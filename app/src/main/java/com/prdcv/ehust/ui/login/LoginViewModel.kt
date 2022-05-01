@@ -1,4 +1,6 @@
 package com.prdcv.ehust.ui.login
 
-class LoginViewModel {
+import androidx.lifecycle.ViewModel
+
+class LoginViewModel: ViewModel() {
 }
