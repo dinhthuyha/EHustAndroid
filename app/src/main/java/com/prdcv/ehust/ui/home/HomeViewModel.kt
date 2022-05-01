@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.home
+package com.prdcv.ehust
 
 import androidx.lifecycle.ViewModel
 
