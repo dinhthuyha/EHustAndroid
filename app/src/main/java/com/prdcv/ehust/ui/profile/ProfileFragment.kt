@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.prdcv.ehust.R
+import com.prdcv.ehust.base.BaseFragmentWithBinding
+import com.prdcv.ehust.databinding.ProfileFragmentBinding
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : BaseFragmentWithBinding<ProfileFragmentBinding>() {
 
     companion object {
         fun newInstance() = ProfileFragment()
@@ -16,17 +18,10 @@ class ProfileFragment : Fragment() {
 
     private lateinit var viewModel: ProfileViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.profile_fragment, container, false)
-    }
+    override fun getViewBinding(inflater: LayoutInflater): ProfileFragmentBinding = ProfileFragmentBinding.inflate(inflater)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun init() {
+
     }
 
 }
