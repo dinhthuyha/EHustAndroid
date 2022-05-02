@@ -24,9 +24,11 @@ abstract  class BaseFragmentWithBinding<VB: ViewBinding> : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         hideActionBar()
+        init()
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+    abstract fun init()
 }
