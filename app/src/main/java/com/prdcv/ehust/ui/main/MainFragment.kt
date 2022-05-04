@@ -42,7 +42,6 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
                     R.id.home -> viewPager.currentItem = 0
                     R.id.search -> viewPager.currentItem = 1
                     R.id.profile -> viewPager.currentItem = 2
-
                 }
                 return false
             }
@@ -55,8 +54,7 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
-            ) {
-            }
+            ) {}
 
             override fun onPageSelected(position: Int) {
                 when (position) {
