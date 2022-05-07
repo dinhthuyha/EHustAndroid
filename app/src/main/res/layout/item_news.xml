@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/boder_item_news"
-    android:layout_margin="15dp">
+    android:layout_marginTop="@dimen/margin_news"
+    android:layout_marginLeft="@dimen/margin_news"
+    android:layout_marginRight="@dimen/margin_news">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txtTitle"
@@ -16,7 +18,7 @@
         android:layout_margin="5dp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:text="Thông báo: Công tác đào tạo và kế hoạch học tập từ ngày 27/9/2021"
+        android:text="@string/news_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -34,17 +36,20 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="2"
-        android:text="Kính gửi: Các đơn vị; Cán bộ, viên chức, người học và khách đến Trường: Tình hình lây nhiễm dịch COVID-19 trong cộng đồng hiện nay cơ bản được kiểm soát."
+        android:text="@string/item_news_content"
         app:layout_constraintTop_toBottomOf="@id/line"
         android:textColor="#969FAA"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
         />
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="27/9/2021"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:textColor="#47525E"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtContent"/>
+        app:layout_constraintTop_toBottomOf="@id/txtContent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

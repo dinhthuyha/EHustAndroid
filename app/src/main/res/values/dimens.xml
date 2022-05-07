@@ -2,4 +2,5 @@
 <resources>
     <dimen name="loginViewsMargin">20dp</dimen>
     <dimen name="newsMoreTextSize">12sp</dimen>
+    <dimen name="margin_news">15dp</dimen>
 </resources>
