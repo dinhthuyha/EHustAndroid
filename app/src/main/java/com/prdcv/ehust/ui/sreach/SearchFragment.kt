@@ -8,10 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.prdcv.ehust.R
 
-class SeachFragment : Fragment() {
+class SearchFragment : Fragment() {
 
     companion object {
-        fun newInstance() = SeachFragment()
+        fun newInstance() = SearchFragment()
     }
 
     private lateinit var viewModel: SeachViewModel

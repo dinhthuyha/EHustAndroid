@@ -15,7 +15,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:text=""
+        android:textColor="#000000"
+        />
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_notifica"
         android:layout_width="match_parent"
@@ -49,10 +59,12 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/black"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"/>
+
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginTop="8dp"/>-->
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
@@ -93,7 +105,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Thời khóa biểu"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -102,10 +114,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 android:text="Tra cứu thời khóa biểu"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                 app:layout_constraintTop_toBottomOf="@+id/appCompatTextView" />
 
@@ -149,7 +161,7 @@
                 android:text="Đồ án"
                 android:layout_marginStart="8dp"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -162,7 +174,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginStart="8dp"
                 android:text="Thông tin về đồ án"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
                 app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -206,7 +218,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Lớp Sinh viên"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -218,12 +230,10 @@
                 android:layout_marginTop="8dp"
                 android:text="Thông tin về lớp của sv"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
                 app:layout_constraintTop_toBottomOf="@+id/appCompatTextView4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-
-
 </androidx.appcompat.widget.LinearLayoutCompat>

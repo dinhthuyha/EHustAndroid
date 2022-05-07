@@ -1,8 +1,12 @@
 package com.prdcv.ehust.base
 
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 abstract class BaseFragment: Fragment(){
     protected fun hideActionBar() {
@@ -13,5 +17,18 @@ abstract class BaseFragment: Fragment(){
     open fun showActionBar() {
         val supportActionBar: ActionBar? = (requireActivity() as AppCompatActivity).supportActionBar
         supportActionBar?.show()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem)= when (item.itemId) {
+        android.R.id.home ->{
+            findNavController().popBackStack()
+            true
+        }
+        else-> super.onOptionsItemSelected(item)
     }
 }

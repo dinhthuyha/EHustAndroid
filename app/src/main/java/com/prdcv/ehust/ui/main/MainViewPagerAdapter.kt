@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.prdcv.ehust.HomeFragment
 import com.prdcv.ehust.ui.profile.ProfileFragment
-import com.prdcv.ehust.ui.sreach.SeachFragment
+import com.prdcv.ehust.ui.sreach.SearchFragment
 
 class MainViewPagerAdapter(fragmentManager: FragmentManager, behavior: Int):FragmentPagerAdapter(fragmentManager,behavior) {
     override fun getCount(): Int {
@@ -15,7 +15,7 @@ class MainViewPagerAdapter(fragmentManager: FragmentManager, behavior: Int):Frag
     override fun getItem(position: Int): Fragment {
         when (position ){
             0->return HomeFragment.newInstance()
-            1->return SeachFragment.newInstance()
+            1->return SearchFragment.newInstance()
             2->return ProfileFragment.newInstance()
         }
         return HomeFragment.newInstance()
