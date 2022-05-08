@@ -24,12 +24,20 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
         binding.login.setOnClickListener {
             viewModel.login(20173086,"123456")
             viewModel.token.observe(viewLifecycleOwner){
+                when(it){
+                    is State.Success->{
+                        Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
+                    }
+                    is State.Error->{
+                        Toast.makeText(context,"$it",Toast.LENGTH_LONG ).show()
+                    }
+                }
                 if (it is State.Success){
                     Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
-                    Log.d("hadinh", "init: ${it.data}")
+
                 }
             }
-            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+            //findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
         }
     }
 
