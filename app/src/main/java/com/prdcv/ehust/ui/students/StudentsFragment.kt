@@ -2,8 +2,10 @@ package com.prdcv.ehust.ui.students
 
 import android.view.LayoutInflater
 import com.prdcv.ehust.base.BaseFragmentWithBinding
-class StudentsFragment : BaseFragmentWithBinding<Stude>() {
-    override fun getViewBinding(inflater: LayoutInflater)= StudentsFragmentBinding.inflate(inflater)
+import com.prdcv.ehust.databinding.FragmentStudentsBinding
+
+class StudentsFragment : BaseFragmentWithBinding<FragmentStudentsBinding>() {
+    override fun getViewBinding(inflater: LayoutInflater)= FragmentStudentsBinding.inflate(inflater)
     override fun init() {
 
     }
