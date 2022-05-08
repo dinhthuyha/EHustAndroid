@@ -1,239 +1,252 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/ic_background_home"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/tb_home"
-        style="@style/Widget.Design.AppBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:text=""
-        android:textColor="#000000"
-        />
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv_notifica"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1"
-        app:cardCornerRadius="24dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="@+id/cd_class_student"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/cd_class_student">
+    <data>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ic_background_home"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/tb_home"
+            layout="@layout/toolbar"
+            app:iconLeft="@{null}"
+            app:iconRight="@{@drawable/ic_notifications}"
+            app:textTitle="@{@string/home_title}"
+            app:titleTextColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="12dp">
-            <androidx.appcompat.widget.AppCompatTextView
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:text=""
+            android:textColor="#000000" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_notifica"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            app:cardCornerRadius="24dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toBottomOf="@+id/cd_class_student"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cd_class_student">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Lịch học hôm nay"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_calendar2"
-                android:textStyle="bold"/>
-            <View
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Lịch học hôm nay"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_calendar2"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/black" />
+
+
+                <!--            <androidx.recyclerview.widget.RecyclerView-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent"-->
+                <!--                android:layout_marginTop="8dp"/>-->
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cd_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="24dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toTopOf="@+id/cd_class_student"
+            app:layout_constraintEnd_toStartOf="@+id/cd_project"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/black"/>
+                android:layout_height="match_parent"
+                android:padding="12dp">
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/appCompatImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_calendar"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-<!--            <androidx.recyclerview.widget.RecyclerView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_marginTop="8dp"/>-->
-        </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.cardview.widget.CardView>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cd_schedule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="12dp"
-        app:cardCornerRadius="24dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@+id/cd_class_student"
-        app:layout_constraintEnd_toStartOf="@+id/cd_project"
-        app:layout_constraintStart_toStartOf="parent">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/appCompatTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Thời khóa biểu"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Tra cứu thời khóa biểu"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                    app:layout_constraintTop_toBottomOf="@+id/appCompatTextView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cd_project"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="12dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:cardCornerRadius="24dp"
+            android:layout_marginBottom="8dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toBottomOf="@+id/cd_schedule"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cd_schedule"
+            app:layout_constraintTop_toTopOf="@+id/cd_schedule">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/appCompatImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_calendar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/appCompatTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:text="Thời khóa biểu"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/appCompatImageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_folder"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:text="Tra cứu thời khóa biểu"
-                android:textSize="14sp"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
-                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/appCompatTextView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Đồ án"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/appCompatTextView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:text="Thông tin về đồ án"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
+                    app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cd_project"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        app:cardCornerRadius="24dp"
-        android:layout_marginBottom="8dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="@+id/cd_schedule"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/cd_schedule"
-        app:layout_constraintTop_toTopOf="@+id/cd_schedule">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cd_class_student"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:cardCornerRadius="24dp"
+            android:layout_marginBottom="12dp"
+            app:cardUseCompatPadding="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cv_notifica"
+            app:layout_constraintStart_toStartOf="parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/appCompatImageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_calendar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/appCompatTextView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Đồ án"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
-                app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/appCompatImageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_class"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/appCompatTextView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:text="Thông tin về đồ án"
-                android:textSize="14sp"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
-                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/appCompatTextView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Lớp Sinh viên"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cd_class_student"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        app:cardCornerRadius="24dp"
-        android:layout_marginBottom="12dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cv_notifica"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/appCompatImageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_calendar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/appCompatTextView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:text="Lớp Sinh viên"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:text="Thông tin về lớp của sv"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:layout_marginStart="8dp"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
-                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView4" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-</androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:text="Thông tin về lớp của sv"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
+                    app:layout_constraintTop_toBottomOf="@+id/appCompatTextView4" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

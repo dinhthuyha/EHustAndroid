@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.sreach
+package com.prdcv.ehust.ui.search
 
 import androidx.lifecycle.ViewModel
 

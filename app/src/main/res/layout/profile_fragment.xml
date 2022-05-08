@@ -5,20 +5,18 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.profile.ProfileFragment">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
+        <include
             android:id="@+id/toolbar"
-            style="@style/Widget.Design.AppBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            app:titleTextColor="@color/text_color"
+            layout="@layout/toolbar"
+            app:iconLeft="@{null}"
+            app:iconRight="@{null}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:title="Thông tin sinh viên" />
+            app:textTitle="@{@string/profile_title}"
+            app:titleTextColor="@color/white" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/appCompatImageView4"

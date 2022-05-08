@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.infromationStudent
+package com.prdcv.ehust.ui.students
 
 import androidx.lifecycle.ViewModel
 
