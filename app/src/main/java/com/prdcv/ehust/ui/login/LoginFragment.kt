@@ -26,21 +26,16 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
             viewModel.token.observe(viewLifecycleOwner){
                 when(it){
                     is State.Success->{
+                        findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                         Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
                     }
                     is State.Error->{
                         Toast.makeText(context,"$it",Toast.LENGTH_LONG ).show()
                     }
                 }
-                if (it is State.Success){
-                    Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
-
-                }
             }
-            //findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+
         }
     }
-
-
 
 }
