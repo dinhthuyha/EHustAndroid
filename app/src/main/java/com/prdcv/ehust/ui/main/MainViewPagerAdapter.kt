@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.prdcv.ehust.HomeFragment
 import com.prdcv.ehust.ui.profile.ProfileFragment
-import com.prdcv.ehust.ui.sreach.SearchFragment
+import com.prdcv.ehust.ui.search.SearchFragment
 
 class MainViewPagerAdapter(fragmentManager: FragmentManager, behavior: Int):FragmentPagerAdapter(fragmentManager,behavior) {
     override fun getCount(): Int {

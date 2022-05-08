@@ -15,13 +15,24 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar"
+                app:iconLeft="@{null}"
+                app:iconRight="@{@drawable/ic_notifications}"
+                app:textTitle="@{@string/new_title}"
+                app:titleTextColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@id/toolbar"
+                tools:itemCount="10"
                 tools:listitem="@layout/item_news"
                 tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>

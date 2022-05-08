@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.projetGraduate
+package com.prdcv.ehust.ui.projectGraduate
 
 import androidx.lifecycle.ViewModel
 
