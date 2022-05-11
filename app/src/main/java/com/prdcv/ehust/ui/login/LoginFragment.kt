@@ -22,18 +22,22 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
     override fun init() {
 
         binding.login.setOnClickListener {
-            viewModel.login(20173086,"123456")
-            viewModel.token.observe(viewLifecycleOwner){
-                when(it){
-                    is State.Success->{
-                        findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-                        Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
-                    }
-                    is State.Error->{
-                        Toast.makeText(context,"$it",Toast.LENGTH_LONG ).show()
+            if (binding.edtId.text.isNotEmpty() && binding.edtPassword.text.isNotEmpty()){
+                Log.d("hadinh", "id: ${binding.edtId.text.toString().toInt()}")
+                viewModel.login(20173086,"123456")
+                viewModel.token.observe(viewLifecycleOwner){
+                    when(it){
+                        is State.Success->{
+                            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+                            Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
+                        }
+                        is State.Error->{
+                            Toast.makeText(context,"$it",Toast.LENGTH_LONG ).show()
+                        }
                     }
                 }
             }
+
 
         }
     }
