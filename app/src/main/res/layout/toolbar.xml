@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:text="@{textTitle}"
             android:textColor="@color/white"
-            android:textSize="23dp"
+            android:textSize="21dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="16dp"
