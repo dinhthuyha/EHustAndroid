@@ -9,7 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
-abstract class BaseRecyclerAdapter<T : RecyclerViewItem, VH : BaseViewHolder<T, ViewDataBinding>>(
+abstract class BaseRecyclerAdapter<T : Any, VH : BaseViewHolder<T, ViewDataBinding>>(
     diffUtilCallback: DiffUtil.ItemCallback<T>
 ) : ListAdapter<T, VH>(diffUtilCallback), BindAbleAdapter<T> {
 
@@ -28,7 +28,6 @@ abstract class BaseRecyclerAdapter<T : RecyclerViewItem, VH : BaseViewHolder<T, 
         submitList(items.toMutableList())
     }
 
-    override fun getItemViewType(position: Int) = getItem(position).type
 
     protected fun getViewHolderDataBinding(parent: ViewGroup, viewType: Int): ViewDataBinding =
         DataBindingUtil.inflate(

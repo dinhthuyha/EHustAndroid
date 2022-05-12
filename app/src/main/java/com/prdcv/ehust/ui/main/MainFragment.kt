@@ -6,10 +6,11 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.prdcv.ehust.R
-import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.MainFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
 
     companion object {

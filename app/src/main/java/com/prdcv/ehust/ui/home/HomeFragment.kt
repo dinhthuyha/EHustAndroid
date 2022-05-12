@@ -10,7 +10,9 @@ import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.ui.main.MainFragmentDirections
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
 
     companion object {
@@ -21,14 +23,17 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         HomeFragmentBinding.inflate(inflater)
 
     override fun init() {
-        binding.name.text =
-            "Trong cuộc họp báo trước Madrid Open, tay vợt số một thế giới Novak Djokovic một lần nữa nhấn mạnh sự hà khắc mà Wimbledon đưa ra với các tay vợt Nga, Belarus. Anh nói: Tôi nghĩ quyết định đó là sai lầm. Chúng ta không thể chống lại các cá nhân đơn lẻ, vì những vấn đề tầm vóc quốc gia. Điều mà các tay vợt muốn chỉ đơn giản là thi đấu. Họ được điều chỉnh bởi luật lệ của ATP, WTA, ITF và không làm gì sai trong trường hợp này"
-        binding.name.isSelected = true
+//        binding.name.text =
+//            "Trong cuộc họp báo trước Madrid Open, tay vợt số một thế giới Novak Djokovic một lần nữa nhấn mạnh sự hà khắc mà Wimbledon đưa ra với các tay vợt Nga, Belarus. Anh nói: Tôi nghĩ quyết định đó là sai lầm. Chúng ta không thể chống lại các cá nhân đơn lẻ, vì những vấn đề tầm vóc quốc gia. Điều mà các tay vợt muốn chỉ đơn giản là thi đấu. Họ được điều chỉnh bởi luật lệ của ATP, WTA, ITF và không làm gì sai trong trường hợp này"
+//        binding.name.isSelected = true
         binding.cdClassStudent.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_informationStudentFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
         }
         binding.cdProject.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
+        }
+        binding.tbHome.iconRightId.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
     }
 }
