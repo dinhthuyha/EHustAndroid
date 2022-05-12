@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.SeachFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>(){
 
     companion object {

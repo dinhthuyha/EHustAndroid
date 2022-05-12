@@ -3,7 +3,7 @@ package com.prdcv.ehust.base.recyclerview
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 
-open class BaseViewHolder<T : RecyclerViewItem, VB : ViewDataBinding>(
+open class BaseViewHolder<T : Any, VB : ViewDataBinding>(
     protected val binding: VB
 ) : RecyclerView.ViewHolder(binding.root) {
 

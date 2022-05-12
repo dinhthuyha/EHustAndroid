@@ -14,5 +14,6 @@
     <string name="new_title">Thông báo</string>
     <string name="profile_title">Thông tin cá nhân</string>
     <string name="ds_projects">Danh sách đồ án</string>
+    <string name="new_title_detail">Thông báo chi tiết</string>
 
 </resources>

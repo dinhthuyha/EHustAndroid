@@ -29,7 +29,6 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
                     when(it){
                         is State.Success->{
                             findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-                            Toast.makeText(context,"${it.data}",Toast.LENGTH_LONG ).show()
                         }
                         is State.Error->{
                             Toast.makeText(context,"$it",Toast.LENGTH_LONG ).show()

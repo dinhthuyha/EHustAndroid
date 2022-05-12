@@ -10,8 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.ProfileFragmentBinding
-import javax.inject.Inject
-
+import dagger.hilt.android.AndroidEntryPoint
+@AndroidEntryPoint
 class ProfileFragment : BaseFragmentWithBinding<ProfileFragmentBinding>() {
 
     companion object {
@@ -24,7 +24,7 @@ class ProfileFragment : BaseFragmentWithBinding<ProfileFragmentBinding>() {
 
     override fun init() {
         binding.imgAvatar.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_informationStudentFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
         }
     }
 

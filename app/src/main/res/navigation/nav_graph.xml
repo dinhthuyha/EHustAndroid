@@ -23,16 +23,20 @@
             android:id="@+id/action_mainFragment_to_projectGraduateFragment"
             app:destination="@id/projectGraduateFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_informationStudentFragment"
-            app:destination="@id/informationStudentFragment" />
-        <action
             android:id="@+id/action_mainFragment_to_newsFragment"
             app:destination="@id/newsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_studentsFragment"
+            app:destination="@id/studentsFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailNewsFragment"
-        android:name="com.prdcv.ehust.ui.news.DetailNewsFragment"
-        android:label="DetailNewsFragment" />
+        android:name="com.prdcv.ehust.ui.news.detail.DetailNewsFragment"
+        android:label="DetailNewsFragment" >
+        <argument
+            android:name="itemNews"
+            app:argType="com.prdcv.ehust.model.News" />
+    </fragment>
     <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.prdcv.ehust.ui.task.NewTaskFragment"
@@ -41,16 +45,7 @@
         android:id="@+id/projectGraduateFragment"
         android:name="com.prdcv.ehust.ui.projectGraduate.ProjectGraduateFragment"
         android:label="project_graduate_fragment"
-        tools:layout="@layout/project_graduate_fragment" />
-    <fragment
-        android:id="@+id/informationStudentFragment"
-        android:name="com.prdcv.ehust.ui.students.InformationStudentFragment"
-        android:label="infromation_student_fragment"
-        tools:layout="@layout/infromation_student_fragment" >
-        <action
-            android:id="@+id/action_informationStudentFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_project_graduate" />
     <fragment
         android:id="@+id/newsFragment"
         android:name="com.prdcv.ehust.ui.news.NewsFragment"
@@ -63,4 +58,12 @@
         android:id="@+id/profileFragment"
         android:name="com.prdcv.ehust.ui.profile.ProfileFragment"
         android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/studentsFragment"
+        android:name="com.prdcv.ehust.ui.students.StudentsFragment"
+        android:label="StudentsFragment" >
+        <action
+            android:id="@+id/action_studentsFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
 </navigation>
