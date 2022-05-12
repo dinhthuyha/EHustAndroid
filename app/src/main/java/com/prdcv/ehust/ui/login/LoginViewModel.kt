@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.repo.EhustRepository
+import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 @HiltViewModel
-class LoginViewModel @Inject constructor(val ehustRepository: EhustRepository):ViewModel() {
+class LoginViewModel @Inject constructor(val ehustRepository: UserRepository):ViewModel() {
     private var _token= SingleLiveEvent<State<String>>()
     val token get() = _token
 
