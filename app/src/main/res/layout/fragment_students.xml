@@ -17,7 +17,7 @@
             layout="@layout/toolbar"
             app:iconLeft="@{null}"
             app:iconRight="@{null}"
-            app:textTitle="@{@string/profile_title}"
+            app:textTitle="@{@string/ds_lop}"
             app:titleTextColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,15 +25,16 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="20dp"
             android:id="@+id/rv_information_student"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:listitem="@layout/item_teacher_student"
-            tools:itemCount="10"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

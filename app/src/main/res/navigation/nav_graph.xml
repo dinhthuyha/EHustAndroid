@@ -57,7 +57,12 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.prdcv.ehust.ui.profile.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="ProfileFragment" >
+        <argument
+            android:name="user"
+            app:argType="com.prdcv.ehust.model.User"
+            app:nullable="true" />
+    </fragment>
     <fragment
         android:id="@+id/studentsFragment"
         android:name="com.prdcv.ehust.ui.students.StudentsFragment"

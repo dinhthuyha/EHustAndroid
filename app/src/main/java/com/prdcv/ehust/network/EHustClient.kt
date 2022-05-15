@@ -17,4 +17,8 @@ class EHustClient @Inject constructor(
     suspend fun getProfileById(id: Int): Response<User>{
         return ehustService.getProfileById(id)
     }
+
+    suspend fun getListStudentInClass(grade:String): Response<List<User>>{
+        return ehustService.getListStudentInClass(grade)
+    }
 }

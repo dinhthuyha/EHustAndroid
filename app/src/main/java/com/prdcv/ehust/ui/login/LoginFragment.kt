@@ -22,10 +22,11 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
         binding.login.setOnClickListener {
             if (binding.edtId.text.isNotEmpty() && binding.edtPassword.text.isNotEmpty()){
                 Log.d("hadinh", "id: ${binding.edtId.text.toString().toInt()}")
-                shareViewModel.login(20173086,"123456")
+                shareViewModel.login(binding.edtId.text.toString().toInt(),"123456")
                 shareViewModel.token.observe(viewLifecycleOwner){
                     when(it){
                         is State.Success->{
+                            shareViewModel.decodeToken(it.data)
                             findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                         }
                         is State.Error->{

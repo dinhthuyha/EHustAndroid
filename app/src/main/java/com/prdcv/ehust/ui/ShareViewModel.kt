@@ -1,11 +1,15 @@
 package com.prdcv.ehust.ui
 
+import android.view.View
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auth0.android.jwt.JWT
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.User
+import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -14,27 +18,76 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    val newsRepository: NewsRepository
 ): ViewModel() {
-    private var _user= SingleLiveEvent<State<User>>()
-    val user get() = _user
-    private var userId =1
-    fun findProfileById(){
+    private var _profileState= SingleLiveEvent<State<User>>()
+    val profileState get() = _profileState
+
+    private var _listUser= SingleLiveEvent<State<List<User>>>()
+    val listUser get() = _listUser
+    var loadingVisibility = ObservableInt()
+
+    private var _newsState= SingleLiveEvent<State<List<News>>>()
+    val newsState get() = _newsState
+
+
+      fun findProfileById(){
         viewModelScope.launch {
-            userRepository.getProfileById(userId).collect {
-                _user.postValue(it)
+            userRepository.getProfileById(user?.id!!).collect {
+                _profileState.postValue(it)
             }
         }
     }
+
+    var user: User?= null
 
     private var _token= SingleLiveEvent<State<String>>()
     val token get() = _token
 
     fun login(id:Int, password:String){
         viewModelScope.launch {
-            userId = id
             userRepository.login(id, password).collect {
                 _token.postValue(it)
+            }
+        }
+
+    }
+
+    fun decodeToken(token: String){
+        val jwt = JWT(token)
+        val grade = jwt.claims["grade"]?.asString()
+        val roleId = jwt.claims["role_id"]?.asInt()
+        val id = jwt.claims["id"]?.asInt()
+        user = User( id = id!!,
+        grade = grade,
+        roleId = roleId!!,
+        )
+    }
+
+   fun getListStudentInClass(){
+        viewModelScope.launch {
+            userRepository.getListStudentInClass(user?.grade!!).collect {
+                _listUser.postValue(it)
+                if (it is State.Success){
+                    loadingVisibility.set(View.GONE)
+                }
+            }
+        }
+
+    }
+
+
+
+    fun setup(){
+        loadingVisibility.set(View.VISIBLE)
+    }
+
+    fun getNews(){
+        viewModelScope.launch {
+            newsRepository.getNews().collect {
+                _newsState.postValue(it)
+
             }
         }
 

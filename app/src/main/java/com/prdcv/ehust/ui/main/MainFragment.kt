@@ -1,8 +1,10 @@
+@file:Suppress("DEPRECATION")
+
 package com.prdcv.ehust.ui.main
 
 import android.view.LayoutInflater
 import android.view.MenuItem
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter.*
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.prdcv.ehust.R
@@ -12,15 +14,16 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
-
     companion object {
         fun newInstance() = MainFragment()
     }
+
     private lateinit var viewPager: ViewPager
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var viewPagerAdapterAdapter: MainViewPagerAdapter
 
-    override fun getViewBinding(inflater: LayoutInflater): MainFragmentBinding = MainFragmentBinding.inflate(inflater)
+    override fun getViewBinding(inflater: LayoutInflater): MainFragmentBinding =
+        MainFragmentBinding.inflate(inflater)
 
     override fun init() {
         viewPager = binding.viewPager
@@ -28,12 +31,14 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
         bottomNavigationView = binding.bottomNavigationView
         viewPagerAdapterAdapter = MainViewPagerAdapter(
             childFragmentManager,
-            FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+            BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
         viewPager.adapter = viewPagerAdapterAdapter
         setPageSelect()
         setItemSelect()
         shareViewModel.findProfileById()
+        shareViewModel.getNews()
+        shareViewModel.getListStudentInClass()
     }
 
     fun setItemSelect() {
@@ -56,7 +61,8 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
                 position: Int,
                 positionOffset: Float,
                 positionOffsetPixels: Int
-            ) {}
+            ) {
+            }
 
             override fun onPageSelected(position: Int) {
                 when (position) {
@@ -71,7 +77,6 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
             }
         })
     }
-
 
 
 }

@@ -8,7 +8,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.Path
 
 interface EHustService {
     @FormUrlEncoded
@@ -19,22 +19,22 @@ interface EHustService {
     @GET("news")
     suspend fun getAllNews(): Response<List<News>>
 
-    @GET("user/profile")
-    suspend fun getProfileById(@Query("id") id: Int): Response<User>
+    @GET("user/profile/{id}")
+    suspend fun getProfileById(@Path("id") id: Int): Response<User>
 
-    @GET("search/user/name")
-    suspend fun searchUserByFullName(@Query("fullName") fullName: String, @Query("role_id") roleId: Int): Response<User>
+    @GET("search/user/name/{fullName}/{roleId}")
+    suspend fun searchUserByFullName(@Path("fullName") fullName: String, @Path("roleId") roleId: Int): Response<User>
 
-    @GET("search/user/id")
-    suspend fun searchUserById(@Query("id") id: Int, @Query("role_id") roleId: Int): Response<User>
+    @GET("search/user/id/{id}/{roleId}")
+    suspend fun searchUserById(@Path("id") id: Int, @Path("roleId") roleId: Int): Response<User>
 
-    @GET("search/class")
-    suspend fun searchClassById(@Query("id") id: Int): Response<ClassStudent>
+    @GET("search/class/{id}")
+    suspend fun searchClassById(@Path("id") id: Int): Response<ClassStudent>
 
-    @GET("classstudent")
-    suspend fun getListStudentInClass(@Query("grade") grade: String)
+    @GET("classstudent/{grade}")
+    suspend fun getListStudentInClass(@Path("grade") grade: String): Response<List<User>>
 
-    @GET("/user/projects")
-    fun findAllProjectsByStudentId(@Query("id") id: Int)
+    @GET("user/projects/{id}")
+    fun findAllProjectsByStudentId(@Path("id") id: Int)
 
 }

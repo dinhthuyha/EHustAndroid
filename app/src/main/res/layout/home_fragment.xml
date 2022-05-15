@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -23,6 +22,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/boder_edit_text"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/name"
@@ -58,7 +61,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Lịch học hôm nay"
+                    android:text="@string/title_schedule"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:drawablePadding="4dp"
@@ -115,7 +118,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="12dp"
-                    android:text="Thời khóa biểu"
+                    android:text="@string/schedule"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -128,7 +131,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="8dp"
-                    android:text="Tra cứu thời khóa biểu"
+                    android:text="@string/title_search_schedule"
                     android:textSize="14sp"
                     app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                     app:layout_constraintTop_toBottomOf="@+id/appCompatTextView" />
@@ -170,7 +173,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Đồ án"
+                    android:text="@string/title_project"
                     android:layout_marginStart="8dp"
                     android:textColor="@color/black"
                     android:textSize="16sp"
@@ -185,7 +188,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:layout_marginStart="8dp"
-                    android:text="Thông tin về đồ án"
+                    android:text="@string/title_information_project"
                     android:textSize="14sp"
                     app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
                     app:layout_constraintTop_toBottomOf="@+id/appCompatTextView2" />
@@ -228,7 +231,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="12dp"
-                    android:text="Lớp Sinh viên"
+                    android:text="@string/title_class_student"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -240,7 +243,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
-                    android:text="Thông tin về lớp của sv"
+                    android:text="@string/title_information_class"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:layout_marginStart="8dp"
