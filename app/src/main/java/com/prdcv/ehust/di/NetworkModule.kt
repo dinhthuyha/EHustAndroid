@@ -17,7 +17,7 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(" https://359b-1-55-19-48.ap.ngrok.io/api/" )
+            .baseUrl("http://104.215.150.77/api/" )
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")

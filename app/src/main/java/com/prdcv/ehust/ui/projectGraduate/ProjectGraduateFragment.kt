@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.FragmentProjectGraduateBinding
-import com.prdcv.ehust.databinding.ProfileFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,5 +1,6 @@
 package com.prdcv.ehust.network
 
+import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -20,4 +21,14 @@ interface EHustService {
 
     @GET("user/profile")
     suspend fun getProfileById(@Query("id") id: Int): Response<User>
+
+    @GET("search/user/name")
+    suspend fun searchUserByFullName(@Query("full_name") id: Int, @Query("role_id") roleId: Int): Response<User>
+
+    @GET("search/user/id")
+    suspend fun searchUserById(@Query("full_name") id: Int, @Query("role_id") roleId: Int): Response<User>
+
+    @GET("search/class")
+    suspend fun searchClassById(@Query("id") id: Int, @Query("role_id") roleId: Int): Response<ClassStudent>
+
 }
