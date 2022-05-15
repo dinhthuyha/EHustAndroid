@@ -6,6 +6,6 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">http://localhost:80</domain>
+        <domain includeSubdomains="true">http://104.215.150.77</domain>
     </domain-config>
 </network-security-config>
