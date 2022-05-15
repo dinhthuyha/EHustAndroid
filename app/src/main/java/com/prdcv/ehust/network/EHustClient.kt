@@ -1,5 +1,6 @@
 package com.prdcv.ehust.network
 
+import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -21,4 +22,9 @@ class EHustClient @Inject constructor(
     suspend fun getListStudentInClass(grade:String): Response<List<User>>{
         return ehustService.getListStudentInClass(grade)
     }
+
+    suspend fun findAllProjectsByStudentId(id: Int):Response<List<ClassStudent>>{
+        return ehustService.findAllProjectsByStudentId(id)
+    }
+
 }

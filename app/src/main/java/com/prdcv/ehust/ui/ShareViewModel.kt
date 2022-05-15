@@ -7,13 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.auth0.android.jwt.JWT
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +34,13 @@ class ShareViewModel @Inject constructor(
     private var _newsState= SingleLiveEvent<State<List<News>>>()
     val newsState get() = _newsState
 
+    var user: User?= null
+
+    private var _token= SingleLiveEvent<State<String>>()
+    val token get() = _token
+
+    private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
+    val projectsState get() = _projectsState
 
       fun findProfileById(){
         viewModelScope.launch {
@@ -40,10 +50,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    var user: User?= null
 
-    private var _token= SingleLiveEvent<State<String>>()
-    val token get() = _token
 
     fun login(id:Int, password:String){
         viewModelScope.launch {
@@ -51,7 +58,6 @@ class ShareViewModel @Inject constructor(
                 _token.postValue(it)
             }
         }
-
     }
 
     fun decodeToken(token: String){
@@ -74,10 +80,7 @@ class ShareViewModel @Inject constructor(
                 }
             }
         }
-
     }
-
-
 
     fun setup(){
         loadingVisibility.set(View.VISIBLE)
@@ -85,11 +88,24 @@ class ShareViewModel @Inject constructor(
 
     fun getNews(){
         viewModelScope.launch {
-            newsRepository.getNews().collect {
-                _newsState.postValue(it)
+            withContext(Dispatchers.Default){
+                newsRepository.getNews().collect {
+                    _newsState.postValue(it)
 
+                }
             }
-        }
 
+        }
+    }
+
+    fun findAllProjectsByStudentId(){
+        viewModelScope.launch {
+            withContext(Dispatchers.Default){
+                userRepository.findAllProjectsByStudentId(user?.id!!).collect {
+                    _projectsState.postValue(it)
+                }
+            }
+
+        }
     }
 }

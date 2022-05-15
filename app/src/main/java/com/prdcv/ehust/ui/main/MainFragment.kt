@@ -39,9 +39,10 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
         shareViewModel.findProfileById()
         shareViewModel.getNews()
         shareViewModel.getListStudentInClass()
+        shareViewModel.findAllProjectsByStudentId()
     }
 
-    fun setItemSelect() {
+    private fun setItemSelect() {
         bottomNavigationView.setOnItemSelectedListener(object :
             BottomNavigationView.OnNavigationItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -55,7 +56,7 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
         })
     }
 
-    fun setPageSelect() {
+  private  fun setPageSelect() {
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,

@@ -2,6 +2,7 @@ package com.prdcv.ehust.repo
 
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
+import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.network.EHustClient
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +32,14 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         return object: NetworkBoundRepository<List<User>>(){
             override suspend fun fetchFromRemote(): Response<List<User>> {
                 return eHustClient.getListStudentInClass(grade)
+            }
+        }.asFlow()
+    }
+
+    fun findAllProjectsByStudentId( id: Int ): Flow<State<List<ClassStudent>>>{
+        return object: NetworkBoundRepository<List<ClassStudent>>(){
+            override suspend fun fetchFromRemote(): Response<List<ClassStudent>> {
+                return eHustClient.findAllProjectsByStudentId(id)
             }
         }.asFlow()
     }

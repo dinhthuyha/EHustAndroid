@@ -20,7 +20,6 @@ class StudentsFragment : BaseFragmentWithBinding<FragmentStudentsBinding>() {
     )
     override fun getViewBinding(inflater: LayoutInflater)= FragmentStudentsBinding.inflate(inflater).apply {
         lifecycleOwner = viewLifecycleOwner
-
         rvInformationStudent.adapter = studentsAdapter
     }
     override fun init() {

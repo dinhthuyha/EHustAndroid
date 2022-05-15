@@ -15,5 +15,19 @@
     <string name="profile_title">Thông tin cá nhân</string>
     <string name="ds_projects">Danh sách đồ án</string>
     <string name="new_title_detail">Thông báo chi tiết</string>
+    <string name="schedule">Thời khóa biểu</string>
+    <string name="title_search_schedule">Tra cứu thời khóa biểu</string>
+    <string name="title_project">Đồ án</string>
+    <string name="title_information_project">Thông tin chi tiết đồ án</string>
+    <string name="title_class_student">Lớp sinh viên</string>
+    <string name="title_information_class">Thông tin lớp sinh viên</string>
+    <string name="title_id_user">Mã sinh viên</string>
+    <string name="title_class">Lớp</string>
+    <string name="title_course">Khóa</string>
+    <string name="title_institute">Khoa/ Viện</string>
+    <string name="title_email">Email</string>
+    <string name="title_information_user">Thông tin cá nhân</string>
+    <string name="title_schedule">Lịch học hôm nay</string>
+    <string name="title_detail_user">Chi tiết</string>
 
 </resources>

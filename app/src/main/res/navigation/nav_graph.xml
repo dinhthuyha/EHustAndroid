@@ -43,7 +43,7 @@
         android:label="NewTaskFragment" />
     <fragment
         android:id="@+id/projectGraduateFragment"
-        android:name="com.prdcv.ehust.ui.projectGraduate.ProjectGraduateFragment"
+        android:name="com.prdcv.ehust.ui.projects.ProjectsFragment"
         android:label="project_graduate_fragment"
         tools:layout="@layout/fragment_project_graduate" />
     <fragment
