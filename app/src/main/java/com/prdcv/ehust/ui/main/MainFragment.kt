@@ -33,6 +33,7 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
         viewPager.adapter = viewPagerAdapterAdapter
         setPageSelect()
         setItemSelect()
+        shareViewModel.findProfileById()
     }
 
     fun setItemSelect() {
