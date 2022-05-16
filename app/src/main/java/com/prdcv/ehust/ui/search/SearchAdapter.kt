@@ -5,6 +5,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.recyclerview.BaseDiffUtilItemCallback
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
+import com.prdcv.ehust.model.ClassStudent
 
 class SearchAdapter(
     private val clickListener: (ItemSearch) -> Unit
@@ -37,8 +38,12 @@ class SearchAdapter(
                 SearchUserViewHolder(viewDataBinding, clickListener)
             }
         }
+    }
 
-
-
+    override fun getItemViewType(position: Int): Int {
+       return when(currentList[0] as? ClassStudent){
+            null -> ViewType.SEARCH_USER.type
+           else ->ViewType.SEARCH_CLASS.type
+        }
     }
 }

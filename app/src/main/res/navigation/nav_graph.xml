@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_mainFragment_to_studentsFragment"
             app:destination="@id/studentsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailNewsFragment"

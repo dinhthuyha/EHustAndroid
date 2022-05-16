@@ -7,15 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.R
 
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
+import com.prdcv.ehust.model.User
+import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.projects.ProjectsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
@@ -41,12 +42,12 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
     override fun init() {
         binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             if (binding.edSearch.text.toString().isNotEmpty()){
+                hideKeyboard()
                 val input = binding.edSearch.text
                 when (checkedId) {
                     R.id.rd_Gv -> {
                         try {
                             searchViewModel.searchUserById(input.toString().toInt())
-                            hideKeyboard()
                         }catch (e: Exception){
                             
                         }
@@ -56,7 +57,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                     R.id.rd_Sv -> {
                         try {
                             searchViewModel.searchUserById(input.toString().toInt())
-                            hideKeyboard()
+
                         }catch (e: Exception){
 
                         }
@@ -65,7 +66,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                     R.id.rd_class -> {
                         try {
                             searchViewModel.searchClassById(input.toString().toInt())
-                            hideKeyboard()
+
                         }catch (e: Exception){
 
                         }
@@ -106,8 +107,15 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
         }
     }
 
-    fun navigateToProfile(any: Any) {
+    fun navigateToProfile(itemSearch: ItemSearch) {
+       when(itemSearch as? User){
+           null -> {
 
+           }
+           else -> {
+               findNavController().navigate(MainFragmentDirections.actionMainFragmentToProfileFragment(itemSearch as User))
+           }
+       }
     }
 
     fun Fragment.hideKeyboard() {

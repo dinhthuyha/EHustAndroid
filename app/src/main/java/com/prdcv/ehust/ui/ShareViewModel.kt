@@ -24,28 +24,27 @@ import javax.inject.Inject
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
     val newsRepository: NewsRepository
-): ViewModel() {
-    private var _profileState= SingleLiveEvent<State<User>>()
+) : ViewModel() {
+    private var _profileState = SingleLiveEvent<State<User>>()
     val profileState get() = _profileState
 
-    private var _listUser= SingleLiveEvent<State<List<User>>>()
+    private var _listUser = SingleLiveEvent<State<List<User>>>()
     val listUser get() = _listUser
     var loadingVisibility = ObservableInt()
 
-    private var _newsState= SingleLiveEvent<State<List<News>>>()
+    private var _newsState = SingleLiveEvent<State<List<News>>>()
     val newsState get() = _newsState
 
-    var user: User?= null
+    var user: User? = null
 
-    private var _token= SingleLiveEvent<State<String>>()
+    private var _token = SingleLiveEvent<State<String>>()
     val token get() = _token
 
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
 
 
-
-      fun findProfileById(){
+    fun findProfileById() {
         viewModelScope.launch {
             userRepository.getProfileById(user?.id!!).collect {
                 _profileState.postValue(it)
@@ -54,8 +53,7 @@ class ShareViewModel @Inject constructor(
     }
 
 
-
-    fun login(id:Int, password:String){
+    fun login(id: Int, password: String) {
         viewModelScope.launch {
             userRepository.login(id, password).collect {
                 _token.postValue(it)
@@ -63,35 +61,45 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun decodeToken(token: String){
+    fun decodeToken(token: String) {
         val jwt = JWT(token)
         val grade = jwt.claims["grade"]?.asString()
         val roleId = jwt.claims["role_id"]?.asInt()
         val id = jwt.claims["id"]?.asInt()
-        user = User( id = id!!,
-        grade = grade,
-        roleId = roleId!!,
+        user = User(
+            id = id!!,
+            fullName = "DDinh Thuy Ha",
+            "Vien cong nghe thong tin",
+            "Nu",
+            grade = grade,
+            "k62",
+            "ha.dt173086@sis.hust.edu.vn",
+            "",
+            "",
+            roleId = roleId!!,
+            "",
+            ""
         )
     }
 
-   fun getListStudentInClass(){
+    fun getListStudentInClass() {
         viewModelScope.launch {
             userRepository.getListStudentInClass(user?.grade!!).collect {
                 _listUser.postValue(it)
-                if (it is State.Success){
+                if (it is State.Success) {
                     loadingVisibility.set(View.GONE)
                 }
             }
         }
     }
 
-    fun setup(){
+    fun setup() {
         loadingVisibility.set(View.VISIBLE)
     }
 
-    fun getNews(){
+    fun getNews() {
         viewModelScope.launch {
-            withContext(Dispatchers.Default){
+            withContext(Dispatchers.Default) {
                 newsRepository.getNews().collect {
                     _newsState.postValue(it)
 
@@ -101,9 +109,9 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findAllProjectsByStudentId(){
+    fun findAllProjectsByStudentId() {
         viewModelScope.launch {
-            withContext(Dispatchers.Default){
+            withContext(Dispatchers.Default) {
                 userRepository.findAllProjectsByStudentId(user?.id!!).collect {
                     _projectsState.postValue(it)
                 }
@@ -111,8 +119,6 @@ class ShareViewModel @Inject constructor(
 
         }
     }
-
-
 
 
 }

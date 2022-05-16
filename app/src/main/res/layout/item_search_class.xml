@@ -14,6 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:background="@drawable/boder_edit_text"
         android:padding="24dp">
 
@@ -24,7 +26,7 @@
             tools:text="Đồ án tốt nghiệp"
             android:text="@{item.nameCourse}"
             android:textColor="@color/black"
-            android:textSize="26sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +49,7 @@
             android:layout_marginTop="12dp"
             android:text="Mã lớp"
             android:textColor="#47525E"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view" />
 
@@ -57,9 +59,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="124dp"
             tools:text="716323"
-            android:text="@{item.codeClass}"
+            android:text="@{String.valueOf(item.codeClass)}"
             android:textColor="@color/black"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tv_mClass"
@@ -72,7 +74,7 @@
             android:layout_marginTop="12dp"
             android:text="Mã HP:"
             android:textColor="#47525E"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@+id/tv_mClass"
             app:layout_constraintTop_toBottomOf="@+id/tv_mClass" />
 
@@ -84,7 +86,7 @@
             tools:text="Mã lớp"
             android:text="@{item.codeCourse}"
             android:textColor="@color/black"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/appCompatTextView9"
@@ -97,7 +99,7 @@
             android:layout_marginTop="12dp"
             android:text="Kỳ:"
             android:textColor="#47525E"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@+id/tx_code_course"
             app:layout_constraintTop_toBottomOf="@+id/tx_code_course" />
 
@@ -109,7 +111,7 @@
             tools:text="Mã lớp"
             android:text="@{String.valueOf(item.semester)}"
             android:textColor="@color/black"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/rv_content_code_course"
@@ -122,7 +124,7 @@
             android:layout_marginTop="12dp"
             android:text="Hình thức học:"
             android:textColor="#47525E"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/appCompatTextView11"
             app:layout_constraintTop_toBottomOf="@+id/appCompatTextView11" />
@@ -135,7 +137,7 @@
             tools:text="Mã lớp"
             android:text="@{item.studyForm}"
             android:textColor="@color/black"
-            android:textSize="23sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
