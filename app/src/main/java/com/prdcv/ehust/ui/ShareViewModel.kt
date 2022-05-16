@@ -12,6 +12,7 @@ import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
+import com.prdcv.ehust.ui.search.ItemSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -41,6 +42,8 @@ class ShareViewModel @Inject constructor(
 
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
+
+
 
       fun findProfileById(){
         viewModelScope.launch {
@@ -108,4 +111,8 @@ class ShareViewModel @Inject constructor(
 
         }
     }
+
+
+
+
 }

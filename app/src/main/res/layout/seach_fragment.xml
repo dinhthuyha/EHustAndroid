@@ -111,8 +111,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"
         app:layout_constraintVertical_bias="0.0"
-        tools:itemCount="1"
-        tools:listitem="@layout/item_teacher_student" />
+        tools:itemCount="5" />
 
 
 

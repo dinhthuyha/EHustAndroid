@@ -1,11 +1,12 @@
 package com.prdcv.ehust.model
 
 import android.os.Parcelable
+import com.prdcv.ehust.ui.search.ItemSearch
 import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
-data class User(
+ class User(
     val id: Int,
     val fullName: String? = null,
     val instituteOfManagement: String? = null,
@@ -18,4 +19,4 @@ data class User(
     val roleId: Int,
     val imageBackground: String? = null,
     val imageAvatar: String? = null,
-) : Parcelable
+) : Parcelable, ItemSearch

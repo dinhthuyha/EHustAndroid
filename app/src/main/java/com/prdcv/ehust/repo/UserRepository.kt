@@ -5,6 +5,7 @@ import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.network.EHustClient
+import com.prdcv.ehust.ui.search.ItemSearch
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -43,4 +44,20 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun searchClassById(id: Int): Flow<State<ClassStudent>>{
+        return object : NetworkBoundRepository<ClassStudent>(){
+            override suspend fun fetchFromRemote(): Response<ClassStudent> {
+                return eHustClient.searchClassById(id)
+            }
+        }.asFlow()
+    }
+     fun searchUserById(id: Int): Flow<State<User>>{
+        return object : NetworkBoundRepository<User>(){
+            override suspend fun fetchFromRemote(): Response<User> {
+                return eHustClient.searchUserById(id)
+            }
+        }.asFlow()
+    }
+
 }

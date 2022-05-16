@@ -1,130 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:background="@drawable/boder_edit_text"
-    android:padding="24dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_title"
+    <data>
+
+        <variable
+            name="item"
+            type="com.prdcv.ehust.model.ClassStudent" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Đồ án tốt nghiệp"
-        android:textColor="@color/black"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
         android:layout_marginTop="8dp"
-        android:background="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+        android:background="@drawable/boder_edit_text"
+        android:padding="24dp">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_mClass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Mã lớp"
-        android:textColor="#47525E"
-        android:textSize="23sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Đồ án tốt nghiệp"
+            android:text="@{item.nameCourse}"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/appCompatTextView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
-        android:text="716323"
-        android:textColor="@color/black"
-        android:textSize="23sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/tv_mClass"
-        app:layout_constraintTop_toTopOf="@+id/tv_mClass" />
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tx_code_course"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Mã HP:"
-        android:textColor="#47525E"
-        android:textSize="23sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_mClass"
-        app:layout_constraintTop_toBottomOf="@+id/tv_mClass" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_mClass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Mã lớp"
+            android:textColor="#47525E"
+            android:textSize="23sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/rv_content_code_course"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Mã lớp"
-        android:textColor="@color/black"
-        android:textSize="23sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/appCompatTextView9"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatTextView9" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="124dp"
+            tools:text="716323"
+            android:text="@{item.codeClass}"
+            android:textColor="@color/black"
+            android:textSize="23sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tv_mClass"
+            app:layout_constraintTop_toTopOf="@+id/tv_mClass" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/appCompatTextView11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Kỳ:"
-        android:textColor="#47525E"
-        android:textSize="23sp"
-        app:layout_constraintStart_toStartOf="@+id/tx_code_course"
-        app:layout_constraintTop_toBottomOf="@+id/tx_code_course" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tx_code_course"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Mã HP:"
+            android:textColor="#47525E"
+            android:textSize="23sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_mClass"
+            app:layout_constraintTop_toBottomOf="@+id/tv_mClass" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/appCompatTextView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Mã lớp"
-        android:textColor="@color/black"
-        android:textSize="23sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/rv_content_code_course"
-        app:layout_constraintTop_toBottomOf="@+id/rv_content_code_course" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/rv_content_code_course"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            tools:text="Mã lớp"
+            android:text="@{item.codeCourse}"
+            android:textColor="@color/black"
+            android:textSize="23sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/appCompatTextView9"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView9" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/appCompatTextView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Hình thức học:"
-        android:textColor="#47525E"
-        android:textSize="23sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/appCompatTextView11"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatTextView11" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Kỳ:"
+            android:textColor="#47525E"
+            android:textSize="23sp"
+            app:layout_constraintStart_toStartOf="@+id/tx_code_course"
+            app:layout_constraintTop_toBottomOf="@+id/tx_code_course" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tv_form"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Mã lớp"
-        android:textColor="@color/black"
-        android:textSize="23sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/appCompatTextView12"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatTextView12" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            tools:text="Mã lớp"
+            android:text="@{String.valueOf(item.semester)}"
+            android:textColor="@color/black"
+            android:textSize="23sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/rv_content_code_course"
+            app:layout_constraintTop_toBottomOf="@+id/rv_content_code_course" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/appCompatTextView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Hình thức học:"
+            android:textColor="#47525E"
+            android:textSize="23sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/appCompatTextView11"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView11" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_form"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            tools:text="Mã lớp"
+            android:text="@{item.studyForm}"
+            android:textColor="@color/black"
+            android:textSize="23sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/appCompatTextView12"
+            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView12" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
