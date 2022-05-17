@@ -43,16 +43,6 @@ class ShareViewModel @Inject constructor(
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
 
-
-    fun findProfileById() {
-        viewModelScope.launch {
-            userRepository.getProfileById(user?.id!!).collect {
-                _profileState.postValue(it)
-            }
-        }
-    }
-
-
     fun login(id: Int, password: String) {
         viewModelScope.launch {
             userRepository.login(id, password).collect {
@@ -63,22 +53,19 @@ class ShareViewModel @Inject constructor(
 
     fun decodeToken(token: String) {
         val jwt = JWT(token)
-        val grade = jwt.claims["grade"]?.asString()
-        val roleId = jwt.claims["role_id"]?.asInt()
-        val id = jwt.claims["id"]?.asInt()
         user = User(
-            id = id!!,
-            fullName = "DDinh Thuy Ha",
-            "Vien cong nghe thong tin",
-            "Nu",
-            grade = grade,
-            "k62",
-            "ha.dt173086@sis.hust.edu.vn",
-            "",
-            "",
-            roleId = roleId!!,
-            "",
-            ""
+            id = jwt.claims["id"]?.asInt()!!,
+            fullName = jwt.claims["full_name"]?.asString(),
+            jwt.claims["institute_of_management"]?.asString(),
+            jwt.claims["gender"]?.asString(),
+            grade = jwt.claims["grade"]?.asString(),
+            jwt.claims["course"]?.asString(),
+            jwt.claims["email"]?.asString(),
+            jwt.claims["cadre_status"]?.asString(),
+            jwt.claims["unit"]?.asString(),
+            roleId = jwt.claims["role_id"]?.asInt()!!,
+            jwt.claims["image_background"]?.asString(),
+            jwt.claims["image_avatar"]?.asString()
         )
     }
 

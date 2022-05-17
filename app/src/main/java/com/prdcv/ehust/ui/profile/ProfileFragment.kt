@@ -1,12 +1,15 @@
 package com.prdcv.ehust.ui.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentProfileBinding
 import com.prdcv.ehust.model.User
+import com.prdcv.ehust.ui.ShareViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
 
@@ -23,11 +26,13 @@ class ProfileFragment : BaseFragmentWithBinding<FragmentProfileBinding>() {
         super.onCreate(savedInstanceState)
         initArgs()
     }
-    private fun initArgs(){
+
+    private fun initArgs() {
         try {
+            user = shareViewModel.user
             val args: ProfileFragmentArgs by navArgs()
-            user= args.user
-        }catch (e: Exception){
+            user = args.user
+        } catch (e: Exception) {
 
         }
 
@@ -35,23 +40,13 @@ class ProfileFragment : BaseFragmentWithBinding<FragmentProfileBinding>() {
 
     override fun getViewBinding(inflater: LayoutInflater): FragmentProfileBinding =
         FragmentProfileBinding.inflate(inflater).apply {
-            lifecycleOwner= viewLifecycleOwner
-    }
-
-    override fun init() {
-        shareViewModel.profileState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is State.Loading -> {
-                }
-                is State.Success -> {
-                    user = state.data
-
-                }
-                is State.Error -> {
-                }
+            lifecycleOwner = viewLifecycleOwner
+            user?.let {
+                userItem = it
             }
         }
-        binding.userItem = user
+
+    override fun init() {
     }
 
 }

@@ -65,16 +65,16 @@
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="24dp"
             android:background="@drawable/boder_edit_text"
             android:padding="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.666"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_name"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintVertical_bias="0.121">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/appCompatTextView5"
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_information_user"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="19sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -107,7 +107,7 @@
                 android:layout_marginTop="12dp"
                 android:text="@string/title_id_user"
                 android:textColor="#47525E"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view2" />
 
@@ -116,14 +116,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                tools:text="716323"
                 android:text="@{String.valueOf(userItem.id)}"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/tv_mClass"
-                app:layout_constraintTop_toTopOf="@+id/tv_mClass" />
+                app:layout_constraintTop_toTopOf="@+id/tv_mClass"
+                tools:text="716323" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tx_code_course"
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_class"
                 android:textColor="#47525E"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/rv_content_code_course"
                 app:layout_constraintStart_toStartOf="@+id/tv_mClass"
                 app:layout_constraintTop_toTopOf="@+id/rv_content_code_course" />
@@ -141,14 +141,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                tools:text="Công nghệ thông tin 11"
                 android:text="@{userItem.grade}"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/appCompatTextView9"
-                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView9" />
+                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView9"
+                tools:text="Công nghệ thông tin 11" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/appCompatTextView11"
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_course"
                 android:textColor="#47525E"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/appCompatTextView12"
                 app:layout_constraintStart_toStartOf="@+id/tx_code_course"
                 app:layout_constraintTop_toTopOf="@+id/appCompatTextView12" />
@@ -166,14 +166,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                tools:text="K62"
                 android:text="@{String.valueOf(userItem.course)}"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/rv_content_code_course"
-                app:layout_constraintTop_toBottomOf="@+id/rv_content_code_course" />
+                app:layout_constraintTop_toBottomOf="@+id/rv_content_code_course"
+                tools:text="K62" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/appCompatTextView8"
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_institute"
                 android:textColor="#47525E"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_form"
                 app:layout_constraintStart_toStartOf="@+id/appCompatTextView11"
                 app:layout_constraintTop_toTopOf="@+id/tv_form" />
@@ -191,14 +191,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                tools:text="Viện Công nghệ Thông tin và Truyền thông"
                 android:text="@{userItem.instituteOfManagement}"
                 android:textColor="@color/black"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/appCompatTextView12"
-                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView12" />
+                app:layout_constraintTop_toBottomOf="@+id/appCompatTextView12"
+                tools:text="Viện Công nghệ Thông tin và Truyền thông" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_email"
@@ -206,7 +206,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/title_email"
                 android:textColor="#47525E"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_content_email"
                 app:layout_constraintStart_toStartOf="@+id/appCompatTextView8"
                 app:layout_constraintTop_toTopOf="@+id/tv_content_email" />
@@ -216,13 +216,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                tools:text="ha.dt173086@sis.hust .edu.vn"
-                android:textColor="@color/black"
                 android:text="@{userItem.email}"
-                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tv_form"
-                app:layout_constraintTop_toBottomOf="@+id/tv_form" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_form"
+                tools:text="ha.dt173086@sis.hust .edu.vn" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,9 +20,9 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
     override fun getViewBinding(inflater: LayoutInflater) = FragmentLoginBinding.inflate(inflater)
     override fun init() {
         binding.login.setOnClickListener {
-            if (binding.edtId.text.isNotEmpty() && binding.edtPassword.text.isNotEmpty()){
-                Log.d("hadinh", "id: ${binding.edtId.text.toString().toInt()}")
-                shareViewModel.login(binding.edtId.text.toString().toInt(),"123456")
+            if (binding.contentId.text?.isNotEmpty() == true  && binding.contentPassword.text?.isNotEmpty() == true ){
+                Log.d("hadinh", "id: ${binding.contentId.text.toString().toInt()}")
+                shareViewModel.login(binding.contentId.text.toString().toInt(),"123456")
                 shareViewModel.token.observe(viewLifecycleOwner){
                     when(it){
                         is State.Success->{

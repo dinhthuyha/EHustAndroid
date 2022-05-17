@@ -36,8 +36,7 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
         viewPager.adapter = viewPagerAdapterAdapter
         setPageSelect()
         setItemSelect()
-        shareViewModel.findProfileById()
-        shareViewModel.getNews()
+
         shareViewModel.getListStudentInClass()
         shareViewModel.findAllProjectsByStudentId()
     }
