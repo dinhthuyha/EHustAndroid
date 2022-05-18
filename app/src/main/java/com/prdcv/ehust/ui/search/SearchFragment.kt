@@ -15,6 +15,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
+import com.prdcv.ehust.extension.hideKeyboard
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.projects.ProjectsAdapter
@@ -118,17 +119,6 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
        }
     }
 
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
 
-    fun Activity.hideKeyboard() {
-        hideKeyboard(currentFocus ?: View(this))
-    }
-
-    fun Context.hideKeyboard(view: View) {
-        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-    }
 
 }
