@@ -41,11 +41,11 @@
                 android:textSize="15sp"
                 android:textStyle="normal"
                 tools:text="Lớp 716323 - GV: Lê Bá Vui" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/line3"/>
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                android:background="@color/line3"/>-->
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

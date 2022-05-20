@@ -28,6 +28,7 @@
             android:background="@drawable/boder_edit_text"
             android:hint="Mã sinh viên"
             android:inputType="number"
+            android:imeOptions="actionSearch"
             android:paddingLeft="20dp"
             android:singleLine="true"
             android:textColor="#000000"

@@ -4,8 +4,10 @@ package com.prdcv.ehust.ui.search
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,7 +25,7 @@ import java.lang.Exception
 
 @AndroidEntryPoint
 class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
-    private val searchViewModel : SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
     private val searchAdapter = SearchAdapter(
         clickListener = ::navigateToProfile
     )
@@ -40,16 +42,16 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
         }
 
     override fun init() {
-        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            if (binding.edSearch.text.toString().isNotEmpty()){
+        binding.edSearch.setOnEditorActionListener { textView, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH && textView.text.toString().isNotEmpty()) {
                 hideKeyboard()
                 val input = binding.edSearch.text
-                when (checkedId) {
+                when (binding.radioGroup.checkedRadioButtonId) {
                     R.id.rd_Gv -> {
                         try {
                             searchViewModel.searchUserById(input.toString().toInt())
-                        }catch (e: Exception){
-                            
+                        } catch (e: Exception) {
+
                         }
 
                     }
@@ -58,7 +60,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                         try {
                             searchViewModel.searchUserById(input.toString().toInt())
 
-                        }catch (e: Exception){
+                        } catch (e: Exception) {
 
                         }
                     }
@@ -67,16 +69,18 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                         try {
                             searchViewModel.searchClassById(input.toString().toInt())
 
-                        }catch (e: Exception){
+                        } catch (e: Exception) {
 
                         }
                     }
                 }
+                return@setOnEditorActionListener true
             }
-
+            return@setOnEditorActionListener false
 
         }
-        searchViewModel.userSearchState.observe(viewLifecycleOwner){
+
+        searchViewModel.userSearchState.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
 
@@ -91,7 +95,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
             }
         }
 
-        searchViewModel.classState.observe(viewLifecycleOwner){
+        searchViewModel.classState.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
 
@@ -108,14 +112,18 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
     }
 
     fun navigateToProfile(itemSearch: ItemSearch) {
-       when(itemSearch as? User){
-           null -> {
+        when (itemSearch as? User) {
+            null -> {
 
-           }
-           else -> {
-               findNavController().navigate(MainFragmentDirections.actionMainFragmentToProfileFragment(itemSearch as User))
-           }
-       }
+            }
+            else -> {
+                findNavController().navigate(
+                    MainFragmentDirections.actionMainFragmentToProfileFragment(
+                        itemSearch as User
+                    )
+                )
+            }
+        }
     }
 
     fun Fragment.hideKeyboard() {
@@ -127,7 +135,8 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
     }
 
     fun Context.hideKeyboard(view: View) {
-        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
