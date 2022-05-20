@@ -29,5 +29,6 @@
     <string name="title_information_user">Thông tin cá nhân</string>
     <string name="title_schedule">Lịch học hôm nay</string>
     <string name="title_detail_user">Chi tiết</string>
+    <string name="dialog_delete_confirmation">Delete this event?</string>
 
 </resources>
