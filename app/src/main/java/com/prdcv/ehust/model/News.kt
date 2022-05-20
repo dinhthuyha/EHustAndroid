@@ -9,6 +9,6 @@ data class News(
     val id: Int,
     val title:String,
     val content: String,
-    @SerializedName("datePost")
+    @SerializedName("date_post")
     val datePost: String
 ) : Parcelable
