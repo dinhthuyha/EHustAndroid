@@ -5,9 +5,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 data class ScheduleEvent(
-    val date: LocalDate,
+    var date: LocalDate,
     val subject: String,
     val startTime: LocalTime,
     var finishTime: LocalTime,
-    var color: Int
+    var color: Int,
+    var finishSubject: LocalDate?=null
 )

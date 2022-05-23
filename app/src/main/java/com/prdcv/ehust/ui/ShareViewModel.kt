@@ -9,6 +9,7 @@ import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
@@ -42,6 +43,10 @@ class ShareViewModel @Inject constructor(
 
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
+
+    private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
+    val schedulesState get() = _schedulesState
+
 
     fun login(id: Int, password: String) {
         viewModelScope.launch {
@@ -101,6 +106,16 @@ class ShareViewModel @Inject constructor(
             withContext(Dispatchers.Default) {
                 userRepository.findAllProjectsByStudentId(user?.id!!).collect {
                     _projectsState.postValue(it)
+                }
+            }
+
+        }
+    }
+    fun findAllSchedules() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                userRepository.findAllSchedules(user?.id!!).collect {
+                    _schedulesState.postValue(it)
                 }
             }
 

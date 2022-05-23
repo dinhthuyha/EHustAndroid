@@ -1,6 +1,7 @@
 package com.prdcv.ehust.ui.schedule
 
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -41,7 +42,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     private val monthTitleFormatter = DateTimeFormatter.ofPattern("MMMM")
 
     private val scheduleAdapter = ScheduleEventAdapter( clickListener = ::navigateToDetailNews)
-    private val schedule = generateFlights().groupBy { it.date }
+    private val schedule = generateFlights().groupBy { it.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH) }
 
     override fun getViewBinding(inflater: LayoutInflater)= FragmentScheduleBinding.inflate(inflater).apply {
 
@@ -76,6 +77,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                     if (day.owner == DayOwner.THIS_MONTH) {
                         if (selectedDate != day.date) {
                             val oldDate = selectedDate
+                            Log.d("TAG", "onViewCreated:${selectedDate},  ${day.date}")
                             selectedDate = day.date
                             val binding = this@ScheduleFragment.binding
                             binding.exFiveCalendar.notifyDateChanged(day.date)
@@ -102,10 +104,13 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                 if (day.owner == DayOwner.THIS_MONTH) {
                     textView.setTextColorRes(R.color.black)
                     layout.setBackgroundResource(if (selectedDate == day.date) R.drawable.example_5_selected_bg else 0)
-
+                    val nameDayOfWeek= day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                     //check neu ngay co lich hoc
-                    val flights = schedule[day.date]
-                    if (flights != null) {
+
+                    val flights = schedule[nameDayOfWeek]
+
+                    if (flights != null && day.date< flights.first().finishSubject) {
+
                         if (flights.isNotEmpty()) {
                             flightBottomView.setBackgroundColor(flights[0].color)
                         }
@@ -163,7 +168,9 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     }
 
     private fun updateAdapterForDate(date: LocalDate?) {
-        scheduleAdapter.setItems(schedule[date].orEmpty())
+        val nameDayOfWeek= date?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+        schedule[nameDayOfWeek]?.forEach { it.date = date!! }
+        scheduleAdapter.setItems(schedule[nameDayOfWeek].orEmpty())
         scheduleAdapter.notifyDataSetChanged()
     }
 }

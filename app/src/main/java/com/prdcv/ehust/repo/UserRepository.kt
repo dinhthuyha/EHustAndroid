@@ -3,12 +3,10 @@ package com.prdcv.ehust.repo
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.network.EHustClient
-import com.prdcv.ehust.ui.search.ItemSearch
 import kotlinx.coroutines.flow.Flow
-import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -56,6 +54,14 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         return object : NetworkBoundRepository<User>(){
             override suspend fun fetchFromRemote(): Response<User> {
                 return eHustClient.searchUserById(id)
+            }
+        }.asFlow()
+    }
+
+    fun findAllSchedules( id: Int ): Flow<State<List<ScheduleEvent>>>{
+        return object: NetworkBoundRepository<List<ScheduleEvent>>(){
+            override suspend fun fetchFromRemote(): Response<List<ScheduleEvent>> {
+                return eHustClient.findAllSchedules(id)
             }
         }.asFlow()
     }

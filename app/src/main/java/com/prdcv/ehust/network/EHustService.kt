@@ -2,8 +2,8 @@ package com.prdcv.ehust.network
 
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
-import com.prdcv.ehust.ui.search.ItemSearch
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -37,5 +37,8 @@ interface EHustService {
 
     @GET("user/projects/{id}")
     suspend fun findAllProjectsByStudentId(@Path("id") id: Int): Response<List<ClassStudent>>
+
+    @GET("user/schedules")
+    suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
 }
