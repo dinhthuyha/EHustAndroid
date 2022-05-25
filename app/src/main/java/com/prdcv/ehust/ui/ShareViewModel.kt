@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui
 
+import android.content.SharedPreferences
 import android.view.View
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.ui.search.ItemSearch
+import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -24,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val sharedPreferences: SharedPreferences,
     val newsRepository: NewsRepository
 ) : ViewModel() {
     private var _profileState = SingleLiveEvent<State<User>>()
@@ -38,7 +41,7 @@ class ShareViewModel @Inject constructor(
 
     var user: User? = null
 
-    private var _token = SingleLiveEvent<State<String>>()
+    private var _token = SingleLiveEvent<State<Map<String,Any>>>()
     val token get() = _token
 
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
@@ -56,21 +59,38 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun decodeToken(token: String) {
-        val jwt = JWT(token)
+    fun decodeResponseLogin(hashMap: Map<String,Any>) {
+        val token = hashMap["token"] as String
+        //save to share preferences
+        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN,token).commit()
+
+        val profile = hashMap["profile"] as Map<String,String>
+        val id = (profile["id"] as String).toInt()
+        val roleId = profile["role_id"] as String
+        val fullName = profile["full_name"] as String
+        val grade = profile["grade"] as String
+        val ins = profile["institute_of_management"] as String
+        val gender = profile["gender"] as String
+        val course = profile["course"] as String
+        val email =  profile["email"] as String
+        val cardeStatus =  profile["cadre_status"] as String
+        val unit = profile["unit"] as String
+        val imageBg = profile["image_background"] as String
+        val imageAva = profile["image_avatar"] as String
+
         user = User(
-            id = jwt.claims["id"]?.asInt()!!,
-            fullName = jwt.claims["full_name"]?.asString(),
-            jwt.claims["institute_of_management"]?.asString(),
-            jwt.claims["gender"]?.asString(),
-            grade = jwt.claims["grade"]?.asString(),
-            jwt.claims["course"]?.asString(),
-            jwt.claims["email"]?.asString(),
-            jwt.claims["cadre_status"]?.asString(),
-            jwt.claims["unit"]?.asString(),
-            roleId = jwt.claims["role_id"]?.asInt()!!,
-            jwt.claims["image_background"]?.asString(),
-            jwt.claims["image_avatar"]?.asString()
+            id,
+            fullName,
+            ins,
+            gender,
+            grade,
+            course,
+            email,
+            cardeStatus,
+            unit,
+            roleId,
+            imageBg,
+            imageAva
         )
     }
 

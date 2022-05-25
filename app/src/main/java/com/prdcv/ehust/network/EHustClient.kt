@@ -10,7 +10,7 @@ import javax.inject.Inject
 class EHustClient @Inject constructor(
     private val ehustService: EHustService
 ) {
-    suspend fun login(id: Int, password: String): Response<String> {
+    suspend fun login(id: Int, password: String): Response<Map<String,Any>> {
         return ehustService.login(id, password)
     }
 

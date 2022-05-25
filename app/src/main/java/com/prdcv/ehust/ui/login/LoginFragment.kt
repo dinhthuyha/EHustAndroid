@@ -1,8 +1,6 @@
 package com.prdcv.ehust.ui.login
 
-import android.content.Intent
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
@@ -23,7 +21,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
             if (binding.contentId.text?.isNotEmpty() == true  && binding.contentPassword.text?.isNotEmpty() == true ){
                 hideKeyboard()
                 binding.login.startAnimation()
-                shareViewModel.login(binding.contentId.text.toString().toInt(),"123456")
+                shareViewModel.login(binding.contentId.text.toString().toInt(),binding.contentPassword.toString())
                 shareViewModel.token.observe(viewLifecycleOwner){
                     when(it){
                         is State.Success->{
@@ -31,7 +29,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
                             handler.postDelayed({
                                 binding.login.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND
                                 ) {
-                                    shareViewModel.decodeToken(it.data)
+                                    shareViewModel.decodeResponseLogin(it.data)
                                     findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                                 }
                             }, 2000)

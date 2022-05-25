@@ -11,9 +11,9 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(val eHustClient: EHustClient) {
-    fun login(id:Int, password: String):Flow<State<String>>{
-        return object : NetworkBoundRepository<String>() {
-            override suspend fun fetchFromRemote(): Response<String> {
+    fun login(id:Int, password: String):Flow<State<Map<String,Any>>>{
+        return object : NetworkBoundRepository<Map<String,Any>>() {
+            override suspend fun fetchFromRemote(): Response<Map<String,Any>> {
                 return eHustClient.login(id, password)
             }
         }.asFlow()

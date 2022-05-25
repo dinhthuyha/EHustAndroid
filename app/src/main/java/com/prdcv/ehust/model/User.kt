@@ -16,7 +16,7 @@ import kotlinx.parcelize.Parcelize
     val email: String? = null,
     val cadreStatus: String? = null,
     val unit: String? = null,
-    val roleId: Int,
+    val roleId: String,
     val imageBackground: String? = null,
     val imageAvatar: String? = null,
 ) : Parcelable, ItemSearch

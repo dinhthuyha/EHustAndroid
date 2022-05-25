@@ -15,7 +15,7 @@ interface EHustService {
     @FormUrlEncoded
     @POST("signin")
     suspend fun login(@Field("id") id: Int,
-                      @Field("password") password: String): Response<String>
+                      @Field("password") password: String): Response<Map<String,Any>>
 
     @GET("news")
     suspend fun getAllNews(): Response<List<News>>
