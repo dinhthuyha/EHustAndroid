@@ -73,8 +73,8 @@ class ShareViewModel @Inject constructor(
         val gender = profile["gender"] as String
         val course = profile["course"] as String
         val email =  profile["email"] as String
-        val cardeStatus =  profile["cadre_status"] as String
-        val unit = profile["unit"] as String
+        val cardeStatus =  profile["cadre_status"] as? String ?: ""
+        val unit = profile["unit"] as? String ?: ""
         val imageBg = profile["image_background"] as String
         val imageAva = profile["image_avatar"] as String
 
