@@ -132,8 +132,9 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                 if (container.legendLayout.tag == null) {
                     container.legendLayout.tag = month.yearMonth
                     container.legendLayout.children.map { it as TextView }.forEachIndexed { index, tv ->
-                        tv.text = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-                            .toUpperCase(Locale.ENGLISH)
+                        val date = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                            .toUpperCase(Locale.ENGLISH).toString()
+                        tv.text = convertDateEnglishToVN(date)
                         tv.setTextColorRes(R.color.black)
                         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                     }
@@ -143,7 +144,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         }
 
         binding.exFiveCalendar.monthScrollListener = { month ->
-            val title = "${monthTitleFormatter.format(month.yearMonth)} ${month.yearMonth.year}"
+            val title = "${convertMonthToVN(monthTitleFormatter.format(month.yearMonth))} ${month.yearMonth.year}"
             binding.exFiveMonthYearText.text = title
 
             selectedDate?.let {
@@ -172,5 +173,35 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         schedule[nameDayOfWeek]?.forEach { it.date = date!! }
         scheduleAdapter.setItems(schedule[nameDayOfWeek].orEmpty())
         scheduleAdapter.notifyDataSetChanged()
+    }
+
+     fun convertDateEnglishToVN(date: String): String{
+        return when(date){
+            "SUN" -> "CN"
+            "MON" -> "T2"
+            "TUE" -> "T3"
+            "WEB" -> "T4"
+            "THU" -> "T5"
+            "FRI" -> "T6"
+            else -> "T7"
+
+        }
+    }
+
+    fun convertMonthToVN(month:String):String {
+        return when(month.toLowerCase()) {
+            "january" -> "thg 1"
+            "february" -> "thg 2"
+            "march" -> "thg 3"
+            "april" -> "thg 4"
+            "may" -> "thg 5"
+            "june" -> "thg 6"
+            "july" -> "thg 7"
+            "august" -> "thg 8"
+            "september" -> "thg 9"
+            "october" -> "thg 10"
+            "november" -> "thg 11"
+            else -> "thg 12"
+        }
     }
 }
