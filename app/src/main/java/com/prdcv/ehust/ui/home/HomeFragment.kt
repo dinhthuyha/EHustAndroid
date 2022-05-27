@@ -2,21 +2,26 @@ package com.prdcv.ehust
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
+import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.HomeFragmentBinding
+import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
 import com.prdcv.ehust.ui.main.MainFragmentDirections
+import com.prdcv.ehust.ui.schedule.ScheduleEventAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
-
+    private val scheduleTodayAdapter = ScheduleTodayAdapter()
     companion object {
         fun newInstance() = HomeFragment()
+        private const val TAG = "HomeFragment"
     }
 
     override fun getViewBinding(inflater: LayoutInflater): HomeFragmentBinding =
@@ -34,6 +39,20 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         }
         binding.tbHome.iconRightId.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
+        }
+
+        shareViewModel.schedulesState.observe(viewLifecycleOwner){
+            when (it) {
+                is State.Loading -> {
+                }
+                is State.Success -> {
+                    Log.d(TAG, "success: ")
+
+                }
+                is State.Error -> {
+                    Log.d(TAG, "error: ${it.exception} ")
+                }
+            }
         }
     }
 }

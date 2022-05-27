@@ -75,7 +75,8 @@ fun generateFlights(): List<ScheduleEvent> {
             LocalTime.of(6, 45),
             LocalTime.of(8, 15),
             randomColor(),
-            currentMonth.plusMonths(1).atDay(2)
+            currentMonth.plusMonths(1).atDay(2),
+            "MON"
         )
     )
 

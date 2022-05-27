@@ -38,7 +38,7 @@ interface EHustService {
     @GET("user/projects/{id}")
     suspend fun findAllProjectsByStudentId(@Path("id") id: Int): Response<List<ClassStudent>>
 
-    @GET("user/schedules")
+    @GET("user/{id}/schedule")
     suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
 }
