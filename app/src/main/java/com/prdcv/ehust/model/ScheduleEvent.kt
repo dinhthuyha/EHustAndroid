@@ -12,5 +12,5 @@ data class ScheduleEvent(
     var finishTime: LocalTime,
     var color: Int,
     var dueDateStudy: LocalDate?=null,
-    var dateStudy: String,
+    var startDateStudy: LocalDate
 )

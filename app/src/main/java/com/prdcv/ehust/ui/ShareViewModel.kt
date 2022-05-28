@@ -51,9 +51,9 @@ class ShareViewModel @Inject constructor(
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
 
-    private var _schedulesState = MutableLiveData<State<List<ScheduleEvent>>>()
+    private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
     val schedulesState get() = _schedulesState
-
+    var schedules = listOf<ScheduleEvent>()
     fun login(id: Int, password: String) {
         viewModelScope.launch {
             userRepository.login(id, password).collect {
@@ -148,7 +148,11 @@ class ShareViewModel @Inject constructor(
     fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
         val today = LocalDate.now()
         val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)?.uppercase(Locale.ENGLISH)
-        return schedules.filter { it.dateStudy ==  dateOfWeek}
+
+        return schedules.filter {
+            val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            dateStudy ==  dateOfWeek
+        }
     }
 
 }

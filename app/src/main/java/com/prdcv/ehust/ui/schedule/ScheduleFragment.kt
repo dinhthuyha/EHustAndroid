@@ -23,11 +23,13 @@ import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.CalendarDayBinding
 import com.prdcv.ehust.databinding.CalendarHeaderBinding
 import com.prdcv.ehust.databinding.FragmentScheduleBinding
+import com.prdcv.ehust.extension.convertDateEnglishToVN
+import com.prdcv.ehust.extension.convertMonthToVN
 import com.prdcv.ehust.extension.daysOfWeekFromLocale
 import com.prdcv.ehust.extension.setTextColorRes
 import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.generateFlights
 import dagger.hilt.android.AndroidEntryPoint
+import generateColorSChedules
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -42,7 +44,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     private val monthTitleFormatter = DateTimeFormatter.ofPattern("MMMM")
 
     private val scheduleAdapter = ScheduleEventAdapter( clickListener = ::navigateToDetailNews)
-    private val schedule = generateFlights().groupBy { it.dateStudy }
+    private var schedule= mapOf<String, List<ScheduleEvent>>()
 
     override fun getViewBinding(inflater: LayoutInflater)= FragmentScheduleBinding.inflate(inflater).apply {
 
@@ -55,7 +57,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     override fun init() {}
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        schedule = generateColorSChedules(shareViewModel.schedules).groupBy { it.startDateStudy.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)}
         binding.exFiveRv.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = scheduleAdapter
@@ -134,7 +136,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                     container.legendLayout.children.map { it as TextView }.forEachIndexed { index, tv ->
                         val date = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                             .toUpperCase(Locale.ENGLISH).toString()
-                        tv.text = convertDateEnglishToVN(date)
+                        tv.text = date.convertDateEnglishToVN()
                         tv.setTextColorRes(R.color.black)
                         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                     }
@@ -144,7 +146,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         }
 
         binding.exFiveCalendar.monthScrollListener = { month ->
-            val title = "${convertMonthToVN(monthTitleFormatter.format(month.yearMonth))} ${month.yearMonth.year}"
+            val title = "${monthTitleFormatter.format(month.yearMonth).convertMonthToVN()} ${month.yearMonth.year}"
             binding.exFiveMonthYearText.text = title
 
             selectedDate?.let {
@@ -173,35 +175,5 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         schedule[nameDayOfWeek]?.forEach { it.date = date!! }
         scheduleAdapter.setItems(schedule[nameDayOfWeek].orEmpty())
         scheduleAdapter.notifyDataSetChanged()
-    }
-
-     fun convertDateEnglishToVN(date: String): String{
-        return when(date){
-            "SUN" -> "CN"
-            "MON" -> "T2"
-            "TUE" -> "T3"
-            "WEB" -> "T4"
-            "THU" -> "T5"
-            "FRI" -> "T6"
-            else -> "T7"
-
-        }
-    }
-
-    fun convertMonthToVN(month:String):String {
-        return when(month.toLowerCase()) {
-            "january" -> "thg 1"
-            "february" -> "thg 2"
-            "march" -> "thg 3"
-            "april" -> "thg 4"
-            "may" -> "thg 5"
-            "june" -> "thg 6"
-            "july" -> "thg 7"
-            "august" -> "thg 8"
-            "september" -> "thg 9"
-            "october" -> "thg 10"
-            "november" -> "thg 11"
-            else -> "thg 12"
-        }
     }
 }

@@ -49,6 +49,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                 is State.Loading -> {
                 }
                 is State.Success -> {
+                    shareViewModel.schedules =it.data
                     if (shareViewModel.getScheduleToday(it.data).isEmpty())
                         Toast.makeText(context,"Hôm nay bạn không có lịch học trên trường", Toast.LENGTH_LONG).show()
                     scheduleTodayAdapter.setItems(shareViewModel.getScheduleToday(it.data))
