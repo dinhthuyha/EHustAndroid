@@ -22,7 +22,6 @@ class ProjectsFragment : BaseFragmentWithBinding<FragmentProjectGraduateBinding>
         }
 
     override fun init() {
-        shareViewModel.findAllProjectsByStudentId()
         shareViewModel.projectsState.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
