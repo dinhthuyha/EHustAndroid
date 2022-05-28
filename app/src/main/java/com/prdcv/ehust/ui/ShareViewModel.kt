@@ -3,6 +3,7 @@ package com.prdcv.ehust.ui
 import android.content.SharedPreferences
 import android.view.View
 import androidx.databinding.ObservableInt
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.auth0.android.jwt.JWT
@@ -21,6 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,9 +51,8 @@ class ShareViewModel @Inject constructor(
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
     val projectsState get() = _projectsState
 
-    private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
+    private var _schedulesState = MutableLiveData<State<List<ScheduleEvent>>>()
     val schedulesState get() = _schedulesState
-
 
     fun login(id: Int, password: String) {
         viewModelScope.launch {
@@ -142,5 +145,10 @@ class ShareViewModel @Inject constructor(
         }
     }
 
+    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
+        val today = LocalDate.now()
+        val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)?.uppercase(Locale.ENGLISH)
+        return schedules.filter { it.dateStudy ==  dateOfWeek}
+    }
 
 }

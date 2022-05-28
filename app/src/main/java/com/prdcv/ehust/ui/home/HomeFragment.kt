@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
@@ -25,7 +26,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
     }
 
     override fun getViewBinding(inflater: LayoutInflater): HomeFragmentBinding =
-        HomeFragmentBinding.inflate(inflater)
+        HomeFragmentBinding.inflate(inflater).apply { rvScheduleToday.adapter = scheduleTodayAdapter }
 
     override fun init() {
 //        binding.name.text =
@@ -40,13 +41,18 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         binding.tbHome.iconRightId.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
-
+        binding.cdSchedule.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_scheduleFragment)
+        }
         shareViewModel.schedulesState.observe(viewLifecycleOwner){
             when (it) {
                 is State.Loading -> {
                 }
                 is State.Success -> {
-                    Log.d(TAG, "success: ")
+                    if (shareViewModel.getScheduleToday(it.data).isEmpty())
+                        Toast.makeText(context,"Hôm nay bạn không có lịch học trên trường", Toast.LENGTH_LONG).show()
+                    scheduleTodayAdapter.setItems(shareViewModel.getScheduleToday(it.data))
+                    Log.d(TAG, "success: ${it.data.size}")
 
                 }
                 is State.Error -> {

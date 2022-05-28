@@ -51,3 +51,33 @@ internal fun randomColor(): Int {
     val rnd = Random()
     return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
 }
+
+fun String.convertDateEnglishToVN(): String{
+    return when(this){
+        "SUN" -> "CN"
+        "MON" -> "T2"
+        "TUE" -> "T3"
+        "WEB" -> "T4"
+        "THU" -> "T5"
+        "FRI" -> "T6"
+        else -> "T7"
+
+    }
+}
+
+fun String.convertMonthToVN():String {
+    return when(this.lowercase()) {
+        "january" -> "thg 1"
+        "february" -> "thg 2"
+        "march" -> "thg 3"
+        "april" -> "thg 4"
+        "may" -> "thg 5"
+        "june" -> "thg 6"
+        "july" -> "thg 7"
+        "august" -> "thg 8"
+        "september" -> "thg 9"
+        "october" -> "thg 10"
+        "november" -> "thg 11"
+        else -> "thg 12"
+    }
+}
