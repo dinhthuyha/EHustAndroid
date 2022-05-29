@@ -1,5 +1,6 @@
 package com.prdcv.ehust.base
 
+import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.ViewDataBinding
@@ -24,11 +25,13 @@ fun <T : Any> RecyclerView.setAdapterData(
 }
 
 @BindingAdapter("bindTime")
-fun bindTime(textVew: TextView, flight: ScheduleEvent){
+fun bindTime(textVew: TextView, flight: ScheduleEvent) {
     val formatter = DateTimeFormatter.ofPattern("EEE'\n'dd MMM")
     textVew.text = formatter.format(flight.date)
-
-
+}
+@BindingAdapter("visible")
+fun setVisibility(target: View, visible: Boolean) {
+    target.visibility = if (visible) View.VISIBLE else View.GONE
 }
 
 @BindingAdapter("bindHour")

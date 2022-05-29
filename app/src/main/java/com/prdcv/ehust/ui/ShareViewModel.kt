@@ -11,6 +11,7 @@ import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
@@ -69,7 +70,7 @@ class ShareViewModel @Inject constructor(
 
         val profile = hashMap["profile"] as Map<String,String>
         val id = (profile["id"] as String).toInt()
-        val roleId = profile["role_id"] as String
+        val roleId = convertRole(profile["role_id"] as String)
         val fullName = profile["full_name"] as String
         val grade = profile["grade"] as String
         val ins = profile["institute_of_management"] as String
@@ -97,6 +98,14 @@ class ShareViewModel @Inject constructor(
         )
     }
 
+    private fun convertRole(roleId: String): Role {
+        return when (roleId) {
+            Role.ROLE_ADMIN.name -> Role.ROLE_ADMIN
+            Role.ROLE_STUDENT.name -> Role.ROLE_STUDENT
+            Role.ROLE_TEACHER.name -> Role.ROLE_TEACHER
+            else -> Role.ROLE_UNKNOWN
+        }
+    }
     fun getListStudentInClass() {
         viewModelScope.launch {
             userRepository.getListStudentInClass(user?.grade!!).collect {
