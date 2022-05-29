@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="text_color">#CD1627</color>
-
+    <color name="text_color_shadow">#A6CD606A</color>
     <color name="boder_edit_text">#8492A6</color>
     <color name="line">#3E8492A6</color>
     <color name="line2">#AE8492A6</color>

@@ -78,4 +78,7 @@ dependencies {
     implementation 'com.auth0.android:jwtdecode:2.0.1'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation 'com.github.kizitonwose:CalendarView:1.0.4'
+
+    implementation 'com.loopeer.lib:shadow:0.0.4-beta3'
+
 }

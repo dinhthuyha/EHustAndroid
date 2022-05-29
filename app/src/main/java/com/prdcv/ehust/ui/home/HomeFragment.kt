@@ -30,6 +30,10 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
             user = shareViewModel.user
            rvScheduleToday.adapter = scheduleTodayAdapter }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun init() {
 //        binding.name.text =
 //            "Trong cuộc họp báo trước Madrid Open, tay vợt số một thế giới Novak Djokovic một lần nữa nhấn mạnh sự hà khắc mà Wimbledon đưa ra với các tay vợt Nga, Belarus. Anh nói: Tôi nghĩ quyết định đó là sai lầm. Chúng ta không thể chống lại các cá nhân đơn lẻ, vì những vấn đề tầm vóc quốc gia. Điều mà các tay vợt muốn chỉ đơn giản là thi đấu. Họ được điều chỉnh bởi luật lệ của ATP, WTA, ITF và không làm gì sai trong trường hợp này"
@@ -52,8 +56,12 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                 }
                 is State.Success -> {
                     shareViewModel.schedules =it.data
-                    if (shareViewModel.getScheduleToday(it.data).isEmpty())
-                        Toast.makeText(context,"Hôm nay bạn không có lịch học trên trường", Toast.LENGTH_LONG).show()
+                    if (shareViewModel.getScheduleToday(it.data).isEmpty()){
+                        binding.txtNoScheduler.apply {
+                            visibility = View.VISIBLE
+                            text = "Hôm nay bạn không có lịch học trên trường"
+                        }
+                    }
                     scheduleTodayAdapter.setItems(shareViewModel.getScheduleToday(it.data))
                     Log.d(TAG, "success: ${it.data.size}")
 
