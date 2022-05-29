@@ -8,82 +8,9 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/ic_background_home"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/tb_home"
-            layout="@layout/toolbar"
-            app:iconLeft="@{null}"
-            app:iconRight="@{@drawable/ic_notifications}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:textTitle="@{@string/home_title}"
-            app:titleTextColor="@color/white" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/boder_edit_text" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:text=""
-            android:textColor="#000000" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_notifica"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_weight="1"
-            app:cardCornerRadius="24dp"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintBottom_toBottomOf="@+id/cd_class_student"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cd_class_student">
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_calendar2"
-                    android:drawablePadding="4dp"
-                    android:text="@string/title_schedule"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/black" />
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvScheduleToday"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cd_schedule"
@@ -158,7 +85,6 @@
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="24dp"
-            android:shadowColor="@color/text_color"
             app:cardUseCompatPadding="true"
             app:layout_constraintBottom_toBottomOf="@+id/cd_schedule"
             app:layout_constraintEnd_toEndOf="parent"
@@ -236,11 +162,11 @@
                 android:padding="12dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/ic_class"
+                    android:id="@+id/ic_news"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_class"
+                    android:src="@drawable/ic_news"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -251,7 +177,7 @@
                     android:orientation="vertical"
                     android:layout_marginStart="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toRightOf="@+id/ic_class"
+                    app:layout_constraintLeft_toRightOf="@+id/ic_news"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -259,7 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:text="@string/title_class_student"
+                        android:text="Tin tức"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -271,7 +197,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="8dp"
-                        android:text="@string/title_information_class"
+                        android:text="Các thông báo, tin tức quan trọng"
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         app:layout_constraintStart_toEndOf="@+id/appCompatImageView3"
