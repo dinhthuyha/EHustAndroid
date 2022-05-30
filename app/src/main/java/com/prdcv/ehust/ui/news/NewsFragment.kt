@@ -33,7 +33,6 @@ class NewsFragment : BaseFragmentWithBinding<FragmentNewsBinding>() {
     }
 
     override fun init() {
-        shareViewModel.getNews()
         shareViewModel.setup()
         shareViewModel.newsState.observe(viewLifecycleOwner) {
             when (it) {

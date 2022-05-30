@@ -72,10 +72,10 @@ class ShareViewModel @Inject constructor(
         val id = (profile["id"] as String).toInt()
         val roleId = convertRole(profile["role_id"] as String)
         val fullName = profile["full_name"] as String
-        val grade = profile["grade"] as String
+        val grade = profile["grade"] as? String?: ""
         val ins = profile["institute_of_management"] as String
         val gender = profile["gender"] as String
-        val course = profile["course"] as String
+        val course = profile["course"] as? String?: ""
         val email =  profile["email"] as String
         val cardeStatus =  profile["cadre_status"] as? String ?: ""
         val unit = profile["unit"] as? String ?: ""

@@ -3,7 +3,7 @@ package com.prdcv.ehust.ui.search
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -11,16 +11,15 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.prdcv.ehust.R
-
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.ui.projects.ProjectsAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
+
 
 @AndroidEntryPoint
 class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
@@ -89,7 +88,8 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                     binding.edSearch.text?.clear()
                 }
                 is State.Error -> {
-                    Log.d(TAG, "error")
+                    searchAdapter.setItems(listOf())
+                    Snackbar.make(binding.snackbar,"Không tìm thấy kết quả phù hợp", Snackbar.LENGTH_SHORT ).show()
                 }
             }
         }
@@ -104,7 +104,15 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                     binding.edSearch.text?.clear()
                 }
                 is State.Error -> {
-                    Log.d(TAG, "error")
+                    searchAdapter.setItems(listOf())
+
+                   val snackBarView =  Snackbar.make(binding.snackbar,"Không tìm thấy kết quả phù hợp", Snackbar.LENGTH_SHORT )
+                        .setTextColor(resources.getColor(R.color.black))
+                        .setBackgroundTint(Color.TRANSPARENT)
+                       .setAnchorView(R.id.snackbar)
+
+                    snackBarView.show()
+
                 }
             }
         }

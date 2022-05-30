@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
+import com.prdcv.ehust.extension.hideKeyboard
 
 abstract  class BaseFragmentWithBinding<VB: ViewBinding> : BaseFragment() {
     private var _binding: VB? = null
@@ -25,6 +26,11 @@ abstract  class BaseFragmentWithBinding<VB: ViewBinding> : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         hideActionBar()
         init()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideKeyboard()
     }
     override fun onDestroyView() {
         super.onDestroyView()

@@ -17,4 +17,12 @@
         <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+
+
+    <style name="Widget.MyApp.Snackbar" parent="@style/Widget.MaterialComponents.Snackbar">
+        <item name="android:layout_margin">45dp</item>
+        <item name="android:padding">32dp</item>
+    </style>
+
 </resources>

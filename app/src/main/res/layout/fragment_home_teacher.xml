@@ -153,7 +153,7 @@
         </com.loopeer.shadow.ShadowView>
 
         <com.loopeer.shadow.ShadowView
-            android:id="@+id/cd_class_student"
+            android:id="@+id/cd_news"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"

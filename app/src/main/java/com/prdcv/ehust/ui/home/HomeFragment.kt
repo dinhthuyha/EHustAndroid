@@ -35,9 +35,6 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
 
     }
     override fun init() {
-//        binding.name.text =
-//            "Trong cuộc họp báo trước Madrid Open, tay vợt số một thế giới Novak Djokovic một lần nữa nhấn mạnh sự hà khắc mà Wimbledon đưa ra với các tay vợt Nga, Belarus. Anh nói: Tôi nghĩ quyết định đó là sai lầm. Chúng ta không thể chống lại các cá nhân đơn lẻ, vì những vấn đề tầm vóc quốc gia. Điều mà các tay vợt muốn chỉ đơn giản là thi đấu. Họ được điều chỉnh bởi luật lệ của ATP, WTA, ITF và không làm gì sai trong trường hợp này"
-//        binding.name.isSelected = true
         binding.viewStudent.cdClassStudent.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
         }
@@ -45,6 +42,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
             findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
         }
         binding.tbHome.iconRightId.setOnClickListener {
+            shareViewModel.getNews()
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
         binding.viewStudent.cdSchedule.setOnClickListener {
@@ -70,6 +68,17 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                     Log.d(TAG, "error: ${it.exception} ")
                 }
             }
+        }
+
+        binding.viewTeacher.cdProject.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
+        }
+        binding.viewTeacher.cdSchedule.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_scheduleFragment)
+        }
+        binding.viewTeacher.cdNews.setOnClickListener {
+            shareViewModel.getNews()
+            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
     }
 }
