@@ -133,7 +133,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findAllProjectsByStudentId() {
+    fun findAllProjectsById() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 userRepository.findAllProjectsByStudentId(user?.id!!).collect {

@@ -1,20 +1,14 @@
 package com.prdcv.ehust
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
-import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.ui.schedule.ScheduleEventAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -79,6 +73,10 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         binding.viewTeacher.cdNews.setOnClickListener {
             shareViewModel.getNews()
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
+        }
+        binding.viewTeacher.cdProject.setOnClickListener {
+            shareViewModel.findAllProjectsById()
+            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
         }
     }
 }

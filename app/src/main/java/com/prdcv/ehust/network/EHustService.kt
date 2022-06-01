@@ -2,6 +2,7 @@ package com.prdcv.ehust.network
 
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -26,8 +27,8 @@ interface EHustService {
     @GET("search/user/name/{fullName}/{roleId}")
     suspend fun searchUserByFullName(@Path("fullName") fullName: String, @Path("roleId") roleId: Int): Response<User>
 
-    @GET("search/user/id/{id}")
-    suspend fun searchUserById(@Path("id") id: Int): Response<User>
+    @GET("search/user/id/{id}/{roleId}")
+    suspend fun searchUserById(@Path("id") id: Int, @Path("roleId") roleId: Role): Response<User>
 
     @GET("search/class/{id}")
     suspend fun searchClassById(@Path("id") id: Int): Response<ClassStudent>

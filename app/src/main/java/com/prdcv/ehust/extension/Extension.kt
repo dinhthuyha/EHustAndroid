@@ -57,7 +57,7 @@ fun String.convertDateEnglishToVN(): String{
         "SUN" -> "CN"
         "MON" -> "T2"
         "TUE" -> "T3"
-        "WEB" -> "T4"
+        "WED" -> "T4"
         "THU" -> "T5"
         "FRI" -> "T6"
         else -> "T7"

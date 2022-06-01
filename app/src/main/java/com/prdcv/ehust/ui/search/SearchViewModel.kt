@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
@@ -37,10 +38,10 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun searchUserById(id: Int){
+    fun searchUserById(id: Int, role: Role){
         viewModelScope.launch {
             withContext(Dispatchers.Default){
-                userRepository.searchUserById(id).collect {
+                userRepository.searchUserById(id, role).collect {
                     _userSearchState.postValue(it)
                 }
             }

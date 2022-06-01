@@ -16,6 +16,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +48,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                 when (binding.radioGroup.checkedRadioButtonId) {
                     R.id.rd_Gv -> {
                         try {
-                            searchViewModel.searchUserById(input.toString().toInt())
+                            searchViewModel.searchUserById(input.toString().toInt(), Role.ROLE_TEACHER)
                         } catch (e: Exception) {
 
                         }
@@ -56,7 +57,7 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
 
                     R.id.rd_Sv -> {
                         try {
-                            searchViewModel.searchUserById(input.toString().toInt())
+                            searchViewModel.searchUserById(input.toString().toInt(),Role.ROLE_STUDENT)
 
                         } catch (e: Exception) {
 

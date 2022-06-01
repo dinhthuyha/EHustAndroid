@@ -2,6 +2,7 @@ package com.prdcv.ehust.network
 
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -34,8 +35,8 @@ class EHustClient @Inject constructor(
         return ehustService.searchClassById(id)
     }
 
-    suspend fun searchUserById(id: Int): Response<User> {
-        return ehustService.searchUserById(id)
+    suspend fun searchUserById(id: Int, roleId: Role): Response<User> {
+        return ehustService.searchUserById(id, roleId)
     }
 
     suspend fun findAllSchedules(id: Int): Response<List<ScheduleEvent>>{
