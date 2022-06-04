@@ -3,7 +3,6 @@ package com.prdcv.ehust.ui.search
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -16,6 +15,8 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
+import com.prdcv.ehust.extension.hideKeyboard
+import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
@@ -85,12 +86,10 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
 
                 }
                 is State.Success -> {
-                    searchAdapter.setItems(listOf(it.data))
-                    binding.edSearch.text?.clear()
+                    updateResultSuccessSearchUser(it)
                 }
                 is State.Error -> {
-                    searchAdapter.setItems(listOf())
-                    Snackbar.make(binding.snackbar,"Không tìm thấy kết quả phù hợp", Snackbar.LENGTH_SHORT ).show()
+                    updateResultErrorSearch()
                 }
             }
         }
@@ -101,23 +100,32 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
 
                 }
                 is State.Success -> {
-                    searchAdapter.setItems(listOf(it.data))
-                    binding.edSearch.text?.clear()
+                    updateResultSuccessSearchClass(it)
                 }
                 is State.Error -> {
-                    searchAdapter.setItems(listOf())
-
-                   val snackBarView =  Snackbar.make(binding.snackbar,"Không tìm thấy kết quả phù hợp", Snackbar.LENGTH_SHORT )
-                        .setTextColor(resources.getColor(R.color.black))
-                        .setBackgroundTint(Color.TRANSPARENT)
-                       .setAnchorView(R.id.snackbar)
-
-                    snackBarView.show()
-
+                    updateResultErrorSearch()
                 }
             }
         }
     }
+
+    private fun updateResultErrorSearch() {
+        searchAdapter.setItems(listOf())
+        binding.searchResult.visibility = View.VISIBLE
+        binding.searchResult.text = "Không tìm thấy kết quả phù hợp"
+    }
+
+    private fun updateResultSuccessSearchClass(it: State.Success<ClassStudent>) {
+        searchAdapter.setItems(listOf(it.data))
+        binding.searchResult.visibility= View.GONE
+        binding.edSearch.text?.clear()
+    }
+    private fun updateResultSuccessSearchUser(it: State.Success<User>) {
+        searchAdapter.setItems(listOf(it.data))
+        binding.searchResult.visibility= View.GONE
+        binding.edSearch.text?.clear()
+    }
+    
 
     fun navigateToProfile(itemSearch: ItemSearch) {
         when (itemSearch as? User) {
@@ -132,20 +140,6 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                 )
             }
         }
-    }
-
-    fun Fragment.hideKeyboard() {
-        view?.let { activity?.hideKeyboard(it) }
-    }
-
-    fun Activity.hideKeyboard() {
-        hideKeyboard(currentFocus ?: View(this))
-    }
-
-    fun Context.hideKeyboard(view: View) {
-        val inputMethodManager =
-            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 }
