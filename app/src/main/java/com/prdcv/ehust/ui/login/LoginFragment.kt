@@ -34,7 +34,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
                                     shareViewModel.decodeResponseLogin(it.data)
                                     findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                                 }
-                            }, 1000)
+                            }, 800)
                         }
                         is State.Error->{
                             binding.login.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);

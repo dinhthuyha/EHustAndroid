@@ -2,7 +2,9 @@ package com.prdcv.ehust.ui.news
 
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.baoyz.widget.PullRefreshLayout
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentNewsBinding
@@ -33,12 +35,21 @@ class NewsFragment : BaseFragmentWithBinding<FragmentNewsBinding>() {
     }
 
     override fun init() {
-        shareViewModel.setup()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.postDelayed(object : Runnable{
+                override fun run() {
+                    shareViewModel.getNews()
+                }
+            },500)
+        }
+
         shareViewModel.newsState.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Loading -> {
+                    shareViewModel.loadingVisibility.set(View.VISIBLE)
                 }
                 is State.Success -> {
+                    binding.swipeRefreshLayout.setRefreshing(false)
                     testAdapter.setItems(it.data)
                     shareViewModel.loadingVisibility.set(View.GONE)
 
