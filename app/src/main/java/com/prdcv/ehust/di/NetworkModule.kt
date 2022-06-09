@@ -13,9 +13,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Authenticator
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
@@ -40,18 +39,14 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideRetrofit(
-        sharedPreferences: SharedPreferences
-    ): Retrofit {
-        val token = sharedPreferences.getString(TOKEN,"")
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
-            val newRequest: Request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-            chain.proceed(newRequest)
-        }.build()
+    @Singleton
+    fun provideRetrofit(authenticator: Authenticator): Retrofit {
+        val client = OkHttpClient.Builder()
+            .authenticator(authenticator)
+            .build()
+
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://104.215.150.77/api/" )
+            .baseUrl("http://104.215.150.77/api/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
@@ -63,9 +58,24 @@ object NetworkModule {
                         .create()
                 )
             )
-               if (!token.isNullOrEmpty())
-                   retrofit.client(client)
-            return retrofit.build()
+            .client(client)
+
+        return retrofit.build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthenticator(sharedPreferences: SharedPreferences): Authenticator {
+        return Authenticator { _, response ->
+            if (response.request.header("Authorization") != null) {
+                return@Authenticator null // Give up, we've already attempted to authenticate.
+            }
+
+            val token = sharedPreferences.getString(TOKEN, "")
+            return@Authenticator response.request.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+        }
     }
 
     @Provides
