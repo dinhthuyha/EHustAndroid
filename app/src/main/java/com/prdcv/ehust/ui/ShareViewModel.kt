@@ -117,10 +117,6 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun setup() {
-        loadingVisibility.set(View.VISIBLE)
-    }
-
     fun getNews() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
