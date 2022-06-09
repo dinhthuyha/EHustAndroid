@@ -81,4 +81,8 @@
         android:id="@+id/scheduleFragment"
         android:name="com.prdcv.ehust.ui.schedule.ScheduleFragment"
         android:label="ScheduleFragment" />
+    <fragment
+        android:id="@+id/topicsFragment"
+        android:name="com.prdcv.ehust.ui.projects.topic.TopicsFragment"
+        android:label="TopicsFragment" />
 </navigation>
