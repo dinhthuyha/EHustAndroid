@@ -3,14 +3,15 @@ package com.prdcv.ehust.ui.profile
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.fragment.navArgs
-import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.databinding.FragmentProfileBinding
+import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.model.User
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProfileFragment : BaseFragmentWithBinding<FragmentProfileBinding>() {
+class ProfileFragment : BaseFragment() {
     private var user: User? = null
     var args: ProfileFragmentArgs? = null
     private val TAG = "ProfileFragment"
@@ -24,10 +25,15 @@ class ProfileFragment : BaseFragmentWithBinding<FragmentProfileBinding>() {
         initArgs()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.composeViewProfile.setContent {
-            ProfileCard(user)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                ProfileCard(user = user)
+            }
         }
     }
 
@@ -39,14 +45,6 @@ class ProfileFragment : BaseFragmentWithBinding<FragmentProfileBinding>() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
-
-    override fun getViewBinding(inflater: LayoutInflater): FragmentProfileBinding =
-        FragmentProfileBinding.inflate(inflater).apply {
-            lifecycleOwner = viewLifecycleOwner
-        }
-
-    override fun init() {}
 
 }

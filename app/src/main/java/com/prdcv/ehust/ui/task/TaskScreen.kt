@@ -30,8 +30,12 @@ import com.prdcv.ehust.ui.profile.ToolBar
 fun DefaultPreview() {
     DefaultTheme {
         Scaffold(floatingActionButton = {
-            FloatingActionButton(onClick = { /*do something*/ }) {
-                Icon(Icons.Filled.Add, contentDescription = "Localized description")
+            FloatingActionButton(onClick = { /*do something*/ }, backgroundColor = Color.Red) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Localized description",
+                    tint = Color.White
+                )
             }
         }) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -68,12 +72,12 @@ fun Task(data: TaskData) {
 //    val data = TaskData()
 
     Card(
-        elevation = 2.dp,
+        elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .padding(5.dp)
             .fillMaxWidth()
-            .clickable {  }
+            .clickable { }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
