@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.task
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,9 +29,21 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val state = remember {
+        mutableStateOf(tasks)
+    }
+
+    fun filterByStatus(status: String?) {
+        state.value = status?.let { s ->
+            tasks.filter { it.status == s }
+        } ?: tasks
+    }
+
+
     DefaultTheme {
         Scaffold(
             floatingActionButton = { FloatButton() },
@@ -43,21 +57,22 @@ fun DefaultPreview() {
                     Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
                 ) {
                     item {
-                        FilterItem("New")
-                        FilterItem("In progress")
-                        FilterItem("Finished")
-                        FilterItem("Done")
-                        FilterItem("Canceled")
+                        FilterItem("New") { filterByStatus(it) }
+                        FilterItem("In progress") { filterByStatus(it) }
+                        FilterItem("Finished") { filterByStatus(it) }
+                        FilterItem("Done") { filterByStatus(it) }
+                        FilterItem("Canceled") { filterByStatus(it) }
                     }
                 }
                 LazyColumn(
                     Modifier
                         //                .background(color = Color.Red)
                         .fillMaxWidth()
+                        .fillMaxHeight()
                         .padding(10.dp)
                 ) {
-                    items(tasks) { t ->
-                        Task(data = t)
+                    items(state.value, key = { it.id }) { t ->
+                        Task(data = t, modifier = Modifier.animateItemPlacement())
                     }
                 }
             }
@@ -67,7 +82,7 @@ fun DefaultPreview() {
 
 //@Preview(showBackground = true)
 @Composable
-fun Task(data: TaskData) {
+fun Task(data: TaskData, modifier: Modifier) {
     Card(
         elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
@@ -75,6 +90,7 @@ fun Task(data: TaskData) {
             .padding(5.dp)
             .fillMaxWidth()
             .clickable { }
+            .then(modifier)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -163,12 +179,15 @@ fun BottomBar() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterItem(text: String) {
-    val state = remember { mutableStateOf(true) }
+fun FilterItem(text: String, onClick: (String?) -> Unit) {
+    val state = remember { mutableStateOf(false) }
 
     FilterChip(
         selected = state.value,
-        onClick = { state.value = !state.value },
+        onClick = {
+            state.value = !state.value
+            if (state.value) onClick(text) else onClick(null)
+        },
         border = ChipDefaults.outlinedBorder,
         colors = ChipDefaults.outlinedFilterChipColors(),
         selectedIcon = {
@@ -194,7 +213,7 @@ data class TaskData(
 private val tasks = listOf(
     TaskData(),
     TaskData(
-        id = 93521,
+        id = 96321,
         title = "Hiển thị file pdf trong giao diện task",
         status = "New",
         progress = 0f,
@@ -207,7 +226,7 @@ private val tasks = listOf(
         progress = 1f,
         dueDate = "12-06-2022"
     ),
-    TaskData(),
+    TaskData(id = 415155),
     TaskData(
         id = 93521,
         title = "Hiển thị file pdf trong giao diện task",
@@ -215,6 +234,10 @@ private val tasks = listOf(
         progress = 0f,
         dueDate = "29-06-2022"
     ),
+    TaskData(12345),
+    TaskData(95362),
+    TaskData(94949),
+    TaskData(35326)
 )
 
 private val Float.percent: String
