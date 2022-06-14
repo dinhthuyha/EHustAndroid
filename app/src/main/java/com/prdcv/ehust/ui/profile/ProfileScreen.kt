@@ -107,10 +107,10 @@ fun ProfileInfoTeacher(user: User?) {
 }
 
 @Composable
-fun ToolBar() {
+fun ToolBar(title: String) {
     TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {
         Text(
-            text = stringResource(id = R.string.profile_title),
+            text = title,
             color = Color.White,
             fontWeight = FontWeight.Bold,
             fontSize = 21.sp,
@@ -133,7 +133,7 @@ fun ProfileName(fullName: String?) {
 fun ProfileCard(user: User?) {
     DefaultTheme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            ToolBar()
+            ToolBar(stringResource(id = R.string.profile_title))
             Row {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(painter = painterResource(id = R.drawable.background_hust), null)
