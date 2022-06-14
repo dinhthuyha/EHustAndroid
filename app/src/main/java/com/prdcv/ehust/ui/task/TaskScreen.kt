@@ -31,20 +31,14 @@ import com.prdcv.ehust.ui.profile.ToolBar
 @Composable
 fun DefaultPreview() {
     DefaultTheme {
-        Scaffold(floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /*do something*/ },
-                backgroundColor = colorResource(id = R.color.text_color)
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = "Localized description",
-                    tint = Color.White
-                )
-            }
-        }) {
+        Scaffold(
+            floatingActionButton = { FloatButton() },
+            topBar = { ToolBar("My tasks") },
+            bottomBar = { BottomBar() },
+            isFloatingActionButtonDocked = true,
+            floatingActionButtonPosition = FabPosition.Center
+        ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                ToolBar("My tasks")
                 LazyRow(
                     Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
                 ) {
@@ -74,8 +68,6 @@ fun DefaultPreview() {
 //@Preview(showBackground = true)
 @Composable
 fun Task(data: TaskData) {
-//    val data = TaskData()
-
     Card(
         elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
@@ -86,7 +78,7 @@ fun Task(data: TaskData) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
                 modifier = Modifier
@@ -142,6 +134,30 @@ fun CircularProgressWithPercent(progress: Float) {
             text = progress.percent,
             fontSize = 10.sp
         )
+    }
+}
+
+@Composable
+fun FloatButton() {
+    FloatingActionButton(
+        onClick = { /*do something*/ },
+        backgroundColor = colorResource(id = R.color.text_color),
+    ) {
+        Icon(
+            Icons.Filled.Add,
+            contentDescription = null,
+            tint = Color.White
+        )
+    }
+}
+
+@Composable
+fun BottomBar() {
+    BottomAppBar(
+        cutoutShape = RoundedCornerShape(50),
+        backgroundColor = colorResource(id = R.color.text_color)
+    ) {
+
     }
 }
 
