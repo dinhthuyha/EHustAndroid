@@ -18,10 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.prdcv.ehust.R
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 
@@ -30,7 +32,10 @@ import com.prdcv.ehust.ui.profile.ToolBar
 fun DefaultPreview() {
     DefaultTheme {
         Scaffold(floatingActionButton = {
-            FloatingActionButton(onClick = { /*do something*/ }, backgroundColor = Color.Red) {
+            FloatingActionButton(
+                onClick = { /*do something*/ },
+                backgroundColor = colorResource(id = R.color.text_color)
+            ) {
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = "Localized description",
@@ -91,7 +96,7 @@ fun Task(data: TaskData) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = data.status,
-                        fontSize = 8.sp,
+                        fontSize = 10.sp,
                         modifier = Modifier
                             .background(
                                 color = Color.LightGray,
@@ -100,18 +105,18 @@ fun Task(data: TaskData) {
                             .padding(2.dp)
                     )
                     Spacer(modifier = Modifier.size(3.dp))
-                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 10.sp)
+                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 12.sp)
 
                 }
                 Text(
                     text = data.title,
                     fontSize = 15.sp,
-                    modifier = Modifier.padding(bottom = 15.dp)
+                    modifier = Modifier.padding(bottom = 20.dp, top = 2.dp)
                 )
                 Text(
                     text = "${data.dueDate} (in 7 days)",
                     fontWeight = FontWeight.Light,
-                    fontSize = 10.sp
+                    fontSize = 12.sp
                 )
             }
             CircularProgressWithPercent(progress = data.progress)

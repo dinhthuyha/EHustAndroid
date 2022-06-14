@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,7 +32,9 @@ fun ProfileInfoRow(label: String, content: String) {
         Divider(thickness = 0.5.dp)
         Spacer(modifier = Modifier.size(6.dp))
         Text(text = label, fontSize = 12.sp, fontWeight = FontWeight.Light)
-        Text(text = content, fontSize = 15.sp)
+        SelectionContainer {
+            Text(text = content, fontSize = 15.sp)
+        }
     }
 }
 
