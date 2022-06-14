@@ -43,7 +43,7 @@
             android:gravity="left"
             android:paddingLeft="10dp"
             android:maxLines="2"
-            android:text="@{flight.courseName}"
+            android:text="@{flight.subjectClass.name}"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:layout_marginLeft="0dp"
