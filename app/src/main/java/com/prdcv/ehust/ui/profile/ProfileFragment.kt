@@ -1,15 +1,11 @@
 package com.prdcv.ehust.ui.profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentProfileBinding
 import com.prdcv.ehust.model.User
-import com.prdcv.ehust.ui.ShareViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
 

@@ -1,16 +1,11 @@
 package com.prdcv.ehust.ui.search
 
 
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
@@ -20,6 +15,7 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
+import com.prdcv.ehust.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 

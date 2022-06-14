@@ -1,8 +1,11 @@
 package com.prdcv.ehust.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.prdcv.ehust.ui.search.ItemSearch
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class ClassStudent(
     @SerializedName("code_class")
     val codeClass: Int,
@@ -16,7 +19,7 @@ data class ClassStudent(
     @SerializedName("study_form")
     val studyForm: String? = null,
 
-    ) : ItemSearch {
+    ) : ItemSearch, Parcelable {
     override fun toString(): String {
         return if (semester ==0){
             "${name} - ${codeCourse}"

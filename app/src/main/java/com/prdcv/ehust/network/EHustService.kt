@@ -4,6 +4,7 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
 import retrofit2.http.Field
@@ -42,4 +43,6 @@ interface EHustService {
     @GET("user/{id}/schedule")
     suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
+    @GET("topic/teacher/{id_teacher}/{id_project}")
+    suspend fun findTopicByIdTeacherAndIdProject(@Path("id_teacher") idTeacher: Int, @Path("id_project") idProject: String): Response<List<Topic>>
 }

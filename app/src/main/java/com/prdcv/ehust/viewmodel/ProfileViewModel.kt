@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.profile
+package com.prdcv.ehust.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.prdcv.ehust.common.SingleLiveEvent

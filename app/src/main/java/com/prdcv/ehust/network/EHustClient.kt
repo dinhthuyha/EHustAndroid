@@ -4,6 +4,7 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
 import javax.inject.Inject
@@ -41,6 +42,12 @@ class EHustClient @Inject constructor(
 
     suspend fun findAllSchedules(id: Int): Response<List<ScheduleEvent>>{
         return ehustService.findAllSchedule(id)
+    }
+    suspend fun findTopicByIdTeacherAndIdProject(
+        idTeacher: Int,
+        idProject: String
+    ): Response<List<Topic>>{
+        return ehustService.findTopicByIdTeacherAndIdProject(idTeacher, idProject)
     }
 
 }

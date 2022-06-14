@@ -1,12 +1,10 @@
-package com.prdcv.ehust.ui
+package com.prdcv.ehust.viewmodel
 
 import android.content.SharedPreferences
 import android.view.View
 import androidx.databinding.ObservableInt
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.auth0.android.jwt.JWT
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
@@ -16,7 +14,6 @@ import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
-import com.prdcv.ehust.ui.search.ItemSearch
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
