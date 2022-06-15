@@ -12,9 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -142,13 +140,13 @@ fun CircularProgressWithPercent(progress: Float) {
     ) {
         CircularProgressIndicator(
             progress = 1f,
-            strokeWidth = 1.5.dp,
+            strokeWidth = 2.dp,
             color = Color.LightGray
         )
-        CircularProgressIndicator(progress = progress, strokeWidth = 1.5.dp)
+        CircularProgressIndicator(progress = progress, strokeWidth = 2.dp)
         Text(
             text = progress.percent,
-            fontSize = 10.sp
+            fontSize = 12.sp
         )
     }
 }
@@ -189,7 +187,10 @@ fun FilterItem(text: String, onClick: (String?) -> Unit) {
             if (state.value) onClick(text) else onClick(null)
         },
         border = ChipDefaults.outlinedBorder,
-        colors = ChipDefaults.outlinedFilterChipColors(),
+        colors = ChipDefaults.filterChipColors(
+            selectedBackgroundColor = MaterialTheme.colors.secondaryVariant,
+            selectedContentColor = Color.White
+        ),
         selectedIcon = {
             Icon(
                 imageVector = Icons.Filled.Done,
