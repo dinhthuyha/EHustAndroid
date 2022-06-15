@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.home
 
+import android.graphics.Color
 import androidx.databinding.ViewDataBinding
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
 import com.prdcv.ehust.databinding.CalendarEventItemViewBinding
@@ -15,7 +16,8 @@ class ScheduleTodayViewHolder(
         super.bind(scheduleToday)
         if (binding is ScheduleTodayItemBinding){
            binding.flight = scheduleToday
-            binding.itemLineVertical.setBackgroundColor(scheduleToday.color)
+
+
         }
     }
 

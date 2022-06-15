@@ -149,7 +149,7 @@ class ShareViewModel @Inject constructor(
 
     fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
         val today = LocalDate.now()
-        val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)?.uppercase(Locale.ENGLISH)
+        val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
 
         return schedules.filter {
             val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
