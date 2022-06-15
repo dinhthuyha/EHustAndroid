@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,9 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.prdcv.ehust.R
-import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
@@ -41,6 +46,8 @@ fun DefaultPreview() {
         } ?: tasks
     }
 
+    val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
+    val coroutineScope = rememberCoroutineScope()
 
     DefaultTheme {
         Scaffold(
@@ -62,15 +69,26 @@ fun DefaultPreview() {
                         FilterItem("Canceled") { filterByStatus(it) }
                     }
                 }
-                LazyColumn(
-                    Modifier
-                        //                .background(color = Color.Red)
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(10.dp)
+
+                SwipeRefresh(
+                    state = refreshingState,
+                    onRefresh = {
+                        refreshingState.isRefreshing = true
+                        coroutineScope.launch {
+                            delay(3000)
+                            refreshingState.isRefreshing = false
+                        }
+                    }
                 ) {
-                    items(state.value, key = { it.id }) { t ->
-                        Task(data = t, modifier = Modifier.animateItemPlacement())
+                    LazyColumn(
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .padding(10.dp)
+                    ) {
+                        items(state.value, key = { it.id }) { t ->
+                            Task(data = t, modifier = Modifier.animateItemPlacement())
+                        }
                     }
                 }
             }
@@ -100,16 +118,7 @@ fun Task(data: TaskData, modifier: Modifier) {
                     .padding(10.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = data.status,
-                        fontSize = 10.sp,
-                        modifier = Modifier
-                            .background(
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(3.dp)
-                            )
-                            .padding(2.dp)
-                    )
+                    Tag(data.status)
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 12.sp)
 
@@ -128,6 +137,26 @@ fun Task(data: TaskData, modifier: Modifier) {
             CircularProgressWithPercent(progress = data.progress)
         }
     }
+}
+
+@Composable
+fun Tag(status: String) {
+    Text(
+        text = status,
+        fontSize = 10.sp,
+        modifier = Modifier
+            .background(
+                color = when (status) {
+                    "New" -> TagNew
+                    "In progress" -> TagInProgress
+                    "Done" -> TagDone
+                    "Finished" -> TagFinished
+                    else -> Color.Gray
+                },
+                shape = RoundedCornerShape(3.dp)
+            )
+            .padding(2.dp)
+    )
 }
 
 @Composable
@@ -227,7 +256,7 @@ private val tasks = listOf(
         progress = 1f,
         dueDate = "12-06-2022"
     ),
-    TaskData(id = 415155),
+    TaskData(id = 415155, status = "Finished"),
     TaskData(
         id = 93521,
         title = "Hiển thị file pdf trong giao diện task",
