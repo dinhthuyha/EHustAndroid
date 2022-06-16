@@ -28,8 +28,8 @@ class EHustClient @Inject constructor(
         return ehustService.getListStudentInClass(grade)
     }
 
-    suspend fun findAllProjectsByStudentId(id: Int, roleId: Role): Response<List<ClassStudent>> {
-        return ehustService.findAllProjectsByStudentId(id, roleId)
+    suspend fun findAllProjectsByStudentId(id: Int): Response<List<ClassStudent>> {
+        return ehustService.findAllProjectsByStudentId(id)
     }
 
     suspend fun searchClassById(id: Int): Response<ClassStudent> {

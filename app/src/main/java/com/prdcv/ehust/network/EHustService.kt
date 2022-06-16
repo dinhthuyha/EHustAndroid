@@ -1,5 +1,6 @@
 package com.prdcv.ehust.network
 
+import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
@@ -37,12 +38,15 @@ interface EHustService {
     @GET("classstudent/{grade}")
     suspend fun getListStudentInClass(@Path("grade") grade: String): Response<List<User>>
 
-    @GET("user/projects/{id}/{role}")
-    suspend fun findAllProjectsByStudentId(@Path("id") id: Int, @Path("role") role: Role): Response<List<ClassStudent>>
+    @GET("user/projects/{id}")
+    suspend fun findAllProjectsByStudentId(@Path("id") id: Int): Response<List<ClassStudent>>
 
     @GET("user/{id}/schedule")
     suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
     @GET("topic/teacher/{id_teacher}/{id_project}")
     suspend fun findTopicByIdTeacherAndIdProject(@Path("id_teacher") idTeacher: Int, @Path("id_project") idProject: String): Response<List<Topic>>
+
+    @GET("updatetopic/{id_topic}")
+    suspend fun updateTopic(@Path("status") status: StatusTopic, @Path("id_student") idStudent: Int = 0)
 }

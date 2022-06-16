@@ -129,7 +129,7 @@ fun ProjectTeacher(data: ClassStudent, navController: NavController, topicViewMo
             .fillMaxWidth()
             .clickable {
                 navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-                topicViewModel.findTopicByIdTeacherAndIdProject(shareViewModel.user?.id!!, data.codeCourse )
+                topicViewModel.findTopicByIdTeacherAndIdProject(shareViewModel.user?.id!!, data.codeCourse)
             }
     ) {
         Row(modifier = Modifier.padding(8.dp)) {

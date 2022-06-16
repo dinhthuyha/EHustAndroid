@@ -36,10 +36,10 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         }.asFlow()
     }
 
-    fun findAllProjectsByStudentId( id: Int, role: Role): Flow<State<List<ClassStudent>>>{
+    fun findAllProjectsByStudentId( id: Int): Flow<State<List<ClassStudent>>>{
         return object: NetworkBoundRepository<List<ClassStudent>>(){
             override suspend fun fetchFromRemote(): Response<List<ClassStudent>> {
-                return eHustClient.findAllProjectsByStudentId(id, role)
+                return eHustClient.findAllProjectsByStudentId(id)
             }
         }.asFlow()
     }
