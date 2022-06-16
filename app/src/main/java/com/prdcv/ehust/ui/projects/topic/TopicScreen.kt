@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Role
@@ -34,7 +35,8 @@ import com.prdcv.ehust.viewmodel.ProjectsViewModel
 @Composable
 fun DefaultPreview(
     viewModel: ProjectsViewModel = viewModel(),
-    role: Role
+    role: Role,
+    navController: NavController
 ) {
     val state = viewModel.topicState.collectAsState()
     DefaultTheme {
@@ -53,7 +55,7 @@ fun DefaultPreview(
                             items(items = topics.data) { t ->
                                 when(role){
                                     Role.ROLE_TEACHER -> {
-                                        TopicTeacherRow(t)
+                                        TopicTeacherRow(t, navController)
                                     }
                                     Role.ROLE_STUDENT -> {
                                         TopicStudentRow(t)
@@ -112,16 +114,17 @@ fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng onlin
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun TopicTeacherRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
+fun TopicTeacherRow(topic: Topic = Topic(123, "lập trình web bán hàng online"), navController: NavController) {
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable { }
+            .clickable {
+                navController.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+            }
     ) {
         Column(
             modifier = Modifier

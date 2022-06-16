@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragment
 
 import com.prdcv.ehust.model.Topic
@@ -30,10 +31,10 @@ class TopicsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return ComposeView(requireContext()).apply {
-            topics.let {
-                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.roleId!!) }
 
-            }
+                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.roleId!!, findNavController()) }
+
+
 
         }
     }

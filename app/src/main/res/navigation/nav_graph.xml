@@ -88,5 +88,9 @@
     <fragment
         android:id="@+id/topicsFragment"
         android:name="com.prdcv.ehust.ui.projects.topic.TopicsFragment"
-        android:label="TopicsFragment" />
+        android:label="TopicsFragment" >
+        <action
+            android:id="@+id/action_topicsFragment_to_newTaskFragment"
+            app:destination="@id/newTaskFragment" />
+    </fragment>
 </navigation>
