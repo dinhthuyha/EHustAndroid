@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,10 +33,10 @@ import com.prdcv.ehust.ui.profile.ToolBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun TaskScreenPreview() {
     val state = remember {
         mutableStateOf(tasks)
     }
@@ -48,50 +49,76 @@ fun DefaultPreview() {
 
     val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
     val coroutineScope = rememberCoroutineScope()
+    val bottomSheetSate = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
+
+    fun refreshTaskList() {
+        refreshingState.isRefreshing = true
+        coroutineScope.launch {
+            delay(3000)
+            refreshingState.isRefreshing = false
+        }
+    }
+
 
     DefaultTheme {
-        Scaffold(
-            floatingActionButton = { FloatButton() },
-            topBar = { ToolBar("My tasks") },
-            bottomBar = { BottomBar() },
-            isFloatingActionButtonDocked = true,
-            floatingActionButtonPosition = FabPosition.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                LazyRow(
-                    Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
-                ) {
-                    item {
-                        FilterItem("New") { filterByStatus(it) }
-                        FilterItem("In progress") { filterByStatus(it) }
-                        FilterItem("Finished") { filterByStatus(it) }
-                        FilterItem("Done") { filterByStatus(it) }
-                        FilterItem("Canceled") { filterByStatus(it) }
+        ModalBottomSheetLayout(
+            sheetShape = Shapes.small,
+            sheetContent = {
+                LazyColumn {
+                    items(10) {
+                        ListItem(
+                            text = { Text("Item $it") },
+                            icon = { Icon(Icons.Default.Favorite, null) }
+                        )
                     }
                 }
-
-                SwipeRefresh(
-                    state = refreshingState,
-                    onRefresh = {
-                        refreshingState.isRefreshing = true
-                        coroutineScope.launch {
-                            delay(3000)
-                            refreshingState.isRefreshing = false
-                        }
-                    }
-                ) {
-                    LazyColumn(
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(10.dp)
+            },
+            sheetState = bottomSheetSate
+        ) {
+            Scaffold(
+                floatingActionButton = { FloatButton { coroutineScope.launch { bottomSheetSate.show() } } },
+                topBar = { ToolBar("My tasks") },
+                bottomBar = { BottomBar() },
+                isFloatingActionButtonDocked = true,
+                floatingActionButtonPosition = FabPosition.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    ChipGroup(action = ::filterByStatus)
+                    SwipeRefresh(
+                        state = refreshingState,
+                        onRefresh = ::refreshTaskList
                     ) {
-                        items(state.value, key = { it.id }) { t ->
-                            Task(data = t, modifier = Modifier.animateItemPlacement())
+                        LazyColumn(
+                            Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .padding(10.dp)
+                        ) {
+                            items(state.value, key = { it.id }) { t ->
+                                Task(data = t, modifier = Modifier.animateItemPlacement())
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ChipGroup(action: (String?) -> Unit) {
+    LazyRow(
+        Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
+    ) {
+        item {
+            FilterItem("New") { action(it) }
+            FilterItem("In progress") { action(it) }
+            FilterItem("Finished") { action(it) }
+            FilterItem("Done") { action(it) }
+            FilterItem("Canceled") { action(it) }
         }
     }
 }
@@ -181,9 +208,9 @@ fun CircularProgressWithPercent(progress: Float) {
 }
 
 @Composable
-fun FloatButton() {
+fun FloatButton(action: () -> Unit) {
     FloatingActionButton(
-        onClick = { /*do something*/ },
+        onClick = action,
         backgroundColor = colorResource(id = R.color.text_color),
     ) {
         Icon(
