@@ -33,6 +33,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
             findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
         }
         binding.viewStudent.cdProject.setOnClickListener {
+            shareViewModel.findAllProjectsById()
             findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
         }
         binding.tbHome.iconRightId.setOnClickListener {

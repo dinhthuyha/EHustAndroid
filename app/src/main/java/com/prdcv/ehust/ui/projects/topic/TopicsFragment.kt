@@ -18,7 +18,7 @@ import com.prdcv.ehust.viewmodel.ProjectsViewModel
  * create an instance of this fragment.
  */
 class TopicsFragment : BaseFragment() {
-    private var topicAdapter = TopicAdapter()
+
     private val topicViewModel: ProjectsViewModel by activityViewModels()
     private var topics = listOf<Topic>(
         Topic(name = "lập trình web bán hàng online"),
@@ -31,7 +31,7 @@ class TopicsFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             topics.let {
-                setContent { DefaultPreview(topicViewModel) }
+                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.roleId!!) }
 
             }
 

@@ -20,20 +20,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.ui.task.FilterItem
 import com.prdcv.ehust.viewmodel.ProjectsViewModel
 
 //@Preview(showBackground = true)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun DefaultPreview(
-    viewModel: ProjectsViewModel = viewModel()
+    viewModel: ProjectsViewModel = viewModel(),
+    role: Role
 ) {
     val state = viewModel.topicState.collectAsState()
     DefaultTheme {
-        Scaffold {
+        Scaffold ( topBar = { ToolBar("Đề tài") },){
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LazyColumn(
@@ -46,7 +51,16 @@ fun DefaultPreview(
                         is State.Error -> {}
                         is State.Success -> {
                             items(items = topics.data) { t ->
-                                TopicRow(topic = t)
+                                when(role){
+                                    Role.ROLE_TEACHER -> {
+                                        TopicTeacherRow(t)
+                                    }
+                                    Role.ROLE_STUDENT -> {
+                                        TopicStudentRow(t)
+                                    }
+                                    else -> {}
+                                }
+
                             }
                         }
                         else -> {}
@@ -61,7 +75,7 @@ fun DefaultPreview(
 
 @Preview(showBackground = true)
 @Composable
-fun TopicRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
+fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -98,6 +112,49 @@ fun TopicRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun TopicTeacherRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
+    Card(
+        elevation = 2.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable { }
+    ) {
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Đề tài: ",
+                    fontSize = 15.sp,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.size(5.dp))
+                Text(
+                    text = "${topic.name} ",
+                    fontSize = 17.sp,
+                    modifier = Modifier
+                        .padding(2.dp)
+                )
+                Spacer(modifier = Modifier.size(3.dp))
+            }
+
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                if (topic.status == StatusTopic.REQUEST){
+                    FilterItem(text = "${topic.status?.name}")
+                    FilterItem(text = "Delete")
+                }
+
+            }
+        }
+
+    }
+}
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FilterItem(text: String) {

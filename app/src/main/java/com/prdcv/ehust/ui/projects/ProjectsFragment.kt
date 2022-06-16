@@ -1,9 +1,14 @@
 package com.prdcv.ehust.ui.projects
 
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentProjectGraduateBinding
@@ -14,52 +19,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ProjectsFragment : BaseFragmentWithBinding<FragmentProjectGraduateBinding>() {
-    private val projectsAdapter = ProjectsAdapter(
-        clickListener = ::navigateToTopic
-    )
+class ProjectsFragment : BaseFragment() {
+
     private val topicViewModel: ProjectsViewModel by activityViewModels()
 
-    override fun getViewBinding(inflater: LayoutInflater) =
-        FragmentProjectGraduateBinding.inflate(inflater).apply {
-            lifecycleOwner = viewLifecycleOwner
-            rvProjectGraduate.adapter = projectsAdapter
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+                setContent { DefaultPreview(shareViewModel, findNavController(), topicViewModel) }
         }
-
-    override fun init() {
-        shareViewModel.projectsState.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
-
-                }
-                is State.Success -> {
-                    projectsAdapter.setItems(it.data)
-                }
-                is State.Error -> {
-
-                }
-            }
-        }
-
     }
-
-    private fun navigateToTopic(newsItem: ClassStudent) {
-        //TH dang dang nhap vs id gv
-       when(shareViewModel.user?.roleId){
-           Role.ROLE_TEACHER -> {
-               findNavController().navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-               topicViewModel.findTopicByIdTeacherAndIdProject(shareViewModel.user?.id!!, newsItem.codeCourse )
-           }
-           Role.ROLE_STUDENT -> {
-               if (!newsItem.nameTeacher.toString().isNullOrEmpty()){
-                   findNavController().navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-               }
-           }
-           else -> {}
-       }
-
-    }
-
-
-
 }
