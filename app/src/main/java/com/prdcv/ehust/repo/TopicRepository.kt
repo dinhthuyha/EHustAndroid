@@ -2,6 +2,7 @@ package com.prdcv.ehust.repo
 
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.network.EHustClient
