@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.prdcv.ehust.ui.ShareViewModel" />
+            type="com.prdcv.ehust.viewmodel.ShareViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
