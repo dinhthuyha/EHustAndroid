@@ -1,68 +1,134 @@
 package com.prdcv.ehust.ui.admin
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.ExposedDropdownMenuDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prdcv.ehust.R
+import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
+import com.prdcv.ehust.viewmodel.AssignViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun AssignScreen() {
+fun AssignScreen(viewModel: AssignViewModel, context: Context) {
     DefaultTheme {
+
         Scaffold() {
+            var selectedOptionProjects = remember { mutableStateOf("") }
+            var selectedNewOProjects = remember { mutableStateOf(false) }
+            var selectedOptionStudents = remember { mutableStateOf("") }
+            var selectedOptionTeachers = remember { mutableStateOf("") }
+            var projects = remember { mutableStateOf(mutableListOf<String>()) }
+            var teachers = remember { mutableStateOf(mutableListOf<String>()) }
+            var students = remember { mutableStateOf(mutableListOf<String>()) }
             ToolBarAssign(title = "Trang chủ ")
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spinner(label = "Danh sách project", options = listOf("Proejct I", "Proejct II"))
+                when (val pro = viewModel.projectsState.value) {
+                    is State.Success -> {
+                        projects.value.addAll(pro.data.map { it.name })
+                        SpinnerProject(
+                            label = "Danh sách project",
+                            options = projects.value,
+                            selectedOptionText = selectedOptionProjects,
+                            isChangeOption = selectedNewOProjects,
+                            viewModel = viewModel
+                        )
+                    }
+                }
+
+
                 Spacer(modifier = Modifier.height(16.dp))
-                Spinner(label = "Danh sách project", options = listOf("Proejct I", "Proejct II"))
+                SpinnerStudent(
+                    label = "Danh sách Sinh vien",
+                    callback = {
+                        when (val tea = viewModel.studentsState.value) {
+                            is State.Success -> {
+                                students.value.addAll(tea.data.map { it.fullName!! })
+                            }
+                        }
+                    },
+                    options = students.value,
+                    selectedOptionText = selectedOptionStudents
+                )
                 Spacer(modifier = Modifier.height(16.dp))
-                Spinner(label = "Danh sách project", options = listOf("Proejct I", "Proejct II"))
+                SpinnerTeacher(
+                    label = "Danh sách giang vien",
+                    callback = {
+                        if (selectedNewOProjects.value) {
+                            when (val tea = viewModel.teachersState.value) {
+                                is State.Success -> {
+                                    teachers.value.addAll(tea.data.map { it.fullName!! })
+                                }
+                            }
+                        }
+
+                    },
+                    options = teachers.value,
+                    selectedOptionText = selectedOptionTeachers
+                )
+                Spacer(modifier = Modifier.height(45.dp))
+                Button(
+                    onClick = {
+                    },
+
+                    ) {
+                    Text(
+                        text = "Submit",
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(15.dp, 6.dp)
+                            .clickable {
+                                if (!selectedOptionProjects.value.equals("")
+                                    && !selectedOptionStudents.value.equals("")
+                                    && !selectedOptionTeachers.value.equals("")
+                                ) {
+
+                                    students.value.remove(selectedOptionStudents.value)
+                                    teachers.value.remove(selectedOptionTeachers.value)
+                                    Log.d("TAG", "AssignScreen: ${teachers.value.size}")
+                                }
+                            }
+                    )
+                }
             }
         }
     }
@@ -90,10 +156,16 @@ fun ToolBarAssign(title: String) {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun Spinner(label: String, options: List<String>) {
+fun SpinnerProject(
+    label: String,
+    options: List<String>,
+    selectedOptionText: MutableState<String>,
+    isChangeOption: MutableState<Boolean>,
+    viewModel: AssignViewModel
+) {
     val focusManager = LocalSoftwareKeyboardController.current
     var expanded = remember { mutableStateOf(false) }
-    var selectedOptionText = remember { mutableStateOf(options[0]) }
+    isChangeOption.value = false
 
     ExposedDropdownMenuBox(
         expanded = expanded.value,
@@ -102,7 +174,9 @@ fun Spinner(label: String, options: List<String>) {
             focusManager?.hide()
         }
     ) {
+
         OutlinedTextField(
+            readOnly = true,
             value = selectedOptionText.value,
             onValueChange = {},
             label = { Text("${label}") },
@@ -120,7 +194,135 @@ fun Spinner(label: String, options: List<String>) {
                 imeAction = ImeAction.None
             ),
 
-        )
+            )
+
+        ExposedDropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        if (selectionOption!= selectedOptionText.value){
+                            isChangeOption.value =true
+                        }else isChangeOption.value = false
+
+                        viewModel.getAllUserInClass(selectionOption, Role.ROLE_TEACHER)
+                        viewModel.getAllUserInClass(selectionOption, Role.ROLE_STUDENT)
+                        selectedOptionText.value = selectionOption
+                        expanded.value = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@Composable
+fun SpinnerTeacher(
+    label: String,
+    callback: () -> Unit,
+    options: List<String>,
+    selectedOptionText: MutableState<String>
+) {
+    val focusManager = LocalSoftwareKeyboardController.current
+    var expanded = remember { mutableStateOf(false) }
+
+
+    ExposedDropdownMenuBox(
+        expanded = expanded.value,
+        onExpandedChange = {
+            expanded.value = !expanded.value
+            focusManager?.hide()
+        }
+    ) {
+        callback.invoke()
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedOptionText.value,
+            onValueChange = {},
+            label = { Text("${label}") },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Purple500,
+                unfocusedBorderColor = LightGray
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded.value
+                )
+            },
+            keyboardActions = KeyboardActions(onDone = { focusManager?.hide() }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.None
+            ),
+
+            )
+
+        ExposedDropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedOptionText.value = selectionOption
+                        expanded.value = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@Composable
+fun SpinnerStudent(
+    label: String,
+    callback: () -> Unit,
+    options: List<String>,
+    selectedOptionText: MutableState<String>
+) {
+    val focusManager = LocalSoftwareKeyboardController.current
+    var expanded = remember { mutableStateOf(false) }
+
+
+    ExposedDropdownMenuBox(
+        expanded = expanded.value,
+        onExpandedChange = {
+            expanded.value = !expanded.value
+            focusManager?.hide()
+        }
+    ) {
+        callback.invoke()
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedOptionText.value,
+            onValueChange = {},
+            label = { Text("${label}") },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Purple500,
+                unfocusedBorderColor = LightGray
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded.value
+                )
+            },
+            keyboardActions = KeyboardActions(onDone = { focusManager?.hide() }),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.None
+            ),
+
+            )
 
         ExposedDropdownMenu(
             expanded = expanded.value,

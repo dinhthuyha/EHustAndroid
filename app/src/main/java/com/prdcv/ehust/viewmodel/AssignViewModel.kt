@@ -1,0 +1,68 @@
+package com.prdcv.ehust.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.Subject
+import com.prdcv.ehust.model.User
+import com.prdcv.ehust.repo.SubjectRepository
+import com.prdcv.ehust.repo.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class AssignViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val subjectRepository: SubjectRepository
+) : ViewModel() {
+
+
+    private var _projectsState: MutableStateFlow<State<List<Subject>>> =
+        MutableStateFlow(State.Loading)
+    val projectsState: StateFlow<State<List<Subject>>> get() = _projectsState
+
+    private var _studentsState: MutableStateFlow<State<List<User>>> =
+        MutableStateFlow(State.Loading)
+    val studentsState: StateFlow<State<List<User>>> get() = _studentsState
+
+    private var _teachersState: MutableStateFlow<State<List<User>>> =
+        MutableStateFlow(State.Loading)
+    val teachersState: StateFlow<State<List<User>>> get() = _teachersState
+
+
+    /**
+     * admin get ds project cua toan truong
+     */
+    fun getAllProjectCurrentSemester() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                subjectRepository.getAllProjectCurrentSemester().collect {
+                    _projectsState.emit(it)
+                }
+            }
+        }
+    }
+
+    fun getAllUserInClass(nameCourse: String, role: Role) {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                userRepository.getAllUserInProject(nameCourse, role).collect{
+                    if (role == Role.ROLE_TEACHER){
+                        _teachersState.emit(it)
+                    }
+                    if (role == Role.ROLE_STUDENT){
+                        _studentsState.emit(it)
+                    }
+                }
+            }
+        }
+    }
+
+}

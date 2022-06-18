@@ -4,6 +4,7 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -50,4 +51,11 @@ class EHustClient @Inject constructor(
         return ehustService.findTopicByIdTeacherAndIdProject(idTeacher, idProject)
     }
 
+    suspend fun getAllUserInClass(nameCourse: String, role: Role): Response< List<User>>{
+        return ehustService.getAllUserInClass(nameCourse, role)
+    }
+
+    suspend fun getAllProjectCurrentSemester():Response<List<Subject>>{
+        return ehustService.getAllProjectCurrent()
+    }
 }

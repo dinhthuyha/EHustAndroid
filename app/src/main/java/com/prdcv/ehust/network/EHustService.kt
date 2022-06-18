@@ -5,6 +5,7 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -49,4 +50,16 @@ interface EHustService {
 
     @GET("updatetopic/{id_topic}")
     suspend fun updateTopic(@Path("status") status: StatusTopic, @Path("id_student") idStudent: Int = 0)
+
+    /**
+     * Tim tat cac user trong lop hoc ki B va hoc mon A
+     */
+    @GET("project/users/{nameCourse}/{role}")
+    suspend fun getAllUserInClass(@Path("nameCourse") nameCourse: String, @Path("role") role: Role): Response< List<User>>
+
+    /**
+     * ds project trong ki hien tai
+     */
+    @GET("project/current/semester")
+    suspend fun getAllProjectCurrent(): Response<List<Subject>>
 }
