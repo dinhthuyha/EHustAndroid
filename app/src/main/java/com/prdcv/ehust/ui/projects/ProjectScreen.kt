@@ -62,7 +62,7 @@ fun DefaultPreview(
                         is State.Success -> {
                             items(items = topics.data) { t ->
                                 when(viewModel.user?.roleId){
-                                    Role.ROLE_STUDENT -> { ProjectStudent(t)}
+                                    Role.ROLE_STUDENT -> { ProjectStudent(t, navController, topicViewModel, viewModel )}
                                     Role.ROLE_TEACHER -> { ProjectTeacher(t, navController, topicViewModel, viewModel) }
                                     else -> {}
                                 }
@@ -79,7 +79,7 @@ fun DefaultPreview(
 
 
 @Composable
-fun ProjectStudent(data: ClassStudent){
+fun ProjectStudent(data: ClassStudent, navController: NavController, topicViewModel: ProjectsViewModel, shareViewModel: ShareViewModel){
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -87,7 +87,11 @@ fun ProjectStudent(data: ClassStudent){
             .padding(5.dp)
             .fillMaxWidth()
             .clickable {
-                Log.d("", "ProjectStudent: ")
+                data.nameTeacher?.let {
+                    navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
+                    topicViewModel.findTopicByIdTeacherAndIdProject(nameTeacher = it,idProject = data.codeCourse)
+                }
+
 
             }
     ) {
@@ -129,7 +133,10 @@ fun ProjectTeacher(data: ClassStudent, navController: NavController, topicViewMo
             .fillMaxWidth()
             .clickable {
                 navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-                topicViewModel.findTopicByIdTeacherAndIdProject(shareViewModel.user?.id!!, data.codeCourse)
+                topicViewModel.findTopicByIdTeacherAndIdProject(
+                    idTeacher = shareViewModel.user?.id!!,
+                    idProject = data.codeCourse
+                )
             }
     ) {
         Row(modifier = Modifier.padding(8.dp)) {

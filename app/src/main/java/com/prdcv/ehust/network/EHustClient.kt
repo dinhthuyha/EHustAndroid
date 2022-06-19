@@ -8,7 +8,6 @@ import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
-import retrofit2.http.Field
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -46,10 +45,11 @@ class EHustClient @Inject constructor(
         return ehustService.findAllSchedule(id)
     }
     suspend fun findTopicByIdTeacherAndIdProject(
-        idTeacher: Int,
-        idProject: String
+        nameTeacher: String,
+        idProject: String,
+        idTeacher: Int
     ): Response<List<Topic>>{
-        return ehustService.findTopicByIdTeacherAndIdProject(idTeacher, idProject)
+        return ehustService.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher)
     }
 
     suspend fun getAllUserInClass(nameCourse: String, role: Role): Response< List<User>>{

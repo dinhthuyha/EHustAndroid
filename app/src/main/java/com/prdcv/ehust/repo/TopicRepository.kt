@@ -13,12 +13,13 @@ import javax.inject.Inject
 
 class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
     fun findTopicByIdTeacherAndIdProject(
-        idTeacher: Int,
-        idProject: String
+        nameTeacher: String,
+        idProject: String,
+        idTeacher: Int
     ): Flow<State<List<Topic>>>{
         return object: NetworkBoundRepository<List<Topic>>(){
             override suspend fun fetchFromRemote(): Response<List<Topic>> {
-                return eHustClient.findTopicByIdTeacherAndIdProject(idTeacher, idProject)
+                return eHustClient.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher)
             }
         }.asFlow()
     }

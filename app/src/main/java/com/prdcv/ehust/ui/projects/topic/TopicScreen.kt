@@ -35,6 +35,7 @@ import com.prdcv.ehust.viewmodel.ProjectsViewModel
 @Composable
 fun DefaultPreview(
     viewModel: ProjectsViewModel = viewModel(),
+    id: Int,
     role: Role,
     navController: NavController
 ) {
@@ -58,7 +59,10 @@ fun DefaultPreview(
                                         TopicTeacherRow(t, navController)
                                     }
                                     Role.ROLE_STUDENT -> {
-                                        TopicStudentRow(t)
+                                        if (t.id != id && t.status == StatusTopic.ACCEPT) {
+
+                                        } else
+                                            TopicStudentRow(t)
                                     }
                                     else -> {}
                                 }
@@ -75,7 +79,6 @@ fun DefaultPreview(
 }
 
 
-@Preview(showBackground = true)
 @Composable
 fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
     Card(
@@ -157,7 +160,7 @@ fun TopicTeacherRow(
 }
 
 @Composable
-fun ShowStatusTopic(topic: Topic){
+fun ShowStatusTopic(topic: Topic) {
     Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
         if (topic.status == StatusTopic.REQUESTING) {
 

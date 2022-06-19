@@ -22,9 +22,12 @@ class ProjectsViewModel @Inject constructor(
 
     private var _topicState: MutableStateFlow<State<List<Topic>>> = MutableStateFlow(State.Loading)
     val topicState: StateFlow<State<List<Topic>>> get() = _topicState
-    fun findTopicByIdTeacherAndIdProject(idTeacher: Int, idProject: String){
+    fun findTopicByIdTeacherAndIdProject(nameTeacher: String = "a", idProject: String, idTeacher: Int = 0){
         viewModelScope.launch {
-            topicRepository.findTopicByIdTeacherAndIdProject(idTeacher, idProject).collect {
+            topicRepository.findTopicByIdTeacherAndIdProject(
+                nameTeacher = nameTeacher,
+                idProject =idProject,
+                idTeacher = idTeacher).collect {
                 _topicState.emit(it)
 
             }
