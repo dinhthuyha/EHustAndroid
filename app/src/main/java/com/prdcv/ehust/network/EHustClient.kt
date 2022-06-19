@@ -8,6 +8,7 @@ import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
+import retrofit2.http.Field
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -58,4 +59,11 @@ class EHustClient @Inject constructor(
     suspend fun getAllProjectCurrentSemester():Response<List<Subject>>{
         return ehustService.getAllProjectCurrent()
     }
+
+    suspend fun assignProjectInstructions(
+        idStudent: Int,
+        idTeacher: Int,
+        nameProject: String
+    ) =
+        ehustService.assignProjectInstructions(idStudent, idTeacher, nameProject)
 }

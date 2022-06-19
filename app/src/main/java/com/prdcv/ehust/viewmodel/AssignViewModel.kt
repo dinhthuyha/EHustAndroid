@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +38,10 @@ class AssignViewModel @Inject constructor(
         MutableStateFlow(State.Loading)
     val teachersState: StateFlow<State<List<User>>> get() = _teachersState
 
+    private var _assignState: MutableStateFlow<State<ResponseBody>> =
+        MutableStateFlow(State.Loading)
+    val assignState: StateFlow<State<ResponseBody>> get() = _assignState
+
 
     /**
      * admin get ds project cua toan truong
@@ -53,14 +59,26 @@ class AssignViewModel @Inject constructor(
     fun getAllUserInClass(nameCourse: String, role: Role) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                userRepository.getAllUserInProject(nameCourse, role).collect{
-                    if (role == Role.ROLE_TEACHER){
+                userRepository.getAllUserInProject(nameCourse, role).collect {
+                    if (role == Role.ROLE_TEACHER) {
                         _teachersState.emit(it)
                     }
-                    if (role == Role.ROLE_STUDENT){
+                    if (role == Role.ROLE_STUDENT) {
                         _studentsState.emit(it)
                     }
                 }
+            }
+        }
+    }
+
+    fun assign(
+        idStudent: Int,
+        idTeacher: Int,
+        nameProject: String
+    ) {
+        viewModelScope.launch {
+            userRepository.assignProjectInstructions(idStudent, idTeacher, nameProject).collect{
+                _assignState.emit(it)
             }
         }
     }

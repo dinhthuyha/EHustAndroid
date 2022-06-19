@@ -8,6 +8,7 @@ import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -62,4 +63,10 @@ interface EHustService {
      */
     @GET("project/current/semester")
     suspend fun getAllProjectCurrent(): Response<List<Subject>>
+
+    @FormUrlEncoded
+    @POST("assignProject")
+    suspend fun assignProjectInstructions(@Field("id_student") idStudent: Int,
+                                          @Field("id_teacher") idTeacher: Int,
+                                          @Field("name_project") nameProject: String): Response<ResponseBody>
 }

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.AssignViewModel
@@ -54,8 +55,11 @@ fun AssignScreen(viewModel: AssignViewModel, context: Context) {
             var selectedOptionStudents = remember { mutableStateOf("") }
             var selectedOptionTeachers = remember { mutableStateOf("") }
             var projects = remember { mutableStateOf(mutableListOf<String>()) }
-            var teachers = remember { mutableStateOf(mutableListOf<String>()) }
-            var students = remember { mutableStateOf(mutableListOf<String>()) }
+            var fullNameTeachers = remember { mutableStateOf(mutableListOf<String>()) }
+            var fullNameStudents = remember { mutableStateOf(mutableListOf<String>()) }
+            var teachers = remember { mutableStateOf(mutableListOf<User>()) }
+            var students = remember { mutableStateOf(mutableListOf<User>()) }
+
             ToolBarAssign(title = "Trang chủ ")
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -69,66 +73,71 @@ fun AssignScreen(viewModel: AssignViewModel, context: Context) {
                             label = "Danh sách project",
                             options = projects.value,
                             selectedOptionText = selectedOptionProjects,
-                            isChangeOption = selectedNewOProjects,
                             viewModel = viewModel
                         )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SpinnerStudent(
+                            label = "Danh sách Sinh vien",
+                            callback = {
+                                when (val tea = viewModel.studentsState.value) {
+                                    is State.Success -> {
+                                        students.value.clear()
+                                        students.value.addAll(tea.data)
+                                        fullNameStudents.value.addAll(tea.data.map { it.fullName!! })
+                                    }
+                                }
+                            },
+                            options = fullNameStudents.value,
+                            selectedOptionText = selectedOptionStudents
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SpinnerTeacher(
+                            label = "Danh sách giang vien",
+                            callback = {
+                                when (val tea = viewModel.teachersState.value) {
+                                    is State.Success -> {
+                                        teachers.value.clear()
+                                        teachers.value.addAll(tea.data)
+                                        fullNameTeachers.value.addAll(tea.data.map { it.fullName!! })
+                                    }
+                                }
+
+
+                            },
+                            options = fullNameTeachers.value,
+                            selectedOptionText = selectedOptionTeachers
+                        )
+                        Spacer(modifier = Modifier.height(45.dp))
+                        Button(
+                            onClick = {
+                            },
+
+                            ) {
+                            Text(
+                                text = "Submit",
+                                fontSize = 16.sp,
+                                modifier = Modifier
+                                    .padding(15.dp, 6.dp)
+                                    .clickable {
+                                        if (!selectedOptionProjects.value.equals("")
+                                            && !selectedOptionStudents.value.equals("")
+                                            && !selectedOptionTeachers.value.equals("")
+                                        ) {
+
+                                            val idStudent = students.value.firstOrNull { it.fullName == selectedOptionStudents.value }!!.id
+                                            val idTeacher = teachers.value.firstOrNull { it.fullName == selectedOptionTeachers.value }!!.id
+                                            viewModel.assign(idStudent, idTeacher, selectedOptionStudents.value)
+                                            Log.d("TAG", "AssignScreen: ${fullNameTeachers.value.size}")
+                                        }
+                                    }
+                            )
+                        }
                     }
                 }
 
 
-                Spacer(modifier = Modifier.height(16.dp))
-                SpinnerStudent(
-                    label = "Danh sách Sinh vien",
-                    callback = {
-                        when (val tea = viewModel.studentsState.value) {
-                            is State.Success -> {
-                                students.value.addAll(tea.data.map { it.fullName!! })
-                            }
-                        }
-                    },
-                    options = students.value,
-                    selectedOptionText = selectedOptionStudents
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                SpinnerTeacher(
-                    label = "Danh sách giang vien",
-                    callback = {
-                        if (selectedNewOProjects.value) {
-                            when (val tea = viewModel.teachersState.value) {
-                                is State.Success -> {
-                                    teachers.value.addAll(tea.data.map { it.fullName!! })
-                                }
-                            }
-                        }
 
-                    },
-                    options = teachers.value,
-                    selectedOptionText = selectedOptionTeachers
-                )
-                Spacer(modifier = Modifier.height(45.dp))
-                Button(
-                    onClick = {
-                    },
-
-                    ) {
-                    Text(
-                        text = "Submit",
-                        fontSize = 16.sp,
-                        modifier = Modifier
-                            .padding(15.dp, 6.dp)
-                            .clickable {
-                                if (!selectedOptionProjects.value.equals("")
-                                    && !selectedOptionStudents.value.equals("")
-                                    && !selectedOptionTeachers.value.equals("")
-                                ) {
-
-                                    students.value.remove(selectedOptionStudents.value)
-                                    teachers.value.remove(selectedOptionTeachers.value)
-                                    Log.d("TAG", "AssignScreen: ${teachers.value.size}")
-                                }
-                            }
-                    )
-                }
             }
         }
     }
@@ -160,18 +169,15 @@ fun SpinnerProject(
     label: String,
     options: List<String>,
     selectedOptionText: MutableState<String>,
-    isChangeOption: MutableState<Boolean>,
     viewModel: AssignViewModel
 ) {
-    val focusManager = LocalSoftwareKeyboardController.current
     var expanded = remember { mutableStateOf(false) }
-    isChangeOption.value = false
+
 
     ExposedDropdownMenuBox(
         expanded = expanded.value,
         onExpandedChange = {
             expanded.value = !expanded.value
-            focusManager?.hide()
         }
     ) {
 
@@ -189,10 +195,7 @@ fun SpinnerProject(
                     expanded = expanded.value
                 )
             },
-            keyboardActions = KeyboardActions(onDone = { focusManager?.hide() }),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.None
-            ),
+
 
             )
 
@@ -205,10 +208,6 @@ fun SpinnerProject(
             options.forEach { selectionOption ->
                 DropdownMenuItem(
                     onClick = {
-                        if (selectionOption!= selectedOptionText.value){
-                            isChangeOption.value =true
-                        }else isChangeOption.value = false
-
                         viewModel.getAllUserInClass(selectionOption, Role.ROLE_TEACHER)
                         viewModel.getAllUserInClass(selectionOption, Role.ROLE_STUDENT)
                         selectedOptionText.value = selectionOption
