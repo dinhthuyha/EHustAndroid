@@ -1,7 +1,7 @@
 package com.hadt.ehust.model
 
 enum class StatusTopic {
-     REQUEST, ACCEPT, REQUESTING;
+     REQUEST, ACCEPT, REQUESTING, DELETE;
 
 //    companion object {
 //        const val REQUEST = "REQUEST"

@@ -56,13 +56,16 @@ fun DefaultPreview(
                             items(items = topics.data) { t ->
                                 when (role) {
                                     Role.ROLE_TEACHER -> {
-                                        TopicTeacherRow(t, navController)
+                                        TopicTeacherRow(t, navController, viewModel)
                                     }
                                     Role.ROLE_STUDENT -> {
                                         if (t.id != id && t.status == StatusTopic.ACCEPT) {
 
-                                        } else
-                                            TopicStudentRow(t)
+                                        } else {
+                                            //update status, id sv
+                                            TopicStudentRow(t, viewModel, id)
+                                        }
+
                                     }
                                     else -> {}
                                 }
@@ -80,7 +83,11 @@ fun DefaultPreview(
 
 
 @Composable
-fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng online")) {
+fun TopicStudentRow(
+    topic: Topic = Topic(123, "lập trình web bán hàng online"),
+    viewModel: ProjectsViewModel,
+    idUser: Int
+) {
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -110,7 +117,12 @@ fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng onlin
                 Spacer(modifier = Modifier.size(3.dp))
             }
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                FilterItem(text = "${topic.status?.name}")
+                FilterItemStudent(
+                    text = "${topic.status?.name}",
+                    callback = {
+                        if (topic.status == StatusTopic.REQUEST)
+                            viewModel.updateTopicTable(topic.id!!, StatusTopic.REQUESTING, idUser)
+                    })
             }
         }
 
@@ -120,7 +132,8 @@ fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng onlin
 @Composable
 fun TopicTeacherRow(
     topic: Topic = Topic(123, "lập trình web bán hàng online"),
-    navController: NavController
+    navController: NavController,
+    viewModel: ProjectsViewModel
 ) {
     Card(
         elevation = 2.dp,
@@ -153,14 +166,14 @@ fun TopicTeacherRow(
                 Spacer(modifier = Modifier.size(3.dp))
             }
             ShowNameStudent(topic = topic)
-            ShowStatusTopic(topic = topic)
+            ShowStatusTopic(topic = topic, viewModel)
         }
 
     }
 }
 
 @Composable
-fun ShowStatusTopic(topic: Topic) {
+fun ShowStatusTopic(topic: Topic, viewModel: ProjectsViewModel) {
     Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
         if (topic.status == StatusTopic.REQUESTING) {
 
@@ -168,8 +181,16 @@ fun ShowStatusTopic(topic: Topic) {
         when (topic.status) {
             StatusTopic.REQUEST, StatusTopic.ACCEPT -> {}
             StatusTopic.REQUESTING -> {
-                FilterItem(text = "Chấp nhận")
-                FilterItem(text = "Xoá")
+                FilterItemTeacher(text = "Chấp nhận", callback = {
+                    //update lại status
+                    viewModel.updateTopicTable(idTopic = topic.id!!,status = StatusTopic.ACCEPT)
+
+                })
+                Spacer(modifier = Modifier.width(8.dp))
+                FilterItemTeacher(text = "Xoá", callback = {
+                    //xoa yeu cau cua sinh vien
+                    viewModel.updateTopicTable(idTopic = topic.id!!, status = StatusTopic.REQUEST, idStudent = 0)
+                })
 
             }
         }
@@ -201,34 +222,41 @@ fun ShowNameStudent(topic: Topic) {
 
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterItem(text: String) {
-    val state = remember { mutableStateOf(false) }
+fun FilterItemStudent(text: String, callback: () -> Unit) {
+    val content = remember { mutableStateOf(text) }
 
-    FilterChip(
-        selected = state.value,
-        onClick = {
-            state.value = !state.value
-            if (state.value) {
-                //send request update state
-                Log.d("TAG", "FilterItem: ")
-            }
-        },
-        border = ChipDefaults.outlinedBorder,
-        colors = ChipDefaults.filterChipColors(
-            selectedBackgroundColor = MaterialTheme.colors.secondaryVariant
-        ),
-        selectedIcon = {
-            Icon(
-                imageVector = Icons.Filled.Done,
-                contentDescription = null,
-                modifier = Modifier.requiredSize(ChipDefaults.SelectedIconSize)
-            )
-        },
-        modifier = Modifier.padding(end = 10.dp)
+    Button(onClick = {
+        if (text == StatusTopic.REQUEST.name){
+            callback.invoke()
+            content.value = StatusTopic.REQUESTING.name
+        }
 
-    ) {
-        Text(text = text)
+    })
+    {
+        Text(
+            text = content.value,
+            fontSize = 11.sp
+        )
+    }
+}
+
+@Composable
+fun FilterItemTeacher(text: String, callback: () -> Unit) {
+    val content = remember { mutableStateOf(text) }
+    Button(onClick = {
+        if (text == "Chấp nhận"){
+            callback.invoke()
+        }
+        if (text == "Xoá"){
+            callback.invoke()
+        }
+
+    })
+    {
+        Text(
+            text = content.value,
+            fontSize = 11.sp
+        )
     }
 }

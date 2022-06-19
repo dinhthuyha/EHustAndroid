@@ -14,6 +14,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface EHustService {
@@ -53,8 +54,6 @@ interface EHustService {
         @Path("id_teacher") idTeacher: Int
     ): Response<List<Topic>>
 
-    @GET("updatetopic/{id_topic}")
-    suspend fun updateTopic(@Path("status") status: StatusTopic, @Path("id_student") idStudent: Int = 0)
 
     /**
      * Tim tat cac user trong lop hoc ki B va hoc mon A
@@ -73,4 +72,15 @@ interface EHustService {
     suspend fun assignProjectInstructions(@Field("id_student") idStudent: Int,
                                           @Field("id_teacher") idTeacher: Int,
                                           @Field("name_project") nameProject: String): Response<ResponseBody>
+
+    /**
+     * update status cho topic
+     */
+    @FormUrlEncoded
+    @PUT("updatetopic/{id_topic}")
+    suspend fun updateStatusAndIdStudentTopic(
+        @Path("id_topic") id: Int,
+        @Field(value = "status") status: StatusTopic,
+        @Field(value = "id_student") idStudent: Int
+    ): Response<ResponseBody>
 }
