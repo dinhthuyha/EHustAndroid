@@ -40,7 +40,7 @@ fun DefaultPreview(
 ) {
     val state = viewModel.topicState.collectAsState()
     DefaultTheme {
-        Scaffold ( topBar = { ToolBar("Đề tài") },){
+        Scaffold(topBar = { ToolBar("Đề tài") }) {
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 LazyColumn(
@@ -53,7 +53,7 @@ fun DefaultPreview(
                         is State.Error -> {}
                         is State.Success -> {
                             items(items = topics.data) { t ->
-                                when(role){
+                                when (role) {
                                     Role.ROLE_TEACHER -> {
                                         TopicTeacherRow(t, navController)
                                     }
@@ -115,7 +115,10 @@ fun TopicStudentRow(topic: Topic = Topic(123, "lập trình web bán hàng onlin
 }
 
 @Composable
-fun TopicTeacherRow(topic: Topic = Topic(123, "lập trình web bán hàng online"), navController: NavController) {
+fun TopicTeacherRow(
+    topic: Topic = Topic(123, "lập trình web bán hàng online"),
+    navController: NavController
+) {
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -146,18 +149,55 @@ fun TopicTeacherRow(topic: Topic = Topic(123, "lập trình web bán hàng onlin
                 )
                 Spacer(modifier = Modifier.size(3.dp))
             }
+            ShowNameStudent(topic = topic)
+            ShowStatusTopic(topic = topic)
+        }
 
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                if (topic.status == StatusTopic.REQUEST){
-                    FilterItem(text = "${topic.status?.name}")
-                    FilterItem(text = "Delete")
-                }
+    }
+}
+
+@Composable
+fun ShowStatusTopic(topic: Topic){
+    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+        if (topic.status == StatusTopic.REQUESTING) {
+
+        }
+        when (topic.status) {
+            StatusTopic.REQUEST, StatusTopic.ACCEPT -> {}
+            StatusTopic.REQUESTING -> {
+                FilterItem(text = "Chấp nhận")
+                FilterItem(text = "Xoá")
 
             }
         }
 
     }
 }
+
+@Composable
+fun ShowNameStudent(topic: Topic) {
+    Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.fillMaxWidth()) {
+        when (topic.status) {
+            StatusTopic.REQUEST -> {}
+            StatusTopic.REQUESTING -> {
+                Spacer(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp))
+                Text(
+                    text = "Sinh viên: ${topic.nameStudent ?: ""} yêu cầu được làm đề tài.",
+                    color = Color.Gray
+                )
+
+            }
+            StatusTopic.ACCEPT -> {
+                Text(
+                    text = "Sinh viên: ${topic.nameStudent ?: ""}",
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FilterItem(text: String) {

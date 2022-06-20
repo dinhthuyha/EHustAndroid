@@ -8,6 +8,8 @@ data class Topic(
     val name: String,
     @SerializedName(value = "id_student")
     val idStudent: Int? = null,
+    @SerializedName("name_student")
+    val nameStudent: String? = null,
 
     @SerializedName(value = "id_teacher")
     val idTeacher: Int? = null,
