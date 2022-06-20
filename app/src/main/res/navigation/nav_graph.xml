@@ -14,6 +14,9 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeAdminFragment"
+            app:destination="@id/homeAdminFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
@@ -93,4 +96,8 @@
             android:id="@+id/action_topicsFragment_to_newTaskFragment"
             app:destination="@id/newTaskFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/homeAdminFragment"
+        android:name="com.prdcv.ehust.ui.admin.HomeAdminFragment"
+        android:label="HomeAdminFragment" />
 </navigation>

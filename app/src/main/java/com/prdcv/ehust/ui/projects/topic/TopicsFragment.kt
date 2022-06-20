@@ -32,7 +32,7 @@ class TopicsFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
 
-                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.roleId!!, findNavController()) }
+                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.id ?: 0, shareViewModel.user?.roleId!!, findNavController()) }
 
 
 

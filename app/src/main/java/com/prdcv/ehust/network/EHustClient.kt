@@ -1,9 +1,11 @@
 package com.prdcv.ehust.network
 
+import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -44,10 +46,31 @@ class EHustClient @Inject constructor(
         return ehustService.findAllSchedule(id)
     }
     suspend fun findTopicByIdTeacherAndIdProject(
-        idTeacher: Int,
-        idProject: String
+        nameTeacher: String,
+        idProject: String,
+        idTeacher: Int
     ): Response<List<Topic>>{
-        return ehustService.findTopicByIdTeacherAndIdProject(idTeacher, idProject)
+        return ehustService.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher)
     }
 
+    suspend fun getAllUserInClass(nameCourse: String, role: Role): Response< List<User>>{
+        return ehustService.getAllUserInClass(nameCourse, role)
+    }
+
+    suspend fun getAllProjectCurrentSemester():Response<List<Subject>>{
+        return ehustService.getAllProjectCurrent()
+    }
+
+    suspend fun assignProjectInstructions(
+        idStudent: Int,
+        idTeacher: Int,
+        nameProject: String
+    ) =
+        ehustService.assignProjectInstructions(idStudent, idTeacher, nameProject)
+
+    suspend fun updateTopicTable(
+        idTopic: Int,
+        status: StatusTopic,
+        idStudent: Int
+    ) = ehustService.updateStatusAndIdStudentTopic(idTopic, status, idStudent)
 }
