@@ -12,11 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,25 +45,20 @@ class AssignViewModel @Inject constructor(
      * admin get ds project cua toan truong
      */
     fun getAllProjectCurrentSemester() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                subjectRepository.getAllProjectCurrentSemester().collect {
-                    _projectsState.emit(it)
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            subjectRepository.getAllProjectCurrentSemester().collect {
+                _projectsState.emit(it)
             }
         }
     }
 
     fun getAllUserInClass(nameCourse: String, role: Role) {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                userRepository.getAllUserInProject(nameCourse, role).collect {
-                    if (role == Role.ROLE_TEACHER) {
-                        _teachersState.emit(it)
-                    }
-                    if (role == Role.ROLE_STUDENT) {
-                        _studentsState.emit(it)
-                    }
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.getAllUserInProject(nameCourse, role).collect {
+                when(role) {
+                    Role.ROLE_TEACHER -> _teachersState.emit(it)
+                    Role.ROLE_STUDENT -> _studentsState.emit(it)
+                    else -> {}
                 }
             }
         }
