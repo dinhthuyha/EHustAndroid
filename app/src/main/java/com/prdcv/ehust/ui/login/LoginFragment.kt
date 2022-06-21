@@ -38,7 +38,6 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
                                 ) {
                                     shareViewModel.decodeResponseLogin(it.data)
                                     if (shareViewModel.user?.roleId == Role.ROLE_ADMIN) {
-                                        viewModel.getAllProjectCurrentSemester()
                                         findNavController().navigate(R.id.action_loginFragment_to_homeAdminFragment)
                                     } else
                                         findNavController().navigate(R.id.action_loginFragment_to_mainFragment)

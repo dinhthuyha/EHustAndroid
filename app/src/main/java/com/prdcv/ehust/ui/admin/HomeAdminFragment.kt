@@ -29,8 +29,7 @@ class HomeAdminFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { AssignScreen(viewModel, requireContext()) }
-
+            setContent { AssignScreen(viewModel) }
         }
     }
 
