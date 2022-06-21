@@ -25,11 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.prdcv.ehust.R
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.viewmodel.TaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,6 +42,7 @@ fun TaskScreenPreview() {
     val state = remember {
         mutableStateOf(tasks)
     }
+    val viewModel : TaskViewModel = viewModel()
 
     fun filterByStatus(status: String?) {
         state.value = status?.let { s ->
