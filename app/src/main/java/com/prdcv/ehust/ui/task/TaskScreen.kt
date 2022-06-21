@@ -14,6 +14,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,26 +31,43 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.R
+import com.prdcv.ehust.common.State
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.Period
+
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
 fun TaskScreenPreview() {
-    val state = remember {
-        mutableStateOf(tasks)
+    val viewModel: TaskViewModel = viewModel()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.findAllTaskByIdTopic(19)
     }
-    val viewModel : TaskViewModel = viewModel()
+    val taskState by viewModel.taskState.collectAsState()
+    val state = remember { mutableStateOf(listOf<TaskData>()) }
+
+    when (taskState) {
+        is State.Success -> {
+            state.value = (taskState as State.Success).data
+        }
+        is State.Loading -> {}
+        is State.Error -> {}
+    }
+
+
 
     fun filterByStatus(status: String?) {
         state.value = status?.let { s ->
-            tasks.filter { it.status == s }
-        } ?: tasks
+            (taskState as State.Success).data.filter { it.status == s }
+        } ?: (taskState as State.Success).data
     }
 
     val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
@@ -129,6 +149,16 @@ fun ChipGroup(action: (String?) -> Unit) {
 //@Preview(showBackground = true)
 @Composable
 fun Task(data: TaskData, modifier: Modifier) {
+    fun showTimeRemain(): String{
+        if (data.status == "In progress"){
+            val today = LocalDate.now()
+            val dueDate = data.dueDate
+            val dateRemain = Period.between(today, dueDate).days
+            return "(in ${dateRemain.toString()} day)"
+        }
+
+        return ""
+    }
     Card(
         elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
@@ -159,7 +189,7 @@ fun Task(data: TaskData, modifier: Modifier) {
                     modifier = Modifier.padding(bottom = 20.dp, top = 2.dp)
                 )
                 Text(
-                    text = "${data.dueDate} (in 7 days)",
+                    text = "${data.dueDate} ${showTimeRemain()}",
                     fontWeight = FontWeight.Light,
                     fontSize = 12.sp
                 )
@@ -267,38 +297,38 @@ data class TaskData(
     val title: String = "Tạo màn hình quản lý task",
     val status: String = "In progress",
     val progress: Float = 0.8f,
-    val dueDate: String = "22-02-2022"
+    val dueDate: LocalDate
 )
 
-private val tasks = listOf(
-    TaskData(),
-    TaskData(
-        id = 96321,
-        title = "Hiển thị file pdf trong giao diện task",
-        status = "New",
-        progress = 0f,
-        dueDate = "29-06-2022"
-    ),
-    TaskData(
-        id = 73732,
-        title = "Lọc task theo filter",
-        status = "Done",
-        progress = 1f,
-        dueDate = "12-06-2022"
-    ),
-    TaskData(id = 415155, status = "Finished"),
-    TaskData(
-        id = 93521,
-        title = "Hiển thị file pdf trong giao diện task",
-        status = "New",
-        progress = 0f,
-        dueDate = "29-06-2022"
-    ),
-    TaskData(12345),
-    TaskData(95362),
-    TaskData(94949),
-    TaskData(35326)
-)
+//private val tasks = listOf(
+//    TaskData(),
+//    TaskData(
+//        id = 96321,
+//        title = "Hiển thị file pdf trong giao diện task",
+//        status = "New",
+//        progress = 0f,
+//        dueDate = "29-06-2022"
+//    ),
+//    TaskData(
+//        id = 73732,
+//        title = "Lọc task theo filter",
+//        status = "Done",
+//        progress = 1f,
+//        dueDate = "12-06-2022"
+//    ),
+//    TaskData(id = 415155, status = "Finished"),
+//    TaskData(
+//        id = 93521,
+//        title = "Hiển thị file pdf trong giao diện task",
+//        status = "New",
+//        progress = 0f,
+//        dueDate = "29-06-2022"
+//    ),
+//    TaskData(12345),
+//    TaskData(95362),
+//    TaskData(94949),
+//    TaskData(35326)
+//)
 
 private val Float.percent: String
     get() = "${(this * 100).toInt()}%"
