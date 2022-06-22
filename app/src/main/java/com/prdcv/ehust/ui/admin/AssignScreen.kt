@@ -1,6 +1,5 @@
 package com.prdcv.ehust.ui.admin
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -14,124 +13,59 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prdcv.ehust.R
-import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.AssignViewModel
 
 @Composable
-fun AssignScreen(viewModel: AssignViewModel) {
+fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getAllProjectCurrentSemester()
     }
 
-    val subjectList by viewModel.projectsState.collectAsState()
-    val studentList by viewModel.studentsState.collectAsState()
-    val teacherList by viewModel.teachersState.collectAsState()
-
-    val selectedOptionProjects = remember { mutableStateOf("") }
-    var selectedNewOProjects = remember { mutableStateOf(false) }
-    val selectedOptionStudents = remember { mutableStateOf("") }
-    val selectedOptionTeachers = remember { mutableStateOf("") }
-    val projects by remember { mutableStateOf(mutableListOf<String>()) }
-    val fullNameTeachers by remember { mutableStateOf(mutableListOf<String>()) }
-    val fullNameStudents by remember { mutableStateOf(mutableListOf<String>()) }
-    val teachers = remember { mutableStateOf(mutableListOf<User>()) }
-    val students = remember { mutableStateOf(mutableListOf<User>()) }
+    val uiState = viewModel.uiState
 
     DefaultTheme {
-        Scaffold {
+        Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState)) {
             ToolBarAssign(title = "Trang chủ")
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                when (val state = subjectList) {
-                    is State.Success -> {
-                        projects.clear()
-                        projects.addAll(state.data.map { it.name })
-                        SpinnerProject(
-                            label = "Danh sách project",
-                            options = projects,
-                            selectedOptionText = selectedOptionProjects,
-                            onItemClick = { projectName ->
-                                viewModel.getAllUserInClass(projectName, Role.ROLE_TEACHER)
-                                viewModel.getAllUserInClass(projectName, Role.ROLE_STUDENT)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+                SpinnerProject(
+                    label = "Danh sách project",
+                    options = uiState.subjects,
+                    selectedOption = uiState.selectedSubject,
+                    onItemClick = viewModel::onProjectSelected
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                        when (val std = studentList) {
-                            is State.Success -> {
-                                students.value.clear()
-                                students.value.addAll(std.data)
-                                selectedOptionStudents.value = ""
-                                fullNameStudents.clear()
-                                fullNameStudents.addAll(std.data.map { it.fullName!! })
+                SpinnerStudent(
+                    label = "Danh sách Sinh vien",
+                    options = uiState.students,
+                    selectedOption = uiState.selectedStudent,
+                    onItemClick = viewModel::onStudentSelected
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                                SpinnerStudent(
-                                    label = "Danh sách Sinh vien",
-                                    options = fullNameStudents,
-                                    selectedOptionText = selectedOptionStudents
-                                )
-                            }
-                            else -> {}
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
+                SpinnerTeacher(
+                    label = "Danh sách giang vien",
+                    options = uiState.teachers,
+                    selectedOption = uiState.selectedTeacher,
+                    onItemClick = viewModel::onTeacherSelected
+                )
+                Spacer(modifier = Modifier.height(45.dp))
 
-
-                        when (val tea = teacherList) {
-                            is State.Success -> {
-                                teachers.value.clear()
-                                teachers.value.addAll(tea.data)
-                                selectedOptionTeachers.value = ""
-                                fullNameTeachers.clear()
-                                fullNameTeachers.addAll(tea.data.map { it.fullName!! })
-
-                                SpinnerTeacher(
-                                    label = "Danh sách giang vien",
-                                    options = fullNameTeachers,
-                                    selectedOptionText = selectedOptionTeachers
-                                )
-                            }
-                            else -> {}
-                        }
-                        Spacer(modifier = Modifier.height(45.dp))
-
-                        Button(onClick = {
-                            if (selectedOptionProjects.value != ""
-                                && selectedOptionStudents.value != ""
-                                && selectedOptionTeachers.value != ""
-                            ) {
-
-                                val idStudent =
-                                    students.value.firstOrNull { it.fullName == selectedOptionStudents.value }!!.id
-                                val idTeacher =
-                                    teachers.value.firstOrNull { it.fullName == selectedOptionTeachers.value }!!.id
-                                viewModel.assign(
-                                    idStudent,
-                                    idTeacher,
-                                    selectedOptionStudents.value
-                                )
-                                Log.d(
-                                    "TAG",
-                                    "AssignScreen: ${fullNameTeachers.size}"
-                                )
-                            }
-                        }) {
-                            Text(
-                                text = "Submit",
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(15.dp, 6.dp)
-                            )
-                        }
-                    }
-                    is State.Error -> Text(text = "Error: ${state.exception}")
-                    State.Loading -> Text(text = "Loading...")
+                Button(onClick = viewModel::onSubmit, enabled = uiState.submitButtonEnabled) {
+                    Text(
+                        text = "Submit",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(15.dp, 6.dp)
+                    )
                 }
             }
         }
@@ -162,9 +96,9 @@ fun ToolBarAssign(title: String) {
 @Composable
 fun SpinnerProject(
     label: String,
-    options: List<String>,
-    selectedOptionText: MutableState<String>,
-    onItemClick: (String) -> Unit
+    options: List<Subject>,
+    selectedOption: Subject?,
+    onItemClick: (Subject) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -175,7 +109,7 @@ fun SpinnerProject(
 
         OutlinedTextField(
             readOnly = true,
-            value = selectedOptionText.value,
+            value = selectedOption?.name ?: "",
             onValueChange = {},
             label = { Text(label) },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -195,71 +129,24 @@ fun SpinnerProject(
                 DropdownMenuItem(
                     onClick = {
                         onItemClick(selectionOption)
-                        selectedOptionText.value = selectionOption
                         expanded = false
                     }
                 ) {
-                    Text(text = selectionOption)
+                    Text(text = selectionOption.name)
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun SpinnerTeacher(
-    label: String,
-    options: List<String>,
-    selectedOptionText: MutableState<String>
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            readOnly = true,
-            value = selectedOptionText.value,
-            onValueChange = {},
-            label = { Text(label) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Purple500,
-                unfocusedBorderColor = LightGray
-            ),
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            }
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    onClick = {
-                        selectedOptionText.value = selectionOption
-                        expanded = false
-                    }
-                ) {
-                    Text(text = selectionOption)
-                }
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SpinnerStudent(
     label: String,
-    options: List<String>,
-    selectedOptionText: MutableState<String>
+    options: List<User>,
+    selectedOption: User?,
+    onItemClick: (User) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -269,7 +156,7 @@ fun SpinnerStudent(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedOptionText.value,
+            value = selectedOption?.fullName ?: "",
             onValueChange = {},
             label = { Text(label) },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -290,13 +177,26 @@ fun SpinnerStudent(
             options.forEach { selectionOption ->
                 DropdownMenuItem(
                     onClick = {
-                        selectedOptionText.value = selectionOption
+                        onItemClick(selectionOption)
                         expanded = false
                     }
                 ) {
-                    Text(text = selectionOption)
+                    Text(text = selectionOption.fullName ?: "")
                 }
             }
         }
     }
 }
+
+@Composable
+fun SpinnerTeacher(
+    label: String,
+    options: List<User>,
+    selectedOption: User?,
+    onItemClick: (User) -> Unit
+) = SpinnerStudent(
+    label = label,
+    options = options,
+    selectedOption = selectedOption,
+    onItemClick = onItemClick,
+)
