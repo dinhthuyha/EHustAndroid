@@ -8,6 +8,7 @@ import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
+import com.prdcv.ehust.ui.task.TaskData
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Field
@@ -83,4 +84,24 @@ interface EHustService {
         @Field(value = "status") status: StatusTopic,
         @Field(value = "id_student") idStudent: Int
     ): Response<ResponseBody>
+
+    /**
+     * get all task theo id topic
+     */
+    @GET("allTask/idTopic/{id_topic}")
+    suspend fun findAllTaskByIdTopic(
+        @Path("id_topic") id: Int
+    ): Response<List<TaskData>>
+
+    @FormUrlEncoded
+    @PUT("updateTask")
+    suspend fun updateTask(
+        @Field(value = "task") taskData: TaskData
+    )
+
+    @FormUrlEncoded
+    @POST("newTask")
+    suspend fun newTask(
+        @Field(value = "task") taskData: TaskData
+    )
 }

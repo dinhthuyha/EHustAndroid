@@ -59,11 +59,11 @@ fun DefaultPreview(
                                         TopicTeacherRow(t, navController, viewModel)
                                     }
                                     Role.ROLE_STUDENT -> {
-                                        if (t.id != id && t.status == StatusTopic.ACCEPT) {
+                                        if (t.idStudent != id && t.status == StatusTopic.ACCEPT) {
 
                                         } else {
                                             //update status, id sv
-                                            TopicStudentRow(t, viewModel, id)
+                                            TopicStudentRow(t, viewModel, id, navController)
                                         }
 
                                     }
@@ -86,7 +86,8 @@ fun DefaultPreview(
 fun TopicStudentRow(
     topic: Topic = Topic(123, "lập trình web bán hàng online"),
     viewModel: ProjectsViewModel,
-    idUser: Int
+    idUser: Int,
+    navController: NavController
 ) {
     Card(
         elevation = 2.dp,
@@ -94,7 +95,11 @@ fun TopicStudentRow(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable { }
+            .clickable {
+                if (topic.status == StatusTopic.ACCEPT){
+                    navController.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+                }
+            }
     ) {
         Column(
             modifier = Modifier
