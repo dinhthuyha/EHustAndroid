@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,8 +24,8 @@ import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
-import com.prdcv.ehust.ui.task.FilterItem
 import com.prdcv.ehust.viewmodel.ProjectsViewModel
+import kotlin.Exception
 
 //@Preview(showBackground = true)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -39,6 +36,14 @@ fun DefaultPreview(
     role: Role,
     navController: NavController
 ) {
+    fun checkTopicAccept(topics: List<Topic>): List<Topic>{
+       return try {
+            topics.filter{ it.status == StatusTopic.ACCEPT}
+        }catch (e: Exception){
+            listOf<Topic>()
+        }
+
+    }
     val state = viewModel.topicState.collectAsState()
     DefaultTheme {
         Scaffold(topBar = { ToolBar("Đề tài") }) {
@@ -53,24 +58,35 @@ fun DefaultPreview(
                         is State.Loading -> {}
                         is State.Error -> {}
                         is State.Success -> {
-                            items(items = topics.data) { t ->
-                                when (role) {
-                                    Role.ROLE_TEACHER -> {
+                            when (role) {
+                                Role.ROLE_TEACHER -> {
+                                    items(items = topics.data) { t ->
                                         TopicTeacherRow(t, navController, viewModel)
                                     }
-                                    Role.ROLE_STUDENT -> {
+
+                                }
+                                Role.ROLE_STUDENT -> {
+
+                                    var items = listOf<Topic>()
+                                    if (checkTopicAccept(topics.data).isNotEmpty()){
+                                        items = checkTopicAccept(topics.data)
+                                    }else
+                                        items = topics.data
+                                    items(items = items) { t ->
                                         if (t.idStudent != id && t.status == StatusTopic.ACCEPT) {
 
                                         } else {
                                             //update status, id sv
                                             TopicStudentRow(t, viewModel, id, navController)
                                         }
-
                                     }
-                                    else -> {}
-                                }
 
+
+                                }
+                                else -> {}
                             }
+
+
                         }
                         else -> {}
                     }
