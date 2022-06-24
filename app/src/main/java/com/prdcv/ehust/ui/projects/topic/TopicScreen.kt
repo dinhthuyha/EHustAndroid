@@ -52,13 +52,17 @@ fun DefaultPreview(
     project: ProjectArg,
     viewModel: ProjectsViewModel = viewModel()
 ) {
-    mViewModel = viewModel
-    mRole = role
-    mProject = project
+    fun init() {
+        mViewModel = viewModel
+        mRole = role
+        mProject = project
+    }
+
+    init()
+    val uiState = viewModel.uiState
     LaunchedEffect(key1 = Unit) {
         callbackGetData()
     }
-
 
     fun checkTopic(topics: List<Topic>): List<Topic> {
         try {
@@ -90,7 +94,6 @@ fun DefaultPreview(
         }
     }
 
-    val state = viewModel.topicState.collectAsState()
     DefaultTheme {
         Scaffold(topBar = { ToolBar("Đề tài") }) {
             SwipeRefresh(
@@ -99,45 +102,33 @@ fun DefaultPreview(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     LazyColumn(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
-                        when (val topics = state.value) {
-                            is State.Loading -> {}
-                            is State.Error -> {}
-                            is State.Success -> {
-                                when (role) {
-                                    Role.ROLE_TEACHER -> {
-                                        items(items = topics.data) { t ->
-                                            TopicTeacherRow(t, navController, viewModel)
+                        when (role) {
+                            Role.ROLE_TEACHER -> {
+                                items(items = uiState.topics) { t ->
+                                    TopicTeacherRow(t, navController, viewModel) {
+                                        coroutineScope.launch {
+                                            delay(4000)
                                         }
-
+                                        refreshTaskList()
                                     }
-                                    Role.ROLE_STUDENT -> {
-
-                                        var items = checkTopic(topics.data)
-
-                                        items(items = items) { t ->
-                                            //update status, id sv
-                                            TopicStudentRow(t, viewModel, id, navController)
-
-                                        }
-
-
-                                    }
-                                    else -> {}
                                 }
-
-
+                            }
+                            Role.ROLE_STUDENT -> {
+                                var items = checkTopic(uiState.topics)
+                                items(items = items) { t ->
+                                    //update status, id sv
+                                    TopicStudentRow(t, viewModel, id, navController)
+                                }
                             }
                             else -> {}
                         }
                     }
                 }
             }
-
-
         }
     }
 }
@@ -183,21 +174,7 @@ fun TopicStudentRow(
                 .width(IntrinsicSize.Max)
                 .padding(10.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Đề tài: ",
-                    fontSize = 15.sp,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.size(5.dp))
-                Text(
-                    text = "${topic.name} ",
-                    fontSize = 17.sp,
-                    modifier = Modifier
-                        .padding(2.dp)
-                )
-                Spacer(modifier = Modifier.size(3.dp))
-            }
+           TitleTopic(topic = topic)
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 FilterItemStudent(
                     text = "${topic.status?.name}",
@@ -215,7 +192,8 @@ fun TopicStudentRow(
 fun TopicTeacherRow(
     topic: Topic = Topic(123, "lập trình web bán hàng online"),
     navController: NavController,
-    viewModel: ProjectsViewModel
+    viewModel: ProjectsViewModel,
+    refreshData: () -> Unit
 ) {
     val buttonVisible = remember { mutableStateOf(true) }
     Card(
@@ -235,7 +213,7 @@ fun TopicTeacherRow(
         ) {
             TitleTopic(topic = topic)
             ShowNameStudent(topic = topic)
-            ShowStatusTopic(topic = topic, viewModel, buttonVisible)
+            ShowStatusTopic(topic = topic, viewModel, buttonVisible) { refreshData.invoke() }
         }
 
     }
@@ -264,15 +242,23 @@ fun TitleTopic(topic: Topic) {
 fun ShowStatusTopic(
     topic: Topic,
     viewModel: ProjectsViewModel,
-    buttonVisible: MutableState<Boolean>
+    buttonVisible: MutableState<Boolean>,
+    refreshData: ()-> Unit
 ) {
 
-    fun isVisibleButton() = if (buttonVisible.value) 1f else 0f
+    when (topic.status) {
+        StatusTopic.REQUEST, StatusTopic.ACCEPT -> {
+            buttonVisible.value = false
+        }
+        StatusTopic.REQUESTING -> {
+            buttonVisible.value = true
+        }
+    }
 
     Row(
         horizontalArrangement = Arrangement.End, modifier = Modifier
             .fillMaxWidth()
-            .alpha(isVisibleButton())
+
     ) {
         if (topic.status == StatusTopic.REQUESTING) {
 
@@ -282,21 +268,19 @@ fun ShowStatusTopic(
             StatusTopic.REQUESTING -> {
                 FilterItemTeacher(text = "Chấp nhận", callback = {
                     //update lại status
-
+                    refreshData.invoke()
                     viewModel.updateTopicTable(idTopic = topic.id!!, status = StatusTopic.ACCEPT)
-                    callbackGetData()
-                    buttonVisible.value = false
+
                 })
                 Spacer(modifier = Modifier.width(8.dp))
                 FilterItemTeacher(text = "Xoá", callback = {
                     //xoa yeu cau cua sinh vien
-                    buttonVisible.value = false
                     viewModel.updateTopicTable(
                         idTopic = topic.id!!,
                         status = StatusTopic.REQUEST,
                         idStudent = 0
                     )
-                    callbackGetData()
+                    refreshData.invoke()
                 })
 
             }

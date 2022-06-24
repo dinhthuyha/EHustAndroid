@@ -21,15 +21,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ProjectsFragment : BaseFragment() {
 
-    private val topicViewModel: ProjectsViewModel by activityViewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return ComposeView(requireContext()).apply {
-                setContent { DefaultPreview(shareViewModel, findNavController(), topicViewModel) }
+                setContent { DefaultPreview(shareViewModel, findNavController()) }
         }
     }
 }

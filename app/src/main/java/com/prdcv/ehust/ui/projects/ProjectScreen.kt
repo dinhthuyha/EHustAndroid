@@ -46,7 +46,6 @@ import kotlinx.parcelize.Parcelize
 fun DefaultPreview(
     viewModel: ShareViewModel = viewModel(),
     navController: NavController,
-    topicViewModel: ProjectsViewModel
 ) {
     val state = viewModel.projectsState.collectAsState()
     DefaultTheme {
@@ -64,8 +63,8 @@ fun DefaultPreview(
                         is State.Success -> {
                             items(items = topics.data) { t ->
                                 when(viewModel.user?.roleId){
-                                    Role.ROLE_STUDENT -> { ProjectStudent(t, navController, topicViewModel, viewModel )}
-                                    Role.ROLE_TEACHER -> { ProjectTeacher(t, navController, topicViewModel, viewModel) }
+                                    Role.ROLE_STUDENT -> { ProjectStudent(t, navController)}
+                                    Role.ROLE_TEACHER -> { ProjectTeacher(t, navController, viewModel) }
                                     else -> {}
                                 }
 
@@ -81,7 +80,7 @@ fun DefaultPreview(
 
 
 @Composable
-fun ProjectStudent(data: ClassStudent, navController: NavController, topicViewModel: ProjectsViewModel, shareViewModel: ShareViewModel){
+fun ProjectStudent(data: ClassStudent, navController: NavController){
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -127,7 +126,7 @@ fun ProjectStudent(data: ClassStudent, navController: NavController, topicViewMo
     }
 }
 @Composable
-fun ProjectTeacher(data: ClassStudent, navController: NavController, topicViewModel: ProjectsViewModel, shareViewModel: ShareViewModel){
+fun ProjectTeacher(data: ClassStudent, navController: NavController, shareViewModel: ShareViewModel){
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
