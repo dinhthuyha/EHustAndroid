@@ -8,11 +8,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,14 +38,20 @@ fun DefaultPreview(
     role: Role,
     navController: NavController
 ) {
-    fun checkTopicAccept(topics: List<Topic>): List<Topic>{
-       return try {
-            topics.filter{ it.status == StatusTopic.ACCEPT}
+    fun checkTopic(topics: List<Topic>): List<Topic>{
+       try {
+           //chi sho cac de tai chua co sinh vien nao request
+           topics.firstOrNull { it.idStudent ==id && it.status == StatusTopic.ACCEPT }?.let {
+               return listOf(it)
+           }
+           topics.filter { it.status == StatusTopic.REQUEST }.let {
+               return it
+           }
         }catch (e: Exception){
-            listOf<Topic>()
+           return listOf<Topic>()
         }
-
     }
+
     val state = viewModel.topicState.collectAsState()
     DefaultTheme {
         Scaffold(topBar = { ToolBar("Đề tài") }) {
@@ -67,18 +75,12 @@ fun DefaultPreview(
                                 }
                                 Role.ROLE_STUDENT -> {
 
-                                    var items = listOf<Topic>()
-                                    if (checkTopicAccept(topics.data).isNotEmpty()){
-                                        items = checkTopicAccept(topics.data)
-                                    }else
-                                        items = topics.data
-                                    items(items = items) { t ->
-                                        if (t.idStudent != id && t.status == StatusTopic.ACCEPT) {
+                                    var items = checkTopic(topics.data)
 
-                                        } else {
+                                    items(items = items) { t ->
                                             //update status, id sv
                                             TopicStudentRow(t, viewModel, id, navController)
-                                        }
+
                                     }
 
 
@@ -112,7 +114,7 @@ fun TopicStudentRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                if (topic.status == StatusTopic.ACCEPT){
+                if (topic.status == StatusTopic.ACCEPT) {
                     navController.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
                 }
             }
@@ -156,6 +158,7 @@ fun TopicTeacherRow(
     navController: NavController,
     viewModel: ProjectsViewModel
 ) {
+    val buttonVisible = remember { mutableStateOf(true) }
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -171,31 +174,40 @@ fun TopicTeacherRow(
                 .width(IntrinsicSize.Max)
                 .padding(10.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Đề tài: ",
-                    fontSize = 15.sp,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.size(5.dp))
-                Text(
-                    text = "${topic.name} ",
-                    fontSize = 17.sp,
-                    modifier = Modifier
-                        .padding(2.dp)
-                )
-                Spacer(modifier = Modifier.size(3.dp))
-            }
+            TitleTopic(topic = topic)
             ShowNameStudent(topic = topic)
-            ShowStatusTopic(topic = topic, viewModel)
+            ShowStatusTopic(topic = topic, viewModel, buttonVisible)
         }
 
     }
 }
 
 @Composable
-fun ShowStatusTopic(topic: Topic, viewModel: ProjectsViewModel) {
-    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+fun TitleTopic(topic: Topic){
+    Row(verticalAlignment = Alignment.CenterVertically, modifier =  Modifier) {
+        Text(
+            text = "Đề tài: ",
+            fontSize = 15.sp,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.size(5.dp))
+        Text(
+            text = "${topic.name} ",
+            fontSize = 17.sp,
+            modifier = Modifier
+                .padding(2.dp)
+        )
+        Spacer(modifier = Modifier.size(3.dp))
+    }
+}
+
+@Composable
+fun ShowStatusTopic(topic: Topic, viewModel: ProjectsViewModel, buttonVisible: MutableState<Boolean>) {
+
+    fun isVisibleButton()= if (buttonVisible.value) 1f else 0f
+
+    Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()
+        .alpha(isVisibleButton())) {
         if (topic.status == StatusTopic.REQUESTING) {
 
         }
@@ -204,12 +216,14 @@ fun ShowStatusTopic(topic: Topic, viewModel: ProjectsViewModel) {
             StatusTopic.REQUESTING -> {
                 FilterItemTeacher(text = "Chấp nhận", callback = {
                     //update lại status
+                    buttonVisible.value = false
                     viewModel.updateTopicTable(idTopic = topic.id!!,status = StatusTopic.ACCEPT)
 
                 })
                 Spacer(modifier = Modifier.width(8.dp))
                 FilterItemTeacher(text = "Xoá", callback = {
                     //xoa yeu cau cua sinh vien
+                    buttonVisible.value = false
                     viewModel.updateTopicTable(idTopic = topic.id!!, status = StatusTopic.REQUEST, idStudent = 0)
                 })
 
@@ -266,13 +280,7 @@ fun FilterItemStudent(text: String, callback: () -> Unit) {
 fun FilterItemTeacher(text: String, callback: () -> Unit) {
     val content = remember { mutableStateOf(text) }
     Button(onClick = {
-        if (text == "Chấp nhận"){
             callback.invoke()
-        }
-        if (text == "Xoá"){
-            callback.invoke()
-        }
-
     })
     {
         Text(
