@@ -1,6 +1,7 @@
 package com.prdcv.ehust.ui.projects
 
 import android.annotation.SuppressLint
+import android.os.Parcelable
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ProjectsViewModel
 import com.prdcv.ehust.viewmodel.ShareViewModel
+import kotlinx.parcelize.Parcelize
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -88,8 +90,9 @@ fun ProjectStudent(data: ClassStudent, navController: NavController, topicViewMo
             .fillMaxWidth()
             .clickable {
                 data.nameTeacher?.let {
-                    navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-                    topicViewModel.findTopicByIdTeacherAndIdProject(nameTeacher = it,idProject = data.codeCourse)
+                    navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(ProjectArg(
+                        nameTeacher = it, idProject = data.codeCourse
+                    )))
                 }
 
 
@@ -132,11 +135,13 @@ fun ProjectTeacher(data: ClassStudent, navController: NavController, topicViewMo
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment())
-                topicViewModel.findTopicByIdTeacherAndIdProject(
-                    idTeacher = shareViewModel.user?.id!!,
+                navController.navigate(ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(
+                    ProjectArg(
+                    idTeacher = shareViewModel.user?.id,
                     idProject = data.codeCourse
                 )
+                ))
+
             }
     ) {
         Row(modifier = Modifier.padding(8.dp)) {
@@ -151,3 +156,10 @@ fun ProjectTeacher(data: ClassStudent, navController: NavController, topicViewMo
         }
     }
 }
+
+@Parcelize
+data class ProjectArg(
+    val nameTeacher: String? =null,
+    val idTeacher: Int? = null,
+    val idProject: String? = null
+): Parcelable

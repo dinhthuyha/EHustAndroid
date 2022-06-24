@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
 
 import com.prdcv.ehust.model.Topic
@@ -21,10 +22,8 @@ import com.prdcv.ehust.viewmodel.ProjectsViewModel
 class TopicsFragment : BaseFragment() {
 
     private val topicViewModel: ProjectsViewModel by activityViewModels()
-    private var topics = listOf<Topic>(
-        Topic(name = "lập trình web bán hàng online"),
-        Topic(name = "Xây dụng app music")
-    )
+
+    val arg: TopicsFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,14 +31,19 @@ class TopicsFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
 
-                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.id ?: 0, shareViewModel.user?.roleId!!, findNavController()) }
-
+            setContent {
+                DefaultPreview(
+                    shareViewModel.user?.id ?: 0,
+                    shareViewModel.user?.roleId!!,
+                    findNavController(),
+                    arg.project,
+                    topicViewModel
+                )
+            }
 
 
         }
     }
-
-
 
 
 }
