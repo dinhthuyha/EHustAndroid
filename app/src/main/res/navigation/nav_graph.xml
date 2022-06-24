@@ -38,14 +38,7 @@
             android:id="@+id/action_mainFragment_to_scheduleFragment"
             app:destination="@id/scheduleFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/detailNewsFragment"
-        android:name="com.prdcv.ehust.ui.news.detail.DetailNewsFragment"
-        android:label="DetailNewsFragment" >
-        <argument
-            android:name="itemNews"
-            app:argType="com.prdcv.ehust.model.News" />
-    </fragment>
+
     <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.prdcv.ehust.ui.task.NewTaskFragment"
@@ -63,9 +56,6 @@
         android:id="@+id/newsFragment"
         android:name="com.prdcv.ehust.ui.news.NewsFragment"
         android:label="NewsFragment" >
-        <action
-            android:id="@+id/action_newsFragment_to_detailNewsFragment"
-            app:destination="@id/detailNewsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
