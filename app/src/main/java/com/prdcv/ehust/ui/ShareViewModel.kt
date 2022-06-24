@@ -3,24 +3,18 @@ package com.prdcv.ehust.ui
 import android.content.SharedPreferences
 import android.view.View
 import androidx.databinding.ObservableInt
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.auth0.android.jwt.JWT
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.model.*
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
-import com.prdcv.ehust.ui.search.ItemSearch
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -41,12 +35,12 @@ class ShareViewModel @Inject constructor(
     val listUser get() = _listUser
     var loadingVisibility = ObservableInt()
 
-    private var _newsState = SingleLiveEvent<State<List<News>>>()
-    val newsState get() = _newsState
+    private var _newsState = MutableStateFlow<State<List<News>>>(State.Loading)
+    val newsState: StateFlow<State<List<News>>> get() = _newsState
 
     var user: User? = null
 
-    private var _token = SingleLiveEvent<State<Map<String,Any>>>()
+    private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token
 
     private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
@@ -63,21 +57,21 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun decodeResponseLogin(hashMap: Map<String,Any>) {
+    fun decodeResponseLogin(hashMap: Map<String, Any>) {
         val token = hashMap["token"] as String
         //save to share preferences
-        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN,token).commit()
+        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN, token).commit()
 
-        val profile = hashMap["profile"] as Map<String,String>
+        val profile = hashMap["profile"] as Map<String, String>
         val id = (profile["id"] as String).toInt()
         val roleId = convertRole(profile["role_id"] as String)
         val fullName = profile["full_name"] as String
-        val grade = profile["grade"] as? String?: ""
+        val grade = profile["grade"] as? String ?: ""
         val ins = profile["institute_of_management"] as String
         val gender = profile["gender"] as String
-        val course = profile["course"] as? String?: ""
-        val email =  profile["email"] as String
-        val cardeStatus =  profile["cadre_status"] as? String ?: ""
+        val course = profile["course"] as? String ?: ""
+        val email = profile["email"] as String
+        val cardeStatus = profile["cadre_status"] as? String ?: ""
         val unit = profile["unit"] as? String ?: ""
         val imageBg = profile["image_background"] as String
         val imageAva = profile["image_avatar"] as String
@@ -106,6 +100,7 @@ class ShareViewModel @Inject constructor(
             else -> Role.ROLE_UNKNOWN
         }
     }
+
     fun getListStudentInClass() {
         viewModelScope.launch {
             userRepository.getListStudentInClass(user?.grade!!).collect {
@@ -118,14 +113,10 @@ class ShareViewModel @Inject constructor(
     }
 
     fun getNews() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                newsRepository.getNews().collect {
-                    _newsState.postValue(it)
-
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            newsRepository.getNews().collect {
+                _newsState.emit(it)
             }
-
         }
     }
 
@@ -139,6 +130,7 @@ class ShareViewModel @Inject constructor(
 
         }
     }
+
     fun findAllSchedules() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
@@ -150,13 +142,15 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
+    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent> {
         val today = LocalDate.now()
-        val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)?.uppercase(Locale.ENGLISH)
+        val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            ?.uppercase(Locale.ENGLISH)
 
         return schedules.filter {
-            val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            dateStudy ==  dateOfWeek
+            val dateStudy =
+                it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            dateStudy == dateOfWeek
         }
     }
 

@@ -178,7 +178,7 @@ fun Tag(status: String) {
                     "In progress" -> TagInProgress
                     "Done" -> TagDone
                     "Finished" -> TagFinished
-                    else -> Color.Gray
+                    else -> Color.LightGray
                 },
                 shape = RoundedCornerShape(3.dp)
             )
