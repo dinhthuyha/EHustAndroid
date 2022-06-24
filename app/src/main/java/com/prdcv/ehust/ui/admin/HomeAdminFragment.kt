@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.task
+package com.prdcv.ehust.ui.admin
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,14 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.databinding.FragmentNewTaskBinding
-import com.prdcv.ehust.ui.profile.ProfileCard
+import com.prdcv.ehust.viewmodel.AssignViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+
+/**
+ * A simple [Fragment] subclass.
+ * Use the [HomeAdminFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
 @AndroidEntryPoint
-class NewTaskFragment : BaseFragment() {
+class HomeAdminFragment : BaseFragment() {
+
+    private val viewModel: AssignViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -21,10 +29,10 @@ class NewTaskFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                TaskScreenPreview()
-            }
+            setContent { AssignScreen(viewModel) }
         }
     }
+
+
 
 }

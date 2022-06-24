@@ -14,6 +14,9 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeAdminFragment"
+            app:destination="@id/homeAdminFragment" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
@@ -51,7 +54,11 @@
         android:id="@+id/projectGraduateFragment"
         android:name="com.prdcv.ehust.ui.projects.ProjectsFragment"
         android:label="project_graduate_fragment"
-        tools:layout="@layout/fragment_project_graduate" />
+        tools:layout="@layout/fragment_project_graduate" >
+        <action
+            android:id="@+id/action_projectGraduateFragment_to_topicsFragment"
+            app:destination="@id/topicsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newsFragment"
         android:name="com.prdcv.ehust.ui.news.NewsFragment"
@@ -84,5 +91,13 @@
     <fragment
         android:id="@+id/topicsFragment"
         android:name="com.prdcv.ehust.ui.projects.topic.TopicsFragment"
-        android:label="TopicsFragment" />
+        android:label="TopicsFragment" >
+        <action
+            android:id="@+id/action_topicsFragment_to_newTaskFragment"
+            app:destination="@id/newTaskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeAdminFragment"
+        android:name="com.prdcv.ehust.ui.admin.HomeAdminFragment"
+        android:label="HomeAdminFragment" />
 </navigation>

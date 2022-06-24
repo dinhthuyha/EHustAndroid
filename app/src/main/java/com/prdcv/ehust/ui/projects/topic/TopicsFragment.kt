@@ -1,43 +1,45 @@
 package com.prdcv.ehust.ui.projects.topic
 
-import android.content.ClipData
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.daimajia.swipe.SwipeLayout
-import com.prdcv.ehust.R
-import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.databinding.FragmentTopicsBinding
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.prdcv.ehust.base.BaseFragment
+
 import com.prdcv.ehust.model.Topic
+import com.prdcv.ehust.viewmodel.ProjectsViewModel
 
 /**
  * A simple [Fragment] subclass.
  * Use the [TopicsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class TopicsFragment : BaseFragmentWithBinding<FragmentTopicsBinding>() {
-    private var topicAdapter = TopicAdapter()
-    override fun getViewBinding(inflater: LayoutInflater) =
-        FragmentTopicsBinding.inflate(inflater).apply {
-            rv.adapter = topicAdapter
+class TopicsFragment : BaseFragment() {
+
+    private val topicViewModel: ProjectsViewModel by activityViewModels()
+    private var topics = listOf<Topic>(
+        Topic(name = "lập trình web bán hàng online"),
+        Topic(name = "Xây dụng app music")
+    )
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+
+                setContent { DefaultPreview(topicViewModel, shareViewModel.user?.id ?: 0, shareViewModel.user?.roleId!!, findNavController()) }
+
+
 
         }
-
-    override fun init() {
-
-        var list = mutableListOf<Topic>()
-        list.add(Topic("item 11"))
-        list.add(Topic("item 2"))
-        topicAdapter.setItems(list)
-
-
     }
+
+
 
 
 }

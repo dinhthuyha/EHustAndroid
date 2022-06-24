@@ -8,15 +8,15 @@ import java.time.LocalTime
 
 data class ScheduleEvent(
     var date: LocalDate,
-    @SerializedName("name_course")
-    val courseName: String,
     @SerializedName("start_time")
-    val startTime: LocalTime,
+    val startTime: LocalTime? = null,
     @SerializedName("finish_time")
-    var finishTime: LocalTime,
+    var finishTime: LocalTime? = null,
     var color: Int,
     @SerializedName("date_finish_course")
     var dueDateStudy: LocalDate?=null,
     @SerializedName("date_start_course")
-    var startDateStudy: LocalDate
+    var startDateStudy: LocalDate? = null,
+    @SerializedName("subject_class")
+    val subjectClass: Subject
 )

@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.search
+package com.prdcv.ehust.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

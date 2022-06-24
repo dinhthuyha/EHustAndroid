@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui
+package com.prdcv.ehust.viewmodel
 
 import android.content.SharedPreferences
 import android.view.View
@@ -7,7 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.*
+import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
@@ -40,11 +44,11 @@ class ShareViewModel @Inject constructor(
 
     var user: User? = null
 
-    private var _token = SingleLiveEvent<State<Map<String, Any>>>()
+    private var _token = SingleLiveEvent<State<Map<String,Any>>>()
     val token get() = _token
 
-    private var _projectsState = SingleLiveEvent<State<List<ClassStudent>>>()
-    val projectsState get() = _projectsState
+    private var _projectsState: MutableStateFlow<State<List<ClassStudent>>> = MutableStateFlow(State.Loading)
+    val projectsState: StateFlow<State<List<ClassStudent>>> get() = _projectsState
 
     private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
     val schedulesState get() = _schedulesState
@@ -57,24 +61,24 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun decodeResponseLogin(hashMap: Map<String, Any>) {
+    fun decodeResponseLogin(hashMap: Map<String,Any>) {
         val token = hashMap["token"] as String
         //save to share preferences
-        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN, token).commit()
+        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN,token).commit()
 
-        val profile = hashMap["profile"] as Map<String, String>
-        val id = (profile["id"] as String).toInt()
-        val roleId = convertRole(profile["role_id"] as String)
-        val fullName = profile["full_name"] as String
-        val grade = profile["grade"] as? String ?: ""
-        val ins = profile["institute_of_management"] as String
-        val gender = profile["gender"] as String
-        val course = profile["course"] as? String ?: ""
-        val email = profile["email"] as String
-        val cardeStatus = profile["cadre_status"] as? String ?: ""
-        val unit = profile["unit"] as? String ?: ""
-        val imageBg = profile["image_background"] as String
-        val imageAva = profile["image_avatar"] as String
+        val profile = hashMap["profile"] as? Map<String,String>
+        val id = (profile?.get("id") as String).toInt()
+        val roleId = convertRole(profile?.get("role_id") as String)
+        val fullName = profile?.get("full_name") as? String
+        val grade = profile?.get("grade") as? String?: ""
+        val ins = profile?.get("institute_of_management") as? String
+        val gender = profile?.get("gender") as? String
+        val course = profile?.get("course") as? String?: ""
+        val email =  profile?.get("email") as? String ?: ""
+        val cardeStatus =  profile?.get("cadre_status") as? String ?: ""
+        val unit = profile?.get("unit") as? String ?: ""
+        val imageBg = profile?.get("image_background") as? String
+        val imageAva = profile?.get("image_avatar") as? String
 
         user = User(
             id,
@@ -124,7 +128,7 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 userRepository.findAllProjectsByStudentId(user?.id!!).collect {
-                    _projectsState.postValue(it)
+                    _projectsState.emit(it)
                 }
             }
 
@@ -142,15 +146,13 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent> {
+    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
         val today = LocalDate.now()
         val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            ?.uppercase(Locale.ENGLISH)
 
         return schedules.filter {
-            val dateStudy =
-                it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            dateStudy == dateOfWeek
+            val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            dateStudy ==  dateOfWeek
         }
     }
 

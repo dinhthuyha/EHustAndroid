@@ -1,15 +1,21 @@
 package com.prdcv.ehust.network
 
+import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.Subject
+import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
+import com.prdcv.ehust.ui.task.TaskData
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface EHustService {
@@ -42,4 +48,60 @@ interface EHustService {
     @GET("user/{id}/schedule")
     suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
+    @GET("topic/teacher/{id_teacher}/{name_teacher}/{id_project}")
+    suspend fun findTopicByIdTeacherAndIdProject(
+        @Path("name_teacher") nameTeacher: String,
+        @Path("id_project") idProject: String,
+        @Path("id_teacher") idTeacher: Int
+    ): Response<List<Topic>>
+
+
+    /**
+     * Tim tat cac user trong lop hoc ki B va hoc mon A
+     */
+    @GET("project/users/{nameCourse}/{role}")
+    suspend fun getAllUserInClass(@Path("nameCourse") nameCourse: String, @Path("role") role: Role): Response< List<User>>
+
+    /**
+     * ds project trong ki hien tai
+     */
+    @GET("project/current/semester")
+    suspend fun getAllProjectCurrent(): Response<List<Subject>>
+
+    @FormUrlEncoded
+    @POST("assignProject")
+    suspend fun assignProjectInstructions(@Field("id_student") idStudent: Int,
+                                          @Field("id_teacher") idTeacher: Int,
+                                          @Field("name_project") nameProject: String): Response<ResponseBody>
+
+    /**
+     * update status cho topic
+     */
+    @FormUrlEncoded
+    @PUT("updatetopic/{id_topic}")
+    suspend fun updateStatusAndIdStudentTopic(
+        @Path("id_topic") id: Int,
+        @Field(value = "status") status: StatusTopic,
+        @Field(value = "id_student") idStudent: Int
+    ): Response<ResponseBody>
+
+    /**
+     * get all task theo id topic
+     */
+    @GET("allTask/idTopic/{id_topic}")
+    suspend fun findAllTaskByIdTopic(
+        @Path("id_topic") id: Int
+    ): Response<List<TaskData>>
+
+    @FormUrlEncoded
+    @PUT("updateTask")
+    suspend fun updateTask(
+        @Field(value = "task") taskData: TaskData
+    )
+
+    @FormUrlEncoded
+    @POST("newTask")
+    suspend fun newTask(
+        @Field(value = "task") taskData: TaskData
+    )
 }

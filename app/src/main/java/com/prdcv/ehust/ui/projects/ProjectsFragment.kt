@@ -1,45 +1,35 @@
 package com.prdcv.ehust.ui.projects
 
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentProjectGraduateBinding
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.viewmodel.ProjectsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ProjectsFragment : BaseFragmentWithBinding<FragmentProjectGraduateBinding>() {
-    private val projectsAdapter = ProjectsAdapter(
-        clickListener = ::navigateToProfile
-    )
+class ProjectsFragment : BaseFragment() {
 
-    override fun getViewBinding(inflater: LayoutInflater) =
-        FragmentProjectGraduateBinding.inflate(inflater).apply {
-            lifecycleOwner = viewLifecycleOwner
-            rvProjectGraduate.adapter = projectsAdapter
-        }
+    private val topicViewModel: ProjectsViewModel by activityViewModels()
 
-    override fun init() {
-        shareViewModel.projectsState.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
-
-                }
-                is State.Success -> {
-                    projectsAdapter.setItems(it.data)
-                }
-                is State.Error -> {
-
-                }
-            }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+                setContent { DefaultPreview(shareViewModel, findNavController(), topicViewModel) }
         }
     }
-
-    private fun navigateToProfile(newsItem: ClassStudent) {
-
-
-    }
-
 }
