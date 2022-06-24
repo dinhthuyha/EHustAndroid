@@ -2,6 +2,9 @@ package com.prdcv.ehust.viewmodel
 
 import android.content.SharedPreferences
 import android.view.View
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,6 +29,9 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
+data class ProjectsScreenState(
+    val projects: List<ClassStudent> = emptyList()
+)
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
@@ -48,8 +54,11 @@ class ShareViewModel @Inject constructor(
     private var _token = SingleLiveEvent<State<Map<String,Any>>>()
     val token get() = _token
 
-    private var _projectsState: MutableStateFlow<State<List<ClassStudent>>> = MutableStateFlow(State.Loading)
-    val projectsState: StateFlow<State<List<ClassStudent>>> get() = _projectsState
+    /**
+     * ui state cho projects screen
+     */
+    var uiProjectsState by mutableStateOf(ProjectsScreenState())
+        private set
 
     private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
     val schedulesState get() = _schedulesState
@@ -132,7 +141,12 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 userRepository.findAllProjectsByStudentId(user?.id!!).collect {
-                    _projectsState.emit(it)
+                    when(val state = it){
+                        is State.Success -> {
+                            uiProjectsState = uiProjectsState.copy(projects = state.data)
+                        }
+                        else-> {}
+                    }
                 }
             }
 
@@ -157,6 +171,10 @@ class ShareViewModel @Inject constructor(
             val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
             dateStudy ==  dateOfWeek
         }
+    }
+
+    fun callbackGetData() {
+        findAllProjectsById()
     }
 
 }

@@ -38,10 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.Exception
 
-lateinit var mRole: Role
-lateinit var mViewModel: ProjectsViewModel
-lateinit var mProject: ProjectArg
-
 //@Preview(showBackground = true)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -52,16 +48,11 @@ fun DefaultPreview(
     project: ProjectArg,
     viewModel: ProjectsViewModel = viewModel()
 ) {
-    fun init() {
-        mViewModel = viewModel
-        mRole = role
-        mProject = project
-    }
-
-    init()
+    viewModel.mProject = project
+    viewModel.mRole = role
     val uiState = viewModel.uiState
     LaunchedEffect(key1 = Unit) {
-        callbackGetData()
+        viewModel.callbackGetData()
     }
 
     fun checkTopic(topics: List<Topic>): List<Topic> {
@@ -85,7 +76,7 @@ fun DefaultPreview(
         refreshingState.isRefreshing = true
         coroutineScope.launch {
             withContext(Dispatchers.IO + Job()) {
-                callbackGetData()
+                viewModel.callbackGetData()
             }
         }
         coroutineScope.launch {
@@ -133,22 +124,7 @@ fun DefaultPreview(
     }
 }
 
-fun callbackGetData() {
-    when (mRole) {
-        Role.ROLE_STUDENT -> {
-            mViewModel.findTopicByIdTeacherAndIdProject(
-                nameTeacher = mProject.nameTeacher!!,
-                idProject = mProject.idProject!!
-            )
-        }
-        Role.ROLE_TEACHER -> {
-            mViewModel.findTopicByIdTeacherAndIdProject(
-                idTeacher = mProject.idTeacher!!,
-                idProject = mProject.idProject!!
-            )
-        }
-    }
-}
+
 
 @Composable
 fun TopicStudentRow(

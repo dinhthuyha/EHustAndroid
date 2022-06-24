@@ -68,9 +68,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         /**
          * teacher event
          */
-        binding.viewTeacher.cdProject.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
-        }
+
         binding.viewTeacher.cdSchedule.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_scheduleFragment)
         }

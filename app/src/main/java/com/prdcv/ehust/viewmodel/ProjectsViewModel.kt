@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.repo.TopicRepository
+import com.prdcv.ehust.ui.projects.ProjectArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -17,14 +19,15 @@ import javax.inject.Inject
 
 data class TopicScreenState(
     val topics: List<Topic> = emptyList(),
-    val updateState: ResponseBody = "".toResponseBody()
+    val updateState: ResponseBody = "".toResponseBody(),
 )
 @HiltViewModel
 class ProjectsViewModel @Inject constructor(
     private val topicRepository: TopicRepository
 ) : ViewModel() {
 
-
+    var mProject: ProjectArg ? = null
+    var mRole: Role = Role.ROLE_UNKNOWN
     var uiState by mutableStateOf(TopicScreenState())
         private set
 
@@ -49,6 +52,25 @@ class ProjectsViewModel @Inject constructor(
         }
     }
 
+    fun callbackGetData() {
+        mProject?.let {
+            when (mRole) {
+                Role.ROLE_STUDENT -> {
+                    findTopicByIdTeacherAndIdProject(
+                        nameTeacher = it.nameTeacher!!,
+                        idProject = it.idProject!!
+                    )
+                }
+                Role.ROLE_TEACHER -> {
+                    findTopicByIdTeacherAndIdProject(
+                        idTeacher = it.idTeacher!!,
+                        idProject = it.idProject!!
+                    )
+                }
+            }
+        }
+
+    }
     fun updateTopicTable(
         idTopic: Int,
         status: StatusTopic,
