@@ -299,7 +299,7 @@ fun FilterItemStudent(text: String, callback: () -> Unit) {
             content.value = StatusTopic.REQUESTING.name
         }
 
-    })
+    }, enabled = text != StatusTopic.ACCEPT.name)
     {
         Text(
             text = content.value,
