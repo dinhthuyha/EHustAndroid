@@ -31,7 +31,7 @@ fun ProfileInfoRow(label: String, content: String) {
     ) {
         Divider(thickness = 0.5.dp)
         Spacer(modifier = Modifier.size(6.dp))
-        Text(text = label, fontSize = 12.sp, fontWeight = FontWeight.Light)
+        Text(text = label, fontSize = 13.sp, fontWeight = FontWeight.Light)
         SelectionContainer {
             Text(text = content, fontSize = 15.sp)
         }

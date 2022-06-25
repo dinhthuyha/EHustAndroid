@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.navigation.findNavController
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.databinding.FragmentNewTaskBinding
@@ -22,7 +23,7 @@ class NewTaskFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                TaskScreenPreview()
+                TaskScreenPreview(findNavController())
             }
         }
     }

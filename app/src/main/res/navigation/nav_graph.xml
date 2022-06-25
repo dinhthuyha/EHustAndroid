@@ -49,7 +49,11 @@
     <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.prdcv.ehust.ui.task.NewTaskFragment"
-        android:label="NewTaskFragment" />
+        android:label="NewTaskFragment" >
+        <action
+            android:id="@+id/action_newTaskFragment_to_detailTaskFragment"
+            app:destination="@id/detailTaskFragment" />
+    </fragment>
     <fragment
         android:id="@+id/projectGraduateFragment"
         android:name="com.prdcv.ehust.ui.projects.ProjectsFragment"
@@ -103,4 +107,8 @@
         android:id="@+id/homeAdminFragment"
         android:name="com.prdcv.ehust.ui.admin.HomeAdminFragment"
         android:label="HomeAdminFragment" />
+    <fragment
+        android:id="@+id/detailTaskFragment"
+        android:name="com.prdcv.ehust.ui.task.detail.DetailTaskFragment"
+        android:label="DetailTaskFragment" />
 </navigation>

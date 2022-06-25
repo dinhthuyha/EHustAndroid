@@ -44,15 +44,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import com.prdcv.ehust.ui.compose.Button
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 
 import androidx.compose.ui.text.font.FontWeight
 
@@ -65,14 +62,16 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 
 
 
-@Preview(showBackground = true)
 @Composable
-fun DetailTask() {
+fun DetailTask(
+    onDateSelectionClicked: () -> Unit,
+    mainViewModel: DetailTaskViewModel
+) {
     DefaultTheme {
         Scaffold(topBar = { ToolBar() }, bottomBar = { BottomBarComment()}) {
             Column(horizontalAlignment = Alignment.Start, modifier = Modifier.verticalScroll(rememberScrollState())) {
                 RowDescription()
-                RowTaskSetup()
+                RowTaskSetup(viewModel = mainViewModel, onDateSelectionClicked)
                 RowAttachFile()
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
@@ -111,7 +110,7 @@ fun RowAttachFile() {
     Row(modifier = Modifier.padding(start = 25.dp)) {
         Button(
             onClick = { /*TODO*/ },
-            content = { Text(text = "Add file", fontSize = 12.sp) },
+            content = { Text(text = "Add file", fontSize = 13.sp) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Button,
                 contentColor = White
@@ -132,14 +131,14 @@ fun AttachFile() {
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = "kindpng_3651626.png", fontWeight = FontWeight.W400, fontSize = 12.sp)
+        Text(text = "kindpng_3651626.png", fontWeight = FontWeight.W400, fontSize = 13.sp)
 
     }
 }
 
-@Preview
 @Composable
-fun RowTaskSetup() {
+fun RowTaskSetup(viewModel: DetailTaskViewModel, onDateSelectionClicked: () -> Unit) {
+    val selectedDates = viewModel?.calendarState.calendarUiState.value.selectedDatesFormatted
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -157,25 +156,9 @@ fun RowTaskSetup() {
 
         ) {
             Column {
-                OutlinedTextField(
-                    value = "date picker",
-                    onValueChange = {},
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Transparent,
-                        unfocusedBorderColor = Transparent
-                    ),
-                    textStyle = TextStyle(fontWeight = FontWeight.W400, fontSize = 12.sp),
-                    readOnly = true,
-                    modifier = Modifier.defaultMinSize(minHeight = 1.dp),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_date),
-                            contentDescription = "",
-                            modifier = Modifier.size(width = 25.dp, height = 25.dp),
-                            tint = DarkGray
-                        )
-                    },
-                )
+                DatesUserInput(datesSelected = selectedDates, onDateSelectionClicked = DateContentUpdates(
+                    onDateSelectionClicked = onDateSelectionClicked,
+                ).onDateSelectionClicked)
                 RowElementSetupTask(title = "Estimate time", idIcon = R.drawable.ic_time, "Hours")
                 RowElementSetupTask(title = "Spend time", idIcon = R.drawable.ic_spendtime,  "Hours")
                 RowElementSetupTask(title = "Done", idIcon = R.drawable.ic_done)
@@ -206,7 +189,7 @@ fun RowElementSetupTask(title: String, idIcon: Int, trailingTitle: String?= null
                     text = title,
                     color = Gray,
                     fontWeight = FontWeight.W400,
-                    fontSize = 12.sp
+                    fontSize = 13.sp
                 )
             },
             leadingIcon = {
@@ -275,7 +258,7 @@ fun RowComment() {
             Column(modifier = Modifier
                .padding( end = 20.dp, bottom = 5.dp)) {
                 Text(text = "Hà Đinh",fontWeight = FontWeight.W400, fontSize = 13.sp, color = Button)
-                Text(text = "Chinh lai table User", fontWeight = FontWeight.W400, fontSize = 12.sp)
+                Text(text = "Chinh lai table User", fontWeight = FontWeight.W400, fontSize = 13.sp)
             }
 
         }
@@ -343,7 +326,7 @@ fun BottomBarComment() {
                         text = "Comment ...",
                         color = Gray,
                         fontWeight = FontWeight.W400,
-                        fontSize = 12.sp
+                        fontSize = 13.sp
                     )
                 },
 

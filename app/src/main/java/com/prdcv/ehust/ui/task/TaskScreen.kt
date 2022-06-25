@@ -31,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.material.chip.Chip
@@ -47,9 +49,9 @@ import java.time.Period
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-@Preview(showBackground = true)
+
 @Composable
-fun TaskScreenPreview() {
+fun TaskScreenPreview(navController: NavController) {
     val viewModel: TaskViewModel = viewModel()
 
     LaunchedEffect(key1 = Unit) {
@@ -125,7 +127,13 @@ fun TaskScreenPreview() {
                                 .padding(10.dp)
                         ) {
                             items(state.value, key = { it.id }) { t ->
-                                Task(data = t, modifier = Modifier.animateItemPlacement())
+                                Task(
+                                    data = t,
+                                    modifier = Modifier
+                                        .animateItemPlacement()
+                                        .clickable {
+                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment())
+                                        })
                             }
                         }
                     }
@@ -137,7 +145,7 @@ fun TaskScreenPreview() {
 
 @Composable
 fun ChipGroup(action: (String?) -> Unit) {
-    val selectChips= remember { mutableStateOf(Chips.ALL.tabName) }
+    val selectChips = remember { mutableStateOf(Chips.ALL.tabName) }
     LazyRow(
         Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
     ) {
@@ -154,8 +162,8 @@ fun ChipGroup(action: (String?) -> Unit) {
 //@Preview(showBackground = true)
 @Composable
 fun Task(data: TaskData, modifier: Modifier) {
-    fun showTimeRemain(): String{
-        if (data.status == "In progress"){
+    fun showTimeRemain(): String {
+        if (data.status == "In progress") {
             val today = LocalDate.now()
             val dueDate = data.dueDate
             val dateRemain = Period.between(today, dueDate).days
@@ -185,7 +193,7 @@ fun Task(data: TaskData, modifier: Modifier) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Tag(data.status)
                     Spacer(modifier = Modifier.size(3.dp))
-                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 12.sp)
+                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
 
                 }
                 Text(
@@ -196,7 +204,7 @@ fun Task(data: TaskData, modifier: Modifier) {
                 Text(
                     text = "${data.dueDate} ${showTimeRemain()}",
                     fontWeight = FontWeight.Light,
-                    fontSize = 12.sp
+                    fontSize = 13.sp
                 )
             }
             CircularProgressWithPercent(progress = data.progress)
@@ -240,7 +248,7 @@ fun CircularProgressWithPercent(progress: Float) {
         CircularProgressIndicator(progress = progress, strokeWidth = 2.dp)
         Text(
             text = progress.percent,
-            fontSize = 12.sp
+            fontSize = 13.sp
         )
     }
 }
@@ -271,7 +279,7 @@ fun BottomBar() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterItem(text: String,selectChip: MutableState<String>, onClick: (String?) -> Unit) {
+fun FilterItem(text: String, selectChip: MutableState<String>, onClick: (String?) -> Unit) {
     val state = remember { mutableStateOf(false) }
     state.value = selectChip.value == text
 
@@ -280,7 +288,7 @@ fun FilterItem(text: String,selectChip: MutableState<String>, onClick: (String?)
         onClick = {
             state.value = !state.value
             if (state.value) {
-                selectChip.value =text
+                selectChip.value = text
 
                 onClick(text)
             } else onClick(null)
