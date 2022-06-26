@@ -9,12 +9,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.android.material.chip.Chip
 import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
@@ -48,6 +51,7 @@ import java.time.Period
 @Composable
 fun TaskScreenPreview() {
     val viewModel: TaskViewModel = viewModel()
+
     LaunchedEffect(key1 = Unit) {
         viewModel.findAllTaskByIdTopic(19)
     }
@@ -133,15 +137,16 @@ fun TaskScreenPreview() {
 
 @Composable
 fun ChipGroup(action: (String?) -> Unit) {
+    val selectChips= remember { mutableStateOf(Chips.ALL.tabName) }
     LazyRow(
         Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
     ) {
         item {
-            FilterItem("New") { action(it) }
-            FilterItem("In progress") { action(it) }
-            FilterItem("Finished") { action(it) }
-            FilterItem("Done") { action(it) }
-            FilterItem("Canceled") { action(it) }
+            FilterItem("New", selectChips) { action(it) }
+            FilterItem("In progress", selectChips) { action(it) }
+            FilterItem("Finished", selectChips) { action(it) }
+
+            FilterItem("Canceled", selectChips) { action(it) }
         }
     }
 }
@@ -266,15 +271,21 @@ fun BottomBar() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterItem(text: String, onClick: (String?) -> Unit) {
+fun FilterItem(text: String,selectChip: MutableState<String>, onClick: (String?) -> Unit) {
     val state = remember { mutableStateOf(false) }
+    state.value = selectChip.value == text
 
     FilterChip(
         selected = state.value,
         onClick = {
             state.value = !state.value
-            if (state.value) onClick(text) else onClick(null)
+            if (state.value) {
+                selectChip.value =text
+
+                onClick(text)
+            } else onClick(null)
         },
+
         border = ChipDefaults.outlinedBorder,
         colors = ChipDefaults.filterChipColors(
             selectedBackgroundColor = MaterialTheme.colors.secondaryVariant,
@@ -300,6 +311,13 @@ data class TaskData(
     val dueDate: LocalDate
 )
 
+enum class Chips(val tabName: String) {
+    NEW("New"),
+    IN_PROGRESS("In progress"),
+    FINISHED("Finished"),
+    CANCELED("Canceled"),
+    ALL("all")
+}
 //private val tasks = listOf(
 //    TaskData(),
 //    TaskData(

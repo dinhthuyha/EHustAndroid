@@ -85,6 +85,9 @@
         <action
             android:id="@+id/action_topicsFragment_to_newTaskFragment"
             app:destination="@id/newTaskFragment" />
+        <argument
+            android:name="project"
+            app:argType="com.prdcv.ehust.ui.projects.ProjectArg" />
     </fragment>
     <fragment
         android:id="@+id/homeAdminFragment"
