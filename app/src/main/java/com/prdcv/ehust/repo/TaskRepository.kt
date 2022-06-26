@@ -3,7 +3,7 @@ package com.prdcv.ehust.repo
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.network.EHustClient
-import com.prdcv.ehust.ui.task.TaskData
+import com.prdcv.ehust.model.TaskData
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject

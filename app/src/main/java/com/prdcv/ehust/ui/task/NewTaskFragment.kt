@@ -7,9 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.databinding.FragmentNewTaskBinding
-import com.prdcv.ehust.ui.profile.ProfileCard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,7 +19,7 @@ class NewTaskFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                TaskScreenPreview()
+                TaskScreen()
             }
         }
     }

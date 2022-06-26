@@ -8,7 +8,7 @@ import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
-import com.prdcv.ehust.ui.task.TaskData
+import com.prdcv.ehust.model.TaskData
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Field
