@@ -1,8 +1,6 @@
 package com.prdcv.ehust.viewmodel
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -72,7 +70,7 @@ enum class TaskStatus(val text: String) {
     @SerializedName("Finished")
     FINISHED("Finished"),
     @SerializedName("Canceled")
-    CANCELED("Canceled"),
+    CANCELED("Cancelled"),
     ALL("all")
 }
 
@@ -84,7 +82,9 @@ class TaskViewModel @Inject constructor(
     val uiState = TaskScreenState()
 
     fun findAllTaskByIdTopic(idTopic: Int) {
+        uiState.refreshState.isRefreshing = true
         viewModelScope.launch(Dispatchers.IO) {
+            delay(2000)
             taskRepository.findAllTaskByIdTopic(idTopic).collect { uiState.addTasksFromState(it) }
         }
     }

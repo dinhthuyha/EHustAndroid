@@ -13,10 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.TaskData
@@ -82,10 +82,21 @@ fun TaskScreen(viewModel: TaskViewModel = viewModel()) {
                         LazyColumn(
                             Modifier
                                 .fillMaxSize()
-                                .padding(10.dp)
+                                .padding(start = 5.dp, end = 5.dp)
                         ) {
-                            items(items = uiState.filteredTaskList, key = { it.id }) { item ->
-                                TaskRow(data = item, modifier = Modifier.animateItemPlacement())
+                            if (uiState.refreshState.isRefreshing) {
+                                items(7) {
+                                    TaskRow(isLoading = true)
+                                }
+                            } else {
+                                items(items = uiState.filteredTaskList, key = { it.id }) { item ->
+                                    TaskRow(
+                                        data = item,
+                                        modifier = Modifier
+                                            .animateItemPlacement()
+                                            .padding(it)
+                                    )
+                                }
                             }
                         }
                     }
@@ -95,10 +106,14 @@ fun TaskScreen(viewModel: TaskViewModel = viewModel()) {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun ChipGroup(selectedTaskStatus: MutableState<TaskStatus>, onClick: (TaskStatus?) -> Unit) {
+fun ChipGroup(
+    selectedTaskStatus: MutableState<TaskStatus> = mutableStateOf(TaskStatus.FINISHED),
+    onClick: (TaskStatus?) -> Unit = {}
+) {
     LazyRow(
-        Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
+        Modifier.padding(all = 5.dp)
     ) {
         item {
             FilterItem(TaskStatus.NEW, selectedTaskStatus, onClick)
@@ -109,9 +124,19 @@ fun ChipGroup(selectedTaskStatus: MutableState<TaskStatus>, onClick: (TaskStatus
     }
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun TaskRow(data: TaskData, modifier: Modifier) {
+private fun TaskRowLoading() {
+    TaskRow(isLoading = true)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TaskRow(
+    data: TaskData = TaskData(),
+    isLoading: Boolean = false,
+    modifier: Modifier = Modifier
+) {
     fun showTimeRemain(): String {
         if (data.status == TaskStatus.IN_PROGRESS) {
             val today = LocalDate.now()
@@ -140,24 +165,39 @@ fun TaskRow(data: TaskData, modifier: Modifier) {
                     .width(IntrinsicSize.Max)
                     .padding(10.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                ) {
                     Tag(data.status.text, selectTagColor(data.status))
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 12.sp)
-
                 }
                 Text(
                     text = data.title,
                     fontSize = 15.sp,
-                    modifier = Modifier.padding(bottom = 20.dp, top = 2.dp)
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp, top = 2.dp)
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
                 )
                 Text(
                     text = "${data.dueDate} ${showTimeRemain()}",
                     fontWeight = FontWeight.Light,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
                 )
             }
-            CircularProgressWithPercent(progress = data.progress)
+            CircularProgressWithPercent(progress = data.progress, isLoading = isLoading)
         }
     }
 }
@@ -177,19 +217,28 @@ fun Tag(status: String, backgroundColor: Color = Color.LightGray) {
 }
 
 @Composable
-fun CircularProgressWithPercent(progress: Float) {
+fun CircularProgressWithPercent(
+    progress: Float,
+    color: Color = MaterialTheme.colors.secondaryVariant,
+    isLoading: Boolean = false
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .padding(all = 10.dp)
             .size(40.dp)
+            .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
     ) {
         CircularProgressIndicator(
             progress = 1f,
             strokeWidth = 2.dp,
             color = Color.LightGray
         )
-        CircularProgressIndicator(progress = progress, strokeWidth = 2.dp)
+        CircularProgressIndicator(
+            progress = progress,
+            strokeWidth = 2.dp,
+            color = color
+        )
         Text(
             text = progress.percent,
             fontSize = 12.sp
@@ -223,6 +272,7 @@ fun FilterItem(
         onClick = { onClick(taskStatus) },
         border = ChipDefaults.outlinedBorder,
         colors = ChipDefaults.filterChipColors(
+            backgroundColor = Color.Transparent,
             selectedBackgroundColor = MaterialTheme.colors.secondaryVariant,
             selectedContentColor = Color.White
         ),
