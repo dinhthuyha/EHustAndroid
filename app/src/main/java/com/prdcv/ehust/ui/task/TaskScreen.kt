@@ -51,11 +51,11 @@ import java.time.Period
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 
 @Composable
-fun TaskScreenPreview(navController: NavController) {
+fun TaskScreenPreview(navController: NavController,idTopic: Int) {
     val viewModel: TaskViewModel = viewModel()
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.findAllTaskByIdTopic(19)
+        viewModel.findAllTaskByIdTopic(idTopic)
     }
     val taskState by viewModel.taskState.collectAsState()
     val state = remember { mutableStateOf(listOf<TaskData>()) }
