@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -39,9 +40,9 @@ import java.time.Period
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-@Preview(showBackground = true)
 @Composable
-fun TaskScreen(viewModel: TaskViewModel = viewModel()) {
+fun TaskScreen(navController: NavController) {
+    val viewModel: TaskViewModel = viewModel()
     val uiState = viewModel.uiState
 
     LaunchedEffect(key1 = Unit) {
@@ -95,6 +96,9 @@ fun TaskScreen(viewModel: TaskViewModel = viewModel()) {
                                         modifier = Modifier
                                             .animateItemPlacement()
                                             .padding(it)
+                                            .clickable {
+                                                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment())
+                                            }
                                     )
                                 }
                             }
@@ -174,7 +178,7 @@ fun TaskRow(
                 ) {
                     Tag(data.status.text, selectTagColor(data.status))
                     Spacer(modifier = Modifier.size(3.dp))
-                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 12.sp)
+                    Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
                 }
                 Text(
                     text = data.title,
@@ -190,7 +194,7 @@ fun TaskRow(
                 Text(
                     text = "${data.dueDate} ${showTimeRemain()}",
                     fontWeight = FontWeight.Light,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     modifier = Modifier.placeholder(
                         visible = isLoading,
                         highlight = PlaceholderHighlight.shimmer()
@@ -241,7 +245,7 @@ fun CircularProgressWithPercent(
         )
         Text(
             text = progress.percent,
-            fontSize = 12.sp
+            fontSize = 13.sp
         )
     }
 }
@@ -272,7 +276,6 @@ fun FilterItem(
         onClick = { onClick(taskStatus) },
         border = ChipDefaults.outlinedBorder,
         colors = ChipDefaults.filterChipColors(
-            backgroundColor = Color.Transparent,
             selectedBackgroundColor = MaterialTheme.colors.secondaryVariant,
             selectedContentColor = Color.White
         ),
