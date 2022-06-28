@@ -3,18 +3,17 @@ package com.prdcv.ehust.viewmodel
 import android.content.SharedPreferences
 import android.view.View
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.model.*
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
@@ -28,15 +27,31 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 import javax.inject.Inject
+
 data class ProjectsScreenState(
-    val projects: List<ClassStudent> = emptyList()
-)
+    val projects: SnapshotStateList<ClassStudent> = mutableStateListOf(),
+    val refreshState: SwipeRefreshState = SwipeRefreshState(false)
+) {
+    fun addProjectListFromState(state: State<List<ClassStudent>>) {
+        when (val _state = state) {
+            is State.Error -> {}
+            State.Loading -> refreshState.isRefreshing = true
+            is State.Success -> {
+                projects.apply {
+                    clear()
+                    addAll(_state.data)
+                }
+                refreshState.isRefreshing = false
+            }
+        }
+    }
+}
 
 @HiltViewModel
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val sharedPreferences: SharedPreferences,
-    val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository
 ) : ViewModel() {
     private var _profileState = SingleLiveEvent<State<User>>()
     val profileState get() = _profileState
@@ -50,14 +65,13 @@ class ShareViewModel @Inject constructor(
 
     var user: User? = null
 
-    private var _token = SingleLiveEvent<State<Map<String,Any>>>()
+    private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token
 
     /**
      * ui state cho projects screen
      */
-    var uiProjectsState by mutableStateOf(ProjectsScreenState())
-        private set
+    val projectsScreenState = ProjectsScreenState()
 
     private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
     val schedulesState get() = _schedulesState
@@ -70,21 +84,21 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun decodeResponseLogin(hashMap: Map<String,Any>) {
+    fun decodeResponseLogin(hashMap: Map<String, Any>) {
         val token = hashMap["token"] as String
         //save to share preferences
-        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN,token).commit()
+        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN, token).commit()
 
-        val profile = hashMap["profile"] as? Map<String,String>
+        val profile = hashMap["profile"] as? Map<String, String>
         val id = (profile?.get("id") as String).toInt()
         val roleId = convertRole(profile?.get("role_id") as String)
         val fullName = profile?.get("full_name") as? String
-        val grade = profile?.get("grade") as? String?: ""
+        val grade = profile?.get("grade") as? String ?: ""
         val ins = profile?.get("institute_of_management") as? String
         val gender = profile?.get("gender") as? String
-        val course = profile?.get("course") as? String?: ""
-        val email =  profile?.get("email") as? String ?: ""
-        val cardeStatus =  profile?.get("cadre_status") as? String ?: ""
+        val course = profile?.get("course") as? String ?: ""
+        val email = profile?.get("email") as? String ?: ""
+        val cardeStatus = profile?.get("cadre_status") as? String ?: ""
         val unit = profile?.get("unit") as? String ?: ""
         val imageBg = profile?.get("image_background") as? String
         val imageAva = profile?.get("image_avatar") as? String
@@ -134,18 +148,10 @@ class ShareViewModel @Inject constructor(
     }
 
     fun findAllProjectsById() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                userRepository.findAllProjectsByStudentId(user?.id!!).collect {
-                    when(val state = it){
-                        is State.Success -> {
-                            uiProjectsState = uiProjectsState.copy(projects = state.data)
-                        }
-                        else-> {}
-                    }
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.findAllProjectsByStudentId(user?.id!!).collect {
+                projectsScreenState.addProjectListFromState(it)
             }
-
         }
     }
 
@@ -160,18 +166,15 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent>{
+    fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent> {
         val today = LocalDate.now()
         val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
 
         return schedules.filter {
-            val dateStudy = it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            dateStudy ==  dateOfWeek
+            val dateStudy =
+                it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            dateStudy == dateOfWeek
         }
-    }
-
-    fun callbackGetData() {
-        findAllProjectsById()
     }
 
 }

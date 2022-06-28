@@ -33,11 +33,9 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
             findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
         }
         binding.viewStudent.cdProject.setOnClickListener {
-            shareViewModel.findAllProjectsById()
             findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
         }
         binding.tbHome.iconRightId.setOnClickListener {
-            shareViewModel.getNews()
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
         binding.viewStudent.cdSchedule.setOnClickListener {
@@ -73,11 +71,9 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
             findNavController().navigate(R.id.action_mainFragment_to_scheduleFragment)
         }
         binding.viewTeacher.cdNews.setOnClickListener {
-            shareViewModel.getNews()
             findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
         }
         binding.viewTeacher.cdProject.setOnClickListener {
-            shareViewModel.findAllProjectsById()
             findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
         }
     }
