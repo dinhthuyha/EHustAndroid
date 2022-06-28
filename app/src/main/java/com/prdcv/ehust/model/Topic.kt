@@ -1,7 +1,7 @@
 package com.prdcv.ehust.model
 
 import com.google.gson.annotations.SerializedName
-import com.hadt.ehust.model.StatusTopic
+import com.hadt.ehust.model.TopicStatus
 
 data class Topic(
     val id: Int? = null,
@@ -15,7 +15,7 @@ data class Topic(
     val idTeacher: Int? = null,
 
     @SerializedName(value = "status")
-    val status: StatusTopic? = null,
+    val status: TopicStatus? = null,
 
     @SerializedName(value = "id_subject")
     val subject: Subject? = null

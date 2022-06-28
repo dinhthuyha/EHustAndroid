@@ -1,6 +1,6 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.StatusTopic
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
@@ -81,7 +81,7 @@ interface EHustService {
     @PUT("updatetopic/{id_topic}")
     suspend fun updateStatusAndIdStudentTopic(
         @Path("id_topic") id: Int,
-        @Field(value = "status") status: StatusTopic,
+        @Field(value = "status") status: TopicStatus,
         @Field(value = "id_student") idStudent: Int
     ): Response<ResponseBody>
 

@@ -1,6 +1,6 @@
 package com.hadt.ehust.model
 
-enum class StatusTopic {
+enum class TopicStatus {
      REQUEST, ACCEPT, REQUESTING, DELETE;
 
 //    companion object {

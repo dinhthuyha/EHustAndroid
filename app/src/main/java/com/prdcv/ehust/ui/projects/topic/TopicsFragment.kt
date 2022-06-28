@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.viewmodel.ProjectsViewModel
+import com.prdcv.ehust.viewmodel.TopicsViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -20,7 +20,7 @@ import com.prdcv.ehust.viewmodel.ProjectsViewModel
  */
 class TopicsFragment : BaseFragment() {
 
-    private val topicViewModel: ProjectsViewModel by activityViewModels()
+    private val topicViewModel: TopicsViewModel by activityViewModels()
     private val arg: TopicsFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -28,14 +28,18 @@ class TopicsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        topicViewModel.apply {
+            mProject = arg.project
+            mRole = shareViewModel.user?.roleId!!
+            mUserId = shareViewModel.user?.id ?: 0
+        }
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DefaultPreview(
-                    shareViewModel.user?.id ?: 0,
-                    shareViewModel.user?.roleId!!,
+                TopicScreen(
                     findNavController(),
-                    arg.project,
                     topicViewModel
                 )
             }

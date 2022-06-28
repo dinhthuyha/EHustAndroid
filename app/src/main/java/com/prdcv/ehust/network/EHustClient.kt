@@ -1,6 +1,6 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.StatusTopic
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
@@ -70,7 +70,7 @@ class EHustClient @Inject constructor(
 
     suspend fun updateTopicTable(
         idTopic: Int,
-        status: StatusTopic,
+        status: TopicStatus,
         idStudent: Int
     ) = ehustService.updateStatusAndIdStudentTopic(idTopic, status, idStudent)
 
