@@ -3,12 +3,7 @@ package com.prdcv.ehust.ui.projects
 import android.annotation.SuppressLint
 import android.os.Parcelable
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
@@ -20,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,11 +27,7 @@ import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ShareViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import kotlinx.parcelize.Parcelize
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -86,7 +78,7 @@ fun DefaultPreview(
                             }
 
                         }
-                        
+
                     }
                 }
             }
@@ -95,9 +87,9 @@ fun DefaultPreview(
     }
 }
 
-
+@Preview(showBackground = true)
 @Composable
-fun ProjectStudent(data: ClassStudent, navController: NavController) {
+fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavController? = null) {
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -106,7 +98,7 @@ fun ProjectStudent(data: ClassStudent, navController: NavController) {
             .fillMaxWidth()
             .clickable {
                 data.nameTeacher?.let {
-                    navController.navigate(
+                    navController?.navigate(
                         ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(
                             ProjectArg(
                                 nameTeacher = it, idProject = data.codeCourse
@@ -114,8 +106,6 @@ fun ProjectStudent(data: ClassStudent, navController: NavController) {
                         )
                     )
                 }
-
-
             }
     ) {
         Column(
@@ -183,6 +173,14 @@ fun ProjectTeacher(
         }
     }
 }
+
+private val classStudentPreview = ClassStudent(
+    codeClass = 1234,
+    semester = 20221,
+    name = "Do an ky su",
+    nameTeacher = "Ho Ten Giang Vien",
+    codeCourse = "12345"
+)
 
 @Parcelize
 data class ProjectArg(

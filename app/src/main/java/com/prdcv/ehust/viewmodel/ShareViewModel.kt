@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -46,8 +45,8 @@ class ShareViewModel @Inject constructor(
     val listUser get() = _listUser
     var loadingVisibility = ObservableInt()
 
-    private var _newsState = SingleLiveEvent<State<List<News>>>()
-    val newsState get() = _newsState
+    private var _newsState = MutableStateFlow<State<List<News>>>(State.Loading)
+    val newsState: StateFlow<State<List<News>>> get() = _newsState
 
     var user: User? = null
 
@@ -114,6 +113,7 @@ class ShareViewModel @Inject constructor(
             else -> Role.ROLE_UNKNOWN
         }
     }
+
     fun getListStudentInClass() {
         viewModelScope.launch {
             userRepository.getListStudentInClass(user?.grade!!).collect {
@@ -126,14 +126,10 @@ class ShareViewModel @Inject constructor(
     }
 
     fun getNews() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                newsRepository.getNews().collect {
-                    _newsState.postValue(it)
-
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            newsRepository.getNews().collect {
+                _newsState.emit(it)
             }
-
         }
     }
 
@@ -152,6 +148,7 @@ class ShareViewModel @Inject constructor(
 
         }
     }
+
     fun findAllSchedules() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
