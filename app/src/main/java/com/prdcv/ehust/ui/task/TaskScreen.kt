@@ -36,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.material.chip.Chip
+import com.google.gson.annotations.SerializedName
 import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
@@ -132,7 +133,7 @@ fun TaskScreenPreview(navController: NavController,idTopic: Int) {
                                     modifier = Modifier
                                         .animateItemPlacement()
                                         .clickable {
-                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment())
+                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(t.id))
                                         })
                             }
                         }
@@ -316,6 +317,7 @@ data class TaskData(
     val title: String = "Tạo màn hình quản lý task",
     val status: String = "In progress",
     val progress: Float = 0.8f,
+    @SerializedName("due_date")
     val dueDate: LocalDate
 )
 

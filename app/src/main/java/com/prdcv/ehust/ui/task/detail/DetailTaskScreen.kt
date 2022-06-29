@@ -1,19 +1,29 @@
 package com.prdcv.ehust.ui.task.detail
 
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +34,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -35,6 +46,7 @@ import androidx.compose.material.icons.filled.Edit
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,49 +58,140 @@ import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import com.prdcv.ehust.ui.compose.Button
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 
 import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.prdcv.ehust.R
+import com.prdcv.ehust.model.TaskDetail
+import com.prdcv.ehust.ui.captionTextStyle
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.profile.ToolBar
+import kotlinx.coroutines.delay
 
-
+lateinit var navController: NavController
 
 @Composable
 fun DetailTask(
     onDateSelectionClicked: () -> Unit,
-    mainViewModel: DetailTaskViewModel
+    mainViewModel: DetailTaskViewModel,
+    id: Int,
+    mNavController: NavController
 ) {
+    LaunchedEffect(key1 = Unit) {
+        mainViewModel.getDetailTask(id)
+    }
+    val uiState = mainViewModel.uiTaskState.taskDetailState
+
     DefaultTheme {
-        Scaffold(topBar = { ToolBar() }, bottomBar = { BottomBarComment()}) {
-            Column(horizontalAlignment = Alignment.Start, modifier = Modifier.verticalScroll(rememberScrollState())) {
-                RowDescription()
-                RowTaskSetup(viewModel = mainViewModel, onDateSelectionClicked)
-                RowAttachFile()
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = "Comments",
-                    Modifier.padding(start = 25.dp, bottom = 12.dp),
-                    color = Black,
-                    fontWeight = FontWeight.Bold
-                )
-                RowComment()
-                RowComment()
-                RowComment()
-                RowComment()
-                RowComment()
+
+        Scaffold(topBar = { ToolBar(uiState.title) }, bottomBar = { BottomBarComment() }) {
+            if (uiState.id == null) {
+                LoadingAnimation()
+            }else{
+                navController = mNavController
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    RowDescription(description = uiState.description)
+                    RowTaskSetup(task = uiState, viewModel = mainViewModel, onDateSelectionClicked)
+                    RowAttachFile()
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Comments",
+                        Modifier.padding(start = 25.dp, bottom = 12.dp),
+                        color = Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                    RowComment()
+                    RowComment()
+                    RowComment()
+                    RowComment()
+                    RowComment()
+                }
             }
+
+
 
         }
     }
+}
+
+@Composable
+fun LoadingAnimation(
+    modifier: Modifier = Modifier,
+    circleSize: Dp = 10.dp,
+    circleColor: Color = MaterialTheme.colors.primary,
+    spaceBetween: Dp = 8.dp,
+    travelDistance: Dp = 8.dp
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        val circles = listOf(
+            remember { Animatable(initialValue = 0f) },
+            remember { Animatable(initialValue = 0f) },
+            remember { Animatable(initialValue = 0f) }
+        )
+
+        circles.forEachIndexed { index, animatable ->
+            LaunchedEffect(key1 = animatable) {
+                delay(index * 100L)
+                animatable.animateTo(
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = keyframes {
+                            durationMillis = 1200
+                            0.0f at 0 with LinearOutSlowInEasing
+                            1.0f at 300 with LinearOutSlowInEasing
+                            0.0f at 600 with LinearOutSlowInEasing
+                            0.0f at 1200 with LinearOutSlowInEasing
+                        },
+                        repeatMode = RepeatMode.Restart
+                    )
+                )
+            }
+        }
+
+        val circleValues = circles.map { it.value }
+        val distance = with(LocalDensity.current) { travelDistance.toPx() }
+
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(spaceBetween)
+        ) {
+            circleValues.forEach { value ->
+                Box(
+                    modifier = Modifier
+                        .size(circleSize)
+                        .graphicsLayer {
+                            translationY = -value * distance
+                        }
+                        .background(
+                            color = circleColor,
+                            shape = CircleShape
+                        )
+                )
+            }
+        }
+    }
+
+
 }
 
 @Composable
@@ -110,7 +213,7 @@ fun RowAttachFile() {
     Row(modifier = Modifier.padding(start = 25.dp)) {
         Button(
             onClick = { /*TODO*/ },
-            content = { Text(text = "Add file", fontSize = 13.sp) },
+            content = { Text(text = "Add file", style = MaterialTheme.typography.button) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Button,
                 contentColor = White
@@ -126,19 +229,25 @@ fun AttachFile() {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(start = 30.dp, end = 10.dp, bottom = 8.dp,
+        modifier = Modifier.padding(
+            start = 30.dp, end = 10.dp, bottom = 8.dp,
         )
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = "kindpng_3651626.png", fontWeight = FontWeight.W400, fontSize = 13.sp)
+        Text(text = "kindpng_3651626.png", style = MaterialTheme.typography.caption)
 
     }
 }
-
+ @Preview(showBackground = true)
 @Composable
-fun RowTaskSetup(viewModel: DetailTaskViewModel, onDateSelectionClicked: () -> Unit) {
-    val selectedDates = viewModel?.calendarState.calendarUiState.value.selectedDatesFormatted
+fun RowTaskSetup(
+    task: TaskDetail= TaskDetail(),
+    viewModel: DetailTaskViewModel? = null,
+    onDateSelectionClicked: () -> Unit = {}
+) {
+
+    val selectedDates = viewModel?.calendarState?.calendarUiState?.value?.selectedDatesFormatted
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -156,13 +265,55 @@ fun RowTaskSetup(viewModel: DetailTaskViewModel, onDateSelectionClicked: () -> U
 
         ) {
             Column {
-                DatesUserInput(datesSelected = selectedDates, onDateSelectionClicked = DateContentUpdates(
-                    onDateSelectionClicked = onDateSelectionClicked,
-                ).onDateSelectionClicked)
-                RowElementSetupTask(title = "Estimate time", idIcon = R.drawable.ic_time, "Hours")
-                RowElementSetupTask(title = "Spend time", idIcon = R.drawable.ic_spendtime,  "Hours")
-                RowElementSetupTask(title = "Done", idIcon = R.drawable.ic_done)
-                RowElementSetupTask(title = "Assignee", idIcon = R.drawable.ic_assignee)
+                DatesUserInput(
+                    cationText = task.selectedDatesFormatted,
+                    datesSelected = selectedDates.toString(),
+                    onDateSelectionClicked = DateContentUpdates(
+                        onDateSelectionClicked = onDateSelectionClicked,
+                    ).onDateSelectionClicked
+                )
+                Row {
+
+                    Column(modifier = Modifier.weight(0.45f), horizontalAlignment = Alignment.Start){
+                        RowElementSetupTask(
+                            task.estimateTime.toString(),
+                            title = "Estimate time",
+                            idIcon = R.drawable.ic_time,
+                            "Hours"
+                            )
+                    }
+
+                    Column(modifier = Modifier.weight(0.55f), horizontalAlignment = Alignment.Start){
+                        RowElementSetupTask(
+                            task.spendTime.toString(),
+                            title = "Spend time",
+                            idIcon = R.drawable.ic_spendtime,
+                            "Hours"
+                        )
+                    }
+
+                }
+                Row(
+
+                ) {
+                    Column(modifier = Modifier.weight(0.45f), horizontalAlignment = Alignment.Start) {
+                        RowElementSetupTask(
+                            task.progress?.percent.toString(),
+                            title = "Done",
+                            idIcon = R.drawable.ic_done,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                   Column(modifier = Modifier.weight(0.55f), horizontalAlignment = Alignment.Start) {
+                       RowElementSetupTask(
+                           "Ngô Ngọc Bảo An",
+                           title = "Assignee",
+                           idIcon = R.drawable.ic_assignee,
+                           modifier = Modifier.fillMaxWidth()
+                       )
+                   }
+
+                }
             }
 
         }
@@ -172,13 +323,22 @@ fun RowTaskSetup(viewModel: DetailTaskViewModel, onDateSelectionClicked: () -> U
 
 
 @Composable
-fun RowElementSetupTask(title: String, idIcon: Int, trailingTitle: String?= null) {
-    var txt = remember { mutableStateOf("") }
-    Row(verticalAlignment = Alignment.CenterVertically) {
+fun RowElementSetupTask(
+    content: String,
+    title: String,
+    idIcon: Int? = null,
+    trailingTitle: String? = null,
+    modifier: Modifier = Modifier
+) {
+    var txt = remember { mutableStateOf(content) }
+    Row( horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
             value = txt.value,
+            maxLines = 1,
             onValueChange = { txt.value = it },
-            modifier = Modifier.defaultMinSize(minHeight = 2.dp),
+            modifier = modifier
+                .width(90.dp)
+                .then(modifier),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Transparent,
                 unfocusedBorderColor = Transparent
@@ -189,25 +349,37 @@ fun RowElementSetupTask(title: String, idIcon: Int, trailingTitle: String?= null
                     text = title,
                     color = Gray,
                     fontWeight = FontWeight.W400,
-                    fontSize = 13.sp
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.offset(y=(5).dp)
                 )
             },
             leadingIcon = {
-                Icon(
-                    painter = painterResource(id = idIcon),
+                idIcon?.let { Icon(
+                    painter = painterResource(id = it),
                     contentDescription = "",
                     modifier = Modifier.size(width = 25.dp, height = 25.dp),
                     tint = DarkGray
-                )
+                ) }
             },
         )
-        Text(text = trailingTitle?: "", fontWeight = FontWeight.W400, fontSize = 12.sp)
+        trailingTitle?.let {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = 2.dp)
+                    .offset(y = (-2).dp),
+                text = trailingTitle,
+                style =  MaterialTheme.typography.caption
+            )
+        }
+
+
     }
 }
 
-@Preview
+
 @Composable
-fun RowDescription() {
+fun RowDescription(description: String?) {
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -225,7 +397,7 @@ fun RowDescription() {
 
         ) {
             OutlinedTextField(
-                value = "The top app bar provides content and actions related to the current screen. It’s used for branding, screen titles, navigation, and actions.",
+                value = description.toString(),
                 onValueChange = {},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Transparent,
@@ -243,39 +415,46 @@ fun RowDescription() {
 @Composable
 fun RowComment() {
 
-        Row(
-            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp, start = 15.dp),
+    Row(
+        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp, start = 15.dp),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_ava),
+            contentDescription = "",
+            modifier = Modifier
+                .size(width = 35.dp, height = 35.dp),
+            tint = DarkGray
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(
+            modifier = Modifier
+                .padding(end = 20.dp, bottom = 5.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_ava),
-                contentDescription = "",
-                modifier = Modifier
-                    .size(width = 35.dp, height = 35.dp)
-                ,
-                tint = DarkGray
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(modifier = Modifier
-               .padding( end = 20.dp, bottom = 5.dp)) {
-                Text(text = "Hà Đinh",fontWeight = FontWeight.W400, fontSize = 13.sp, color = Button)
-                Text(text = "Chinh lai table User", fontWeight = FontWeight.W400, fontSize = 13.sp)
-            }
-
+            Text(text = "Hà Đinh", fontWeight = FontWeight.W400, style = MaterialTheme.typography.caption, color = Button)
+            Text(text = "Chinh lai table User", style = MaterialTheme.typography.h3)
         }
+
+    }
 
 
 }
 
-@Preview
+
 @Composable
-fun ToolBar() {
+fun ToolBar(title: String?) {
+
     TopAppBar(
         title = {
-            Text(text = "Thiết kế database")
+            Text(text = title?:"Detail task")
         },
         navigationIcon = {
-            IconButton(onClick = { }) {
-                Icon(imageVector = Icons.Filled.Close, contentDescription = "Menu Btn")
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Menu Btn",
+                    modifier = Modifier.clickable {
+                        (navController.popBackStack())
+                    })
             }
         },
         backgroundColor = colorResource(id = R.color.text_color),
@@ -326,7 +505,7 @@ fun BottomBarComment() {
                         text = "Comment ...",
                         color = Gray,
                         fontWeight = FontWeight.W400,
-                        fontSize = 13.sp
+                        style = MaterialTheme.typography.h3
                     )
                 },
 
@@ -338,4 +517,5 @@ fun BottomBarComment() {
 
 }
 
-
+private val Float.percent: String
+    get() = "${(this * 100).toInt()}%"

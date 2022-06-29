@@ -113,5 +113,9 @@
     <fragment
         android:id="@+id/detailTaskFragment"
         android:name="com.prdcv.ehust.ui.task.detail.DetailTaskFragment"
-        android:label="DetailTaskFragment" />
+        android:label="DetailTaskFragment" >
+        <argument
+            android:name="idTask"
+            app:argType="integer" />
+    </fragment>
 </navigation>

@@ -77,4 +77,6 @@ class EHustClient @Inject constructor(
     suspend fun findAllTaskByIdTopic(
         idTopic: Int
     ) = ehustService.findAllTaskByIdTopic(idTopic)
+
+    suspend fun getDetailTask(id: Int) = ehustService.getDetailTask(id)
 }
