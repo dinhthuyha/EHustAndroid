@@ -9,19 +9,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,66 +24,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.android.material.chip.Chip
-import com.google.gson.annotations.SerializedName
-import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.R
-import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.Period
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
-
 @Composable
-fun TaskScreenPreview(navController: NavController,idTopic: Int) {
+fun TaskScreenPreview(navController: NavController, idTopic: Int) {
     val viewModel: TaskViewModel = viewModel()
+    val uiState = viewModel.uiState
 
     LaunchedEffect(key1 = Unit) {
         viewModel.findAllTaskByIdTopic(idTopic)
     }
-    val taskState by viewModel.taskState.collectAsState()
-    val state = remember { mutableStateOf(listOf<TaskData>()) }
 
-    when (taskState) {
-        is State.Success -> {
-            state.value = (taskState as State.Success).data
-        }
-        is State.Loading -> {}
-        is State.Error -> {}
-    }
-
-
-
-    fun filterByStatus(status: String?) {
-        state.value = status?.let { s ->
-            (taskState as State.Success).data.filter { it.status == s }
-        } ?: (taskState as State.Success).data
-    }
-
-    val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetSate = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-
-    fun refreshTaskList() {
-        refreshingState.isRefreshing = true
-        coroutineScope.launch {
-            delay(3000)
-            refreshingState.isRefreshing = false
-        }
-    }
-
 
     DefaultTheme {
         ModalBottomSheetLayout(
@@ -111,30 +73,34 @@ fun TaskScreenPreview(navController: NavController,idTopic: Int) {
             Scaffold(
                 floatingActionButton = { FloatButton { coroutineScope.launch { bottomSheetSate.show() } } },
                 topBar = { ToolBar("My tasks") },
-                bottomBar = { BottomBar() },
-                isFloatingActionButtonDocked = true,
-                floatingActionButtonPosition = FabPosition.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    ChipGroup(action = ::filterByStatus)
+                    ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
                     SwipeRefresh(
-                        state = refreshingState,
-                        onRefresh = ::refreshTaskList
+                        state = uiState.refreshState,
+                        onRefresh = { viewModel.findAllTaskByIdTopic(idTopic) }
                     ) {
                         LazyColumn(
                             Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .padding(10.dp)
+                                .fillMaxSize()
+                                .padding(start = 5.dp, end = 5.dp)
                         ) {
-                            items(state.value, key = { it.id }) { t ->
-                                Task(
-                                    data = t,
-                                    modifier = Modifier
-                                        .animateItemPlacement()
-                                        .clickable {
-                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(t.id))
-                                        })
+                            if (uiState.refreshState.isRefreshing) {
+                                items(7) {
+                                    TaskRow(isLoading = true)
+                                }
+                            } else {
+                                items(items = uiState.filteredTaskList, key = { it.id }) { item ->
+                                    TaskRow(
+                                        data = item,
+                                        modifier = Modifier
+                                            .animateItemPlacement()
+                                            .padding(it)
+                                            .clickable {
+                                                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(item.id))
+                                            }
+                                    )
+                                }
                             }
                         }
                     }
@@ -144,31 +110,43 @@ fun TaskScreenPreview(navController: NavController,idTopic: Int) {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun ChipGroup(action: (String?) -> Unit) {
-    val selectChips = remember { mutableStateOf(Chips.ALL.tabName) }
+fun ChipGroup(
+    selectedTaskStatus: MutableState<TaskStatus> = mutableStateOf(TaskStatus.FINISHED),
+    onClick: (TaskStatus?) -> Unit = {}
+) {
     LazyRow(
-        Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp)
+        Modifier.padding(all = 5.dp)
     ) {
         item {
-            FilterItem("New", selectChips) { action(it) }
-            FilterItem("In progress", selectChips) { action(it) }
-            FilterItem("Finished", selectChips) { action(it) }
-
-            FilterItem("Canceled", selectChips) { action(it) }
+            FilterItem(TaskStatus.NEW, selectedTaskStatus, onClick)
+            FilterItem(TaskStatus.IN_PROGRESS, selectedTaskStatus, onClick)
+            FilterItem(TaskStatus.FINISHED, selectedTaskStatus, onClick)
+            FilterItem(TaskStatus.CANCELED, selectedTaskStatus, onClick)
         }
     }
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun Task(data: TaskData, modifier: Modifier) {
+private fun TaskRowLoading() {
+    TaskRow(isLoading = true)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TaskRow(
+    data: TaskData = TaskData(),
+    isLoading: Boolean = false,
+    modifier: Modifier = Modifier
+) {
     fun showTimeRemain(): String {
-        if (data.status == "In progress") {
+        if (data.status == TaskStatus.IN_PROGRESS) {
             val today = LocalDate.now()
             val dueDate = data.dueDate
             val dateRemain = Period.between(today, dueDate).days
-            return "(in ${dateRemain.toString()} day)"
+            return "(in $dateRemain days)"
         }
 
         return ""
@@ -191,42 +169,51 @@ fun Task(data: TaskData, modifier: Modifier) {
                     .width(IntrinsicSize.Max)
                     .padding(10.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Tag(data.status)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                ) {
+                    Tag(data.status.text, selectTagColor(data.status))
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
-
                 }
                 Text(
                     text = data.title,
                     fontSize = 15.sp,
-                    modifier = Modifier.padding(bottom = 20.dp, top = 2.dp)
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp, top = 2.dp)
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
                 )
                 Text(
                     text = "${data.dueDate} ${showTimeRemain()}",
                     fontWeight = FontWeight.Light,
-                    fontSize = 13.sp
+                    fontSize = 13.sp,
+                    modifier = Modifier.placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
                 )
             }
-            CircularProgressWithPercent(progress = data.progress)
+            CircularProgressWithPercent(progress = data.progress, isLoading = isLoading)
         }
     }
 }
 
 @Composable
-fun Tag(status: String) {
+fun Tag(status: String, backgroundColor: Color = Color.LightGray) {
     Text(
         text = status,
         fontSize = 10.sp,
         modifier = Modifier
             .background(
-                color = when (status) {
-                    "New" -> TagNew
-                    "In progress" -> TagInProgress
-                    "Done" -> TagDone
-                    "Finished" -> TagFinished
-                    else -> Color.Gray
-                },
+                color = backgroundColor,
                 shape = RoundedCornerShape(3.dp)
             )
             .padding(2.dp)
@@ -234,19 +221,28 @@ fun Tag(status: String) {
 }
 
 @Composable
-fun CircularProgressWithPercent(progress: Float) {
+fun CircularProgressWithPercent(
+    progress: Float,
+    color: Color = MaterialTheme.colors.secondaryVariant,
+    isLoading: Boolean = false
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .padding(all = 10.dp)
             .size(40.dp)
+            .placeholder(visible = isLoading, highlight = PlaceholderHighlight.shimmer())
     ) {
         CircularProgressIndicator(
             progress = 1f,
             strokeWidth = 2.dp,
             color = Color.LightGray
         )
-        CircularProgressIndicator(progress = progress, strokeWidth = 2.dp)
+        CircularProgressIndicator(
+            progress = progress,
+            strokeWidth = 2.dp,
+            color = color
+        )
         Text(
             text = progress.percent,
             fontSize = 13.sp
@@ -268,33 +264,16 @@ fun FloatButton(action: () -> Unit) {
     }
 }
 
-@Composable
-fun BottomBar() {
-    BottomAppBar(
-        cutoutShape = RoundedCornerShape(50),
-        backgroundColor = colorResource(id = R.color.text_color)
-    ) {
-
-    }
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterItem(text: String, selectChip: MutableState<String>, onClick: (String?) -> Unit) {
-    val state = remember { mutableStateOf(false) }
-    state.value = selectChip.value == text
-
+fun FilterItem(
+    taskStatus: TaskStatus,
+    selectedTaskStatus: MutableState<TaskStatus>,
+    onClick: (TaskStatus?) -> Unit
+) {
     FilterChip(
-        selected = state.value,
-        onClick = {
-            state.value = !state.value
-            if (state.value) {
-                selectChip.value = text
-
-                onClick(text)
-            } else onClick(null)
-        },
-
+        selected = selectedTaskStatus.value == taskStatus,
+        onClick = { onClick(taskStatus) },
         border = ChipDefaults.outlinedBorder,
         colors = ChipDefaults.filterChipColors(
             selectedBackgroundColor = MaterialTheme.colors.secondaryVariant,
@@ -308,26 +287,19 @@ fun FilterItem(text: String, selectChip: MutableState<String>, onClick: (String?
             )
         }, modifier = Modifier.padding(end = 10.dp)
     ) {
-        Text(text = text)
+        Text(text = taskStatus.text)
     }
 }
 
-data class TaskData(
-    val id: Int = 23851,
-    val title: String = "Tạo màn hình quản lý task",
-    val status: String = "In progress",
-    val progress: Float = 0.8f,
-    @SerializedName("due_date")
-    val dueDate: LocalDate
-)
-
-enum class Chips(val tabName: String) {
-    NEW("New"),
-    IN_PROGRESS("In progress"),
-    FINISHED("Finished"),
-    CANCELED("Canceled"),
-    ALL("all")
+private fun selectTagColor(taskStatus: TaskStatus): Color {
+    return when (taskStatus) {
+        TaskStatus.NEW -> TagNew
+        TaskStatus.IN_PROGRESS -> TagInProgress
+        TaskStatus.FINISHED -> TagFinished
+        else -> Color.LightGray
+    }
 }
+
 //private val tasks = listOf(
 //    TaskData(),
 //    TaskData(
