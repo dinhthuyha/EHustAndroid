@@ -46,7 +46,7 @@ data class TopicScreenState(
                         return
                     }
 
-                _topics.filter { it.status == TopicStatus.REQUEST }
+                _topics.filter { it.status == TopicStatus.REQUEST || it.status == TopicStatus.REQUESTING }
                     .let {
                         topics.addAll(it)
                         return

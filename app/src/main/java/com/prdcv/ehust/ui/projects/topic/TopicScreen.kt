@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,6 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
-import com.prdcv.ehust.ui.task.FloatButton
 import com.prdcv.ehust.viewmodel.TopicsViewModel
 import kotlinx.coroutines.launch
 
@@ -58,10 +56,19 @@ fun TopicScreen(
         ModalBottomSheetLayout(
             sheetShape = Shapes.small,
             sheetContent = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
-                    OutlinedTextField(value = "", onValueChange = {}, label = { Text("ten de tai") })
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = {},
+                        label = { Text("ten de tai") })
                     OutlinedTextField(value = "", onValueChange = {}, label = { Text("noi dung") })
-                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Button(onClick = { /*TODO*/ }) {
                             Text(text = "Submit")
                         }
@@ -141,7 +148,7 @@ fun TopicStudentRow(
             TitleTopic(topic = topic)
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 FilterItemStudent(
-                    text = "${topic.status?.name}"
+                    status = topic.status
                 ) {
                     if (topic.status == TopicStatus.REQUEST)
                         viewModel?.updateTopicStatus(topic.id!!, TopicStatus.REQUESTING)
@@ -292,19 +299,13 @@ fun ShowNameStudent(topic: Topic) {
 }
 
 @Composable
-fun FilterItemStudent(text: String, callback: () -> Unit) {
-    val content = remember { mutableStateOf(text) }
-
-    Button(onClick = {
-        if (text == TopicStatus.REQUEST.name) {
-            callback.invoke()
-            content.value = TopicStatus.REQUESTING.name
-        }
-
-    }, enabled = text != TopicStatus.ACCEPT.name)
-    {
+fun FilterItemStudent(status: TopicStatus?, callback: () -> Unit) {
+    Button(
+        onClick = callback,
+        enabled = status != TopicStatus.ACCEPT && status != TopicStatus.REQUESTING
+    ) {
         Text(
-            text = content.value,
+            text = status?.name ?: "UNKNOWN",
             fontSize = 11.sp
         )
     }
