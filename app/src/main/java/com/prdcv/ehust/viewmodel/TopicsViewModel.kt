@@ -26,7 +26,7 @@ data class TopicScreenState(
 ) {
     fun addTopicsFromState(state: State<List<Topic>>) {
         when (val _state = state) {
-            is State.Error -> {}
+            is State.Error -> refreshState.isRefreshing = false
             State.Loading -> refreshState.isRefreshing = true
             is State.Success -> {
                 _topics = _state.data

@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,9 +24,14 @@ import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.Shapes
+import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.ui.task.FloatButton
 import com.prdcv.ehust.viewmodel.TopicsViewModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun TopicScreen(
@@ -41,31 +47,65 @@ fun TopicScreen(
         updateTopics()
     }
 
+    val bottomSheetSate = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true
+    )
+    val coroutineScope = rememberCoroutineScope()
+
     DefaultTheme {
-        Scaffold(topBar = { ToolBar("Đề tài") }) {
-            SwipeRefresh(
-                state = uiState.refreshState,
-                onRefresh = updateTopics
+
+        ModalBottomSheetLayout(
+            sheetShape = Shapes.small,
+            sheetContent = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
+                    OutlinedTextField(value = "", onValueChange = {}, label = { Text("ten de tai") })
+                    OutlinedTextField(value = "", onValueChange = {}, label = { Text("noi dung") })
+                    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                        Button(onClick = { /*TODO*/ }) {
+                            Text(text = "Submit")
+                        }
+                        Button(onClick = { /*TODO*/ }) {
+                            Text(text = "Cancel")
+                        }
+                    }
+                }
+            },
+            sheetState = bottomSheetSate
+        ) {
+
+            Scaffold(
+                topBar = { ToolBar("Đề tài") },
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp)
-                    ) {
-                        when (viewModel.mRole) {
-                            Role.ROLE_TEACHER -> {
-                                items(items = uiState.topics) {
-                                    TopicTeacherRow(it, navController, viewModel)
+                SwipeRefresh(
+                    state = uiState.refreshState,
+                    onRefresh = updateTopics
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                        ) {
+                            when (viewModel.mRole) {
+                                Role.ROLE_TEACHER -> {
+                                    items(items = uiState.topics) {
+                                        TopicTeacherRow(it, navController, viewModel)
+                                    }
                                 }
-                            }
-                            Role.ROLE_STUDENT -> {
-                                items(items = uiState.topics) {
-                                    //update status, id sv
-                                    TopicStudentRow(it, viewModel, navController)
+                                Role.ROLE_STUDENT -> {
+                                    items(items = uiState.topics) {
+                                        //update status, id sv
+                                        TopicStudentRow(it, viewModel, navController)
+                                    }
+                                    item {
+                                        TopicSuggestionRow {
+                                            coroutineScope.launch { bottomSheetSate.show() }
+                                        }
+                                    }
                                 }
+                                else -> {}
                             }
-                            else -> {}
                         }
                     }
                 }
@@ -139,6 +179,40 @@ fun TopicTeacherRow(
             ShowStatusTopic(topic = topic, viewModel) {}
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopicSuggestionRow(onClick: () -> Unit = {}) {
+    Card(
+        elevation = 0.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .dashedBorder(2.dp, Color.LightGray, MaterialTheme.shapes.medium, 8.dp, 5.dp)
+            .clickable {}
+    ) {
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(10.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Đề xuất đề tài", color = Color.Gray, fontSize = 17.sp)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.padding(5.dp)
+                )
+            }
+        }
     }
 }
 
