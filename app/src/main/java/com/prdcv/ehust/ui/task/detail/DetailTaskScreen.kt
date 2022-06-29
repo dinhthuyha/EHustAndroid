@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,6 +47,7 @@ import androidx.compose.material.icons.filled.Edit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -94,10 +95,15 @@ fun DetailTask(
         mainViewModel.getDetailTask(id)
     }
     val uiState = mainViewModel.uiTaskState.taskDetailState
+    val readOnly = remember { mutableStateOf(true) }
 
     DefaultTheme {
-
-        Scaffold(topBar = { ToolBar(uiState.title) }, bottomBar = { BottomBarComment() }) {
+        Scaffold(topBar = {
+            ToolBar(
+                title = uiState.title,
+                onCloseScreen = { (navController.popBackStack()) },
+                onEditTask = { readOnly.value = false})
+        }, bottomBar = { BottomBarComment() }) {
             if (uiState.id == null) {
                 LoadingAnimation()
             }else{
@@ -107,7 +113,7 @@ fun DetailTask(
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
                     RowDescription(description = uiState.description)
-                    RowTaskSetup(task = uiState, viewModel = mainViewModel, onDateSelectionClicked)
+                    RowTaskSetup(task = uiState, viewModel = mainViewModel, onDateSelectionClicked, readOnly = readOnly)
                     RowAttachFile()
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
@@ -121,6 +127,21 @@ fun DetailTask(
                     RowComment()
                     RowComment()
                     RowComment()
+                    if (!readOnly.value) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Button(
+                                onClick = { /*TODO*/ },
+                                content = { Text(text = "Submit", style = MaterialTheme.typography.button, color = White) },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Button
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(60.dp))
+                        }
+                    }
                 }
             }
 
@@ -213,10 +234,9 @@ fun RowAttachFile() {
     Row(modifier = Modifier.padding(start = 25.dp)) {
         Button(
             onClick = { /*TODO*/ },
-            content = { Text(text = "Add file", style = MaterialTheme.typography.button) },
+            content = { Text(text = "Add file", style = MaterialTheme.typography.button, color = White) },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Button,
-                contentColor = White
+                backgroundColor = Button
             )
         )
     }
@@ -244,7 +264,8 @@ fun AttachFile() {
 fun RowTaskSetup(
     task: TaskDetail= TaskDetail(),
     viewModel: DetailTaskViewModel? = null,
-    onDateSelectionClicked: () -> Unit = {}
+    onDateSelectionClicked: () -> Unit = {},
+    readOnly: MutableState<Boolean> = mutableStateOf(true)
 ) {
 
     val selectedDates = viewModel?.calendarState?.calendarUiState?.value?.selectedDatesFormatted
@@ -270,7 +291,8 @@ fun RowTaskSetup(
                     datesSelected = selectedDates.toString(),
                     onDateSelectionClicked = DateContentUpdates(
                         onDateSelectionClicked = onDateSelectionClicked,
-                    ).onDateSelectionClicked
+                    ).onDateSelectionClicked,
+                    readOnly =  readOnly
                 )
                 Row {
 
@@ -279,7 +301,8 @@ fun RowTaskSetup(
                             task.estimateTime.toString(),
                             title = "Estimate time",
                             idIcon = R.drawable.ic_time,
-                            "Hours"
+                            "Hours",
+                            readOnly = readOnly
                             )
                     }
 
@@ -293,23 +316,23 @@ fun RowTaskSetup(
                     }
 
                 }
-                Row(
-
-                ) {
+                Row {
                     Column(modifier = Modifier.weight(0.45f), horizontalAlignment = Alignment.Start) {
                         RowElementSetupTask(
                             task.progress?.percent.toString(),
                             title = "Done",
                             idIcon = R.drawable.ic_done,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            readOnly = readOnly
                         )
                     }
                    Column(modifier = Modifier.weight(0.55f), horizontalAlignment = Alignment.Start) {
                        RowElementSetupTask(
-                           "Ngô Ngọc Bảo An",
+                           task.assignee.toString(),
                            title = "Assignee",
                            idIcon = R.drawable.ic_assignee,
-                           modifier = Modifier.fillMaxWidth()
+                           modifier = Modifier.fillMaxWidth(),
+                           readOnly = readOnly
                        )
                    }
 
@@ -328,7 +351,8 @@ fun RowElementSetupTask(
     title: String,
     idIcon: Int? = null,
     trailingTitle: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    readOnly: MutableState<Boolean> = mutableStateOf(true)
 ) {
     var txt = remember { mutableStateOf(content) }
     Row( horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
@@ -361,6 +385,7 @@ fun RowElementSetupTask(
                     tint = DarkGray
                 ) }
             },
+            readOnly = readOnly.value
         )
         trailingTitle?.let {
             Text(
@@ -379,7 +404,7 @@ fun RowElementSetupTask(
 
 
 @Composable
-fun RowDescription(description: String?) {
+fun RowDescription(description: String?, readOnly: MutableState<Boolean> = mutableStateOf(true)) {
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -404,7 +429,7 @@ fun RowDescription(description: String?) {
                     unfocusedBorderColor = Transparent
                 ),
                 textStyle = TextStyle(fontWeight = FontWeight.W400),
-                readOnly = true
+                readOnly = readOnly.value
             )
         }
 
@@ -430,8 +455,8 @@ fun RowComment() {
             modifier = Modifier
                 .padding(end = 20.dp, bottom = 5.dp)
         ) {
-            Text(text = "Hà Đinh", fontWeight = FontWeight.W400, style = MaterialTheme.typography.caption, color = Button)
-            Text(text = "Chinh lai table User", style = MaterialTheme.typography.h3)
+            Text(text = "Hà Đinh", fontWeight = FontWeight.W400, style = MaterialTheme.typography.subtitle1, color = Button)
+            Text(text = "Chinh lai table User", style = MaterialTheme.typography.caption)
         }
 
     }
@@ -441,7 +466,7 @@ fun RowComment() {
 
 
 @Composable
-fun ToolBar(title: String?) {
+fun ToolBar(title: String?, onEditTask: ()-> Unit, onCloseScreen: () -> Unit) {
 
     TopAppBar(
         title = {
@@ -453,7 +478,7 @@ fun ToolBar(title: String?) {
                     imageVector = Icons.Filled.Close,
                     contentDescription = "Menu Btn",
                     modifier = Modifier.clickable {
-                        (navController.popBackStack())
+                        onCloseScreen.invoke()
                     })
             }
         },
@@ -463,7 +488,10 @@ fun ToolBar(title: String?) {
         actions = {
             // RowScope here, so these icons will be placed horizontally
             IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Edit, contentDescription = "Localized description")
+                Icon(Icons.Filled.Edit,
+                    contentDescription = "Localized description",
+                    modifier =  Modifier.clickable { onEditTask.invoke() }
+                )
             }
         }
     )
@@ -478,7 +506,7 @@ fun BottomBarComment() {
         }
 
         Row(
-            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+            modifier = Modifier.padding(top = 3.dp, bottom = 3.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -494,6 +522,7 @@ fun BottomBarComment() {
                 onValueChange = { txt.value = it },
                 modifier = Modifier
                     .border(BorderStroke(0.5.dp, Gray), CircleShape)
+                    .fillMaxHeight()
                     .weight(9f),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Transparent,
