@@ -7,7 +7,11 @@ import androidx.compose.ui.res.stringResource
 import com.prdcv.ehust.R
 
 @Composable
-fun DatesUserInput(cationText: String,datesSelected: String, onDateSelectionClicked: () -> Unit, readOnly: MutableState<Boolean> = mutableStateOf(true)) {
+fun DatesUserInput(cationText: String,
+                   datesSelected: String,
+                   onDateSelectionClicked: () -> Unit,
+                   readOnly: MutableState<Boolean>
+) {
     if (!readOnly.value){
         CraneUserInput(
             onClick = onDateSelectionClicked,
