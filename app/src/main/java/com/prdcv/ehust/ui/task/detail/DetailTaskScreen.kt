@@ -78,6 +78,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prdcv.ehust.R
+import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.DefaultTheme
@@ -96,7 +97,7 @@ fun DetailTask(
     LaunchedEffect(key1 = Unit) {
         mainViewModel.getDetailTask(id)
     }
-    val uiState = mainViewModel.uiTaskState.taskDetailState
+    val uiState = mainViewModel.uiTaskState
     val readOnly = rememberSaveable {
         mutableStateOf(true)
     }
@@ -104,11 +105,11 @@ fun DetailTask(
     DefaultTheme {
         Scaffold(topBar = {
             ToolBar(
-                title = uiState.title,
+                title = uiState.taskDetailState.title,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { readOnly.value = false })
-        }, bottomBar = { BottomBarComment() }) {
-            if (uiState.id == null) {
+        }, bottomBar = { BottomBarComment(mainViewModel) }) {
+            if (uiState.taskDetailState.id == null) {
                 LoadingAnimation()
             } else {
 
@@ -118,12 +119,12 @@ fun DetailTask(
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
                     RowDescription(
-                        des = uiState.description ?: "",
+                        des = uiState.taskDetailState.description ?: "",
                         onTextChanged = mainViewModel::onChangeDescription,
                         readOnly
                     )
                     RowTaskSetup(
-                        task = uiState,
+                        task = uiState.taskDetailState,
                         viewModel = mainViewModel,
                         onDateSelectionClicked,
                         readOnly = readOnly
@@ -136,11 +137,11 @@ fun DetailTask(
                         color = Black,
                         fontWeight = FontWeight.Bold
                     )
-                    RowComment()
-                    RowComment()
-                    RowComment()
-                    RowComment()
-                    RowComment()
+
+                    //TODO: chuyen thanh LazyColumn
+                   uiState.commentState.forEach { RowComment(comment = it) }
+
+
                     if (!readOnly.value) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -514,12 +515,14 @@ fun RowDescription(
     }
 }
 
-@Preview
 @Composable
-fun RowComment() {
+fun RowComment(comment: Comment) {
 
     Row(
-        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp, start = 15.dp),
+        modifier = Modifier
+            .padding(top = 5.dp, bottom = 5.dp, start = 15.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_ava),
@@ -534,12 +537,12 @@ fun RowComment() {
                 .padding(end = 20.dp, bottom = 5.dp)
         ) {
             Text(
-                text = "Hà Đinh",
+                text = comment.nameUserPost?:"",
                 fontWeight = FontWeight.W400,
                 style = MaterialTheme.typography.subtitle1,
                 color = Button
             )
-            Text(text = "Chinh lai table User", style = MaterialTheme.typography.caption)
+            Text(text = comment.content, style = MaterialTheme.typography.caption)
         }
 
     }
@@ -580,9 +583,8 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
     )
 }
 
-@Preview
 @Composable
-fun BottomBarComment() {
+fun BottomBarComment(viewModel: DetailTaskViewModel) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
         val txt = remember {
             mutableStateOf("")
@@ -606,7 +608,7 @@ fun BottomBarComment() {
                 modifier = Modifier
                     .border(BorderStroke(0.5.dp, Gray), CircleShape)
                     .fillMaxHeight()
-                    .weight(9f),
+                    .weight(8f),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Transparent,
                     unfocusedBorderColor = Transparent
@@ -622,6 +624,18 @@ fun BottomBarComment() {
                 },
 
                 )
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_send),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(width = 35.dp, height = 35.dp)
+                    .weight(1f)
+                    .clickable {
+                        viewModel.postComment(content = txt.value)
+                    },
+                tint = DarkGray
+            )
         }
 
 

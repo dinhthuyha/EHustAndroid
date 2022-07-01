@@ -37,7 +37,7 @@ class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val sharedPreferences: SharedPreferences,
     val newsRepository: NewsRepository
-) : ViewModel() {
+) : BaseViewModel() {
     private var _profileState = SingleLiveEvent<State<User>>()
     val profileState get() = _profileState
 
@@ -47,8 +47,6 @@ class ShareViewModel @Inject constructor(
 
     private var _newsState = MutableStateFlow<State<List<News>>>(State.Loading)
     val newsState: StateFlow<State<List<News>>> get() = _newsState
-
-    var user: User? = null
 
     private var _token = SingleLiveEvent<State<Map<String,Any>>>()
     val token get() = _token

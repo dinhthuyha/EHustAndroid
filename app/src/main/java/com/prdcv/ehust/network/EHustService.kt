@@ -13,6 +13,7 @@ import com.prdcv.ehust.model.User
 import com.prdcv.ehust.model.TaskData
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -124,7 +125,7 @@ interface EHustService {
      * post comment
      */
     @POST("postComment")
-    suspend fun postComment(@Field(value = "comment") comment: Comment):Response<ResponseBody>
+    suspend fun postComment(@Body comment: Comment):Response<List<Comment>>
 
     /**
      * delete comment

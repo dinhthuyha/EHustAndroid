@@ -7,17 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.annotation.meta.When
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailTaskViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
-) : ViewModel() {
+    private val taskRepository: TaskRepository,
+    private val commentRepository: CommentRepository
+) : BaseViewModel()  {
     var uiTaskState by mutableStateOf(TaskDetailScreenState())
         private set
 
@@ -28,6 +32,22 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
+    fun postComment(content: String){
+        viewModelScope.launch {
+            val comment = Comment(content = content)
+            commentRepository.postComment(comment).collect{
+                when (val state = it) {
+                    is State.Success -> {
+                        uiTaskState = uiTaskState.copy(commentState = state.data)
+
+                    }
+                    else -> {}
+                }
+                uiTaskState.commentState
+            }
+        }
+    }
+
     fun getDetailTask(idTask: Int) {
         viewModelScope.launch {
             taskRepository.getDetailTask(idTask).collect {
@@ -35,6 +55,14 @@ class DetailTaskViewModel @Inject constructor(
                     is State.Success -> {
                         uiTaskState = uiTaskState.copy(taskDetailState = state.data)
 
+                    }
+                    else -> {}
+                }
+            }
+            commentRepository.findAllCommentByIdTask(idTask).collect{
+                when(val state = it){
+                    is State.Success -> {
+                        uiTaskState = uiTaskState.copy(commentState = state.data)
                     }
                     else -> {}
                 }
