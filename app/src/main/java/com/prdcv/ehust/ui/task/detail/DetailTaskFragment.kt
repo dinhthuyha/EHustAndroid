@@ -16,8 +16,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.calendar.CalendarScreen
-import com.prdcv.ehust.ui.task.NewTaskFragmentArgs
-import com.prdcv.ehust.viewmodel.MainViewModel
+import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 
 class DetailTaskFragment : BaseFragment() {
 

@@ -42,8 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.prdcv.ehust.R
-import com.prdcv.ehust.ui.task.detail.DetailTaskViewModel
-import com.prdcv.ehust.viewmodel.MainViewModel
+import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import java.time.LocalDate
 
 @Composable

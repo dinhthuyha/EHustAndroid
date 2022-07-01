@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui.task.detail
+package com.prdcv.ehust.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
