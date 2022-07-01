@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,6 +49,7 @@ import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 lateinit var navController: NavController
 
@@ -64,6 +66,8 @@ fun DetailTask(
     val readOnly = rememberSaveable {
         mutableStateOf(true)
     }
+    val lazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     DefaultTheme {
         Scaffold(topBar = {
@@ -71,14 +75,26 @@ fun DetailTask(
                 title = uiState.taskDetailState.title,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { readOnly.value = false })
-        }, bottomBar = { BottomBarComment(viewModel) }) {
+        }, bottomBar = {
+            BottomBarComment(onSendClick = {
+                viewModel.postComment(it)
+                coroutineScope.launch {
+                    lazyListState.layoutInfo.run {
+                        while (visibleItemsInfo.last().index < totalItemsCount) {
+                            lazyListState.animateScrollToItem(totalItemsCount)
+                        }
+                    }
+                }
+            })
+        }) {
             if (uiState.taskDetailState.id == null) {
                 LoadingAnimation()
             } else {
                 navController = mNavController
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.padding(it)
+                    modifier = Modifier.padding(it),
+                    state = lazyListState
                 ) {
                     item {
                         RowDescription(
@@ -560,7 +576,7 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun BottomBarComment(viewModel: DetailTaskViewModel? = null) {
+fun BottomBarComment(onSendClick: (String) -> Unit = {}) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
         var txt by remember { mutableStateOf("") }
 
@@ -600,7 +616,7 @@ fun BottomBarComment(viewModel: DetailTaskViewModel? = null) {
 
             IconButton(
                 onClick = {
-                    viewModel?.postComment(content = txt)
+                    onSendClick(txt)
                     txt = ""
                 }, enabled = txt.isNotBlank(), modifier = Modifier
                     .weight(1f)
