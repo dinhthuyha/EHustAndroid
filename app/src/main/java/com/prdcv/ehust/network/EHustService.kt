@@ -124,8 +124,8 @@ interface EHustService {
     /**
      * post comment
      */
-    @POST("postComment")
-    suspend fun postComment(@Body comment: Comment):Response<List<Comment>>
+    @POST("comments/{id_task}")
+    suspend fun postComment(@Path("id_task") idTask: Int, @Body comment: Comment): Response<List<Comment>>
 
     /**
      * delete comment

@@ -22,6 +22,8 @@ class DetailTaskViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val commentRepository: CommentRepository
 ) : BaseViewModel()  {
+    var idTask: Int = 0
+
     var uiTaskState by mutableStateOf(TaskDetailScreenState())
         private set
 
@@ -35,7 +37,7 @@ class DetailTaskViewModel @Inject constructor(
     fun postComment(content: String){
         viewModelScope.launch {
             val comment = Comment(content = content)
-            commentRepository.postComment(comment).collect{
+            commentRepository.postComment(idTask, comment).collect{
                 when (val state = it) {
                     is State.Success -> {
                         uiTaskState = uiTaskState.copy(commentState = state.data)
@@ -48,7 +50,7 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun getDetailTask(idTask: Int) {
+    fun getDetailTask() {
         viewModelScope.launch {
             taskRepository.getDetailTask(idTask).collect {
                 when (val state = it) {

@@ -83,7 +83,7 @@ class EHustClient @Inject constructor(
 
     suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)
 
-    suspend fun postComment( comment: Comment) = ehustService.postComment(comment)
+    suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
 }

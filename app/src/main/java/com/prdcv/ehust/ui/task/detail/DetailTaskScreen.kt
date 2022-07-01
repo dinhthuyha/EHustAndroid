@@ -90,14 +90,13 @@ lateinit var navController: NavController
 @Composable
 fun DetailTask(
     onDateSelectionClicked: () -> Unit,
-    mainViewModel: DetailTaskViewModel,
-    id: Int,
+    viewModel: DetailTaskViewModel,
     mNavController: NavController
 ) {
     LaunchedEffect(key1 = Unit) {
-        mainViewModel.getDetailTask(id)
+        viewModel.getDetailTask()
     }
-    val uiState = mainViewModel.uiTaskState
+    val uiState = viewModel.uiTaskState
     val readOnly = rememberSaveable {
         mutableStateOf(true)
     }
@@ -108,7 +107,7 @@ fun DetailTask(
                 title = uiState.taskDetailState.title,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { readOnly.value = false })
-        }, bottomBar = { BottomBarComment(mainViewModel) }) {
+        }, bottomBar = { BottomBarComment(viewModel) }) {
             if (uiState.taskDetailState.id == null) {
                 LoadingAnimation()
             } else {
@@ -120,12 +119,12 @@ fun DetailTask(
                 ) {
                     RowDescription(
                         des = uiState.taskDetailState.description ?: "",
-                        onTextChanged = mainViewModel::onChangeDescription,
+                        onTextChanged = viewModel::onChangeDescription,
                         readOnly
                     )
                     RowTaskSetup(
                         task = uiState.taskDetailState,
-                        viewModel = mainViewModel,
+                        viewModel = viewModel,
                         onDateSelectionClicked,
                         readOnly = readOnly
                     )
@@ -149,11 +148,11 @@ fun DetailTask(
                         ) {
                             Button(
                                 onClick = {
-                                    mainViewModel.uiTaskState.apply {
+                                    viewModel.uiTaskState.apply {
                                         Log.d(
                                             "TAG",
                                             "DetailTask: ${onDescriptionTextChange}," +
-                                                    " ${mainViewModel.calendarState?.calendarUiState?.value?.selectedDatesFormatted}," +
+                                                    " ${viewModel.calendarState?.calendarUiState?.value?.selectedDatesFormatted}," +
                                                     " ${onEstimateTimeTextChange}," +
                                                     " ${onSpendTimeTextChange}," +
                                                     "${onPercentDoneTextChange}," +

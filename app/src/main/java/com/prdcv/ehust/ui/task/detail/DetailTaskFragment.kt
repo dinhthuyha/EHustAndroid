@@ -42,12 +42,12 @@ class DetailTaskFragment : BaseFragment() {
                 NavHost(navController = navController, startDestination = Routes.Home.route) {
                     composable(Routes.Home.route) {
                         val viewModel = hiltViewModel<DetailTaskViewModel>()
+                        viewModel.idTask = idTask
                         DetailTask(
                             onDateSelectionClicked = {
                                 navController.navigate(Routes.Calendar.route)
                             },
-                            mainViewModel = viewModel,
-                            id = idTask,
+                            viewModel = viewModel,
                             mNavController = findNavController()
                         )
                         Log.d("hadinh", "onViewCreated: "+ viewModel?.calendarState.calendarUiState.value.selectedDatesFormatted)

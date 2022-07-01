@@ -19,10 +19,10 @@ class CommentRepository @Inject constructor(val eHustClient: EHustClient){
         }.asFlow()
     }
 
-    fun postComment(comment: Comment): Flow<State<List<Comment>>>{
+    fun postComment(idTask: Int, comment: Comment): Flow<State<List<Comment>>>{
         return object : NetworkBoundRepository<List<Comment>>(){
             override suspend fun fetchFromRemote(): Response<List<Comment>> {
-                return eHustClient.postComment(comment)
+                return eHustClient.postComment(idTask, comment)
             }
         }.asFlow()
     }
