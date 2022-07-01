@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -44,13 +46,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.runtime.*
 
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -111,68 +109,75 @@ fun DetailTask(
             if (uiState.taskDetailState.id == null) {
                 LoadingAnimation()
             } else {
-
                 navController = mNavController
-                Column(
+                LazyColumn(
                     horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                    modifier = Modifier.padding(it)
                 ) {
-                    RowDescription(
-                        des = uiState.taskDetailState.description ?: "",
-                        onTextChanged = viewModel::onChangeDescription,
-                        readOnly
-                    )
-                    RowTaskSetup(
-                        task = uiState.taskDetailState,
-                        viewModel = viewModel,
-                        onDateSelectionClicked,
-                        readOnly = readOnly
-                    )
-                    RowAttachFile()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "Comments",
-                        Modifier.padding(start = 25.dp, bottom = 12.dp),
-                        color = Black,
-                        fontWeight = FontWeight.Bold
-                    )
+                    item {
+                        RowDescription(
+                            des = uiState.taskDetailState.description ?: "",
+                            onTextChanged = viewModel::onChangeDescription,
+                            readOnly
+                        )
+                    }
+                    item {
+                        RowTaskSetup(
+                            task = uiState.taskDetailState,
+                            viewModel = viewModel,
+                            onDateSelectionClicked,
+                            readOnly = readOnly
+                        )
+                    }
+                    item { RowAttachFile() }
+                    item { Spacer(modifier = Modifier.height(10.dp)) }
+                    item {
+                        Text(
+                            text = "Comments",
+                            Modifier.padding(start = 25.dp, bottom = 12.dp),
+                            color = Black,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
-                    //TODO: chuyen thanh LazyColumn
-                   uiState.commentState.forEach { RowComment(comment = it) }
-
+                    items(items = uiState.commentState) { cmt ->
+                        RowComment(comment = cmt)
+                    }
 
                     if (!readOnly.value) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Button(
-                                onClick = {
-                                    viewModel.uiTaskState.apply {
-                                        Log.d(
-                                            "TAG",
-                                            "DetailTask: ${onDescriptionTextChange}," +
-                                                    " ${viewModel.calendarState?.calendarUiState?.value?.selectedDatesFormatted}," +
-                                                    " ${onEstimateTimeTextChange}," +
-                                                    " ${onSpendTimeTextChange}," +
-                                                    "${onPercentDoneTextChange}," +
-                                                    " ${onAssigneeTextChange}"
-                                        )
-                                    }
+                        item {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Button(
+                                    onClick = {
+                                        viewModel.uiTaskState.apply {
+                                            Log.d(
+                                                "TAG",
+                                                "DetailTask: ${onDescriptionTextChange}," +
+                                                        " ${viewModel.calendarState?.calendarUiState?.value?.selectedDatesFormatted}," +
+                                                        " ${onEstimateTimeTextChange}," +
+                                                        " ${onSpendTimeTextChange}," +
+                                                        "${onPercentDoneTextChange}," +
+                                                        " ${onAssigneeTextChange}"
+                                            )
+                                        }
 
-                                },
-                                content = {
-                                    Text(
-                                        text = "Submit",
-                                        style = MaterialTheme.typography.button,
-                                        color = White
+                                    },
+                                    content = {
+                                        Text(
+                                            text = "Submit",
+                                            style = MaterialTheme.typography.button,
+                                            color = White
+                                        )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Button
                                     )
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Button
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(60.dp))
+                                Spacer(modifier = Modifier.height(60.dp))
+                            }
                         }
                     }
                 }
@@ -516,7 +521,6 @@ fun RowDescription(
 
 @Composable
 fun RowComment(comment: Comment) {
-
     Row(
         modifier = Modifier
             .padding(top = 5.dp, bottom = 5.dp, start = 15.dp)
@@ -545,8 +549,6 @@ fun RowComment(comment: Comment) {
         }
 
     }
-
-
 }
 
 
@@ -585,9 +587,7 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
 @Composable
 fun BottomBarComment(viewModel: DetailTaskViewModel) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
-        val txt = remember {
-            mutableStateOf("")
-        }
+        var txt by remember { mutableStateOf("") }
 
         Row(
             modifier = Modifier.padding(top = 3.dp, bottom = 3.dp),
@@ -602,8 +602,8 @@ fun BottomBarComment(viewModel: DetailTaskViewModel) {
                 tint = DarkGray
             )
             OutlinedTextField(
-                value = txt.value,
-                onValueChange = { txt.value = it },
+                value = txt,
+                onValueChange = { txt = it },
                 modifier = Modifier
                     .border(BorderStroke(0.5.dp, Gray), CircleShape)
                     .fillMaxHeight()
@@ -631,7 +631,8 @@ fun BottomBarComment(viewModel: DetailTaskViewModel) {
                     .size(width = 35.dp, height = 35.dp)
                     .weight(1f)
                     .clickable {
-                        viewModel.postComment(content = txt.value)
+                        viewModel.postComment(content = txt)
+                        txt = ""
                     },
                 tint = DarkGray
             )
