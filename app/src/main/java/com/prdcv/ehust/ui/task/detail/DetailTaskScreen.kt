@@ -2,57 +2,25 @@ package com.prdcv.ehust.ui.task.detail
 
 
 import android.util.Log
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
-
-
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
@@ -62,15 +30,12 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import com.prdcv.ehust.ui.compose.Button
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -79,6 +44,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
+import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
@@ -358,7 +324,7 @@ fun RowTaskSetup(
                     ) {
                         RowElementSetupTask(
                             onTextChanged = viewModel::onSpendTimeTextChange,
-                            content =task.spendTime.toString(),
+                            content = task.spendTime.toString(),
                             title = "Spend time",
                             idIcon = R.drawable.ic_spendtime,
                             "Hours", readOnly = readOnly
@@ -384,7 +350,8 @@ fun RowTaskSetup(
                         modifier = Modifier.weight(0.55f),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        RowElementSetupTask(onTextChanged = viewModel::onAssigneeTextChange,
+                        RowElementSetupTask(
+                            onTextChanged = viewModel::onAssigneeTextChange,
                             content = task.assignee.toString(),
                             title = "Assignee",
                             idIcon = R.drawable.ic_assignee,
@@ -412,7 +379,7 @@ fun RowElementSetupTask(
     trailingTitle: String? = null,
     modifier: Modifier = Modifier,
     readOnly: MutableState<Boolean>,
-    keyboardType : KeyboardType = KeyboardType.Number
+    keyboardType: KeyboardType = KeyboardType.Number
 
 ) {
     val focusManager = LocalFocusManager.current
@@ -429,10 +396,10 @@ fun RowElementSetupTask(
                 .width(90.dp)
                 .then(modifier),
             colors =
-                TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Transparent,
-                    unfocusedBorderColor = Transparent
-                ),
+            TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Transparent,
+                unfocusedBorderColor = Transparent
+            ),
             textStyle = TextStyle(fontWeight = FontWeight.W400),
             placeholder = {
                 Text(
@@ -454,9 +421,14 @@ fun RowElementSetupTask(
                 }
             },
             readOnly = readOnly.value,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = keyboardType),
-            keyboardActions = KeyboardActions(onDone = { onTextChanged(txt.value)
-                focusManager.clearFocus()})
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = keyboardType
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                onTextChanged(txt.value)
+                focusManager.clearFocus()
+            })
         )
         trailingTitle?.let {
             Text(
@@ -511,8 +483,10 @@ fun RowDescription(
                 readOnly = readOnly.value,
                 textStyle = TextStyle(fontWeight = FontWeight.W400),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onTextChanged(txt.value)
-                    focusManager.clearFocus()})
+                keyboardActions = KeyboardActions(onDone = {
+                    onTextChanged(txt.value)
+                    focusManager.clearFocus()
+                })
             )
         }
 
@@ -540,7 +514,7 @@ fun RowComment(comment: Comment) {
                 .padding(end = 20.dp, bottom = 5.dp)
         ) {
             Text(
-                text = comment.nameUserPost?:"",
+                text = comment.nameUserPost ?: "",
                 fontWeight = FontWeight.W400,
                 style = MaterialTheme.typography.subtitle1,
                 color = Button
@@ -584,8 +558,9 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
     )
 }
 
+@Preview(showBackground = true)
 @Composable
-fun BottomBarComment(viewModel: DetailTaskViewModel) {
+fun BottomBarComment(viewModel: DetailTaskViewModel? = null) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
         var txt by remember { mutableStateOf("") }
 
@@ -621,21 +596,22 @@ fun BottomBarComment(viewModel: DetailTaskViewModel) {
                         style = MaterialTheme.typography.h3
                     )
                 },
-
-                )
-
-            Icon(
-                painter = painterResource(id = R.drawable.ic_send),
-                contentDescription = "",
-                modifier = Modifier
-                    .size(width = 35.dp, height = 35.dp)
-                    .weight(1f)
-                    .clickable {
-                        viewModel.postComment(content = txt)
-                        txt = ""
-                    },
-                tint = DarkGray
             )
+
+            IconButton(
+                onClick = {
+                    viewModel?.postComment(content = txt)
+                    txt = ""
+                }, enabled = txt.isNotBlank(), modifier = Modifier
+                    .weight(1f)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_send),
+                    contentDescription = "",
+                    tint = DarkGray,
+                    modifier = Modifier.size(width = 35.dp, height = 35.dp)
+                )
+            }
         }
 
 
