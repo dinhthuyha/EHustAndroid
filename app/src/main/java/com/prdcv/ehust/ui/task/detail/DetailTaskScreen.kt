@@ -1,7 +1,10 @@
 package com.prdcv.ehust.ui.task.detail
 
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -113,7 +116,29 @@ fun DetailTask(
                             readOnly = readOnly
                         )
                     }
-                    item { RowAttachFile() }
+                    item {
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Row(Modifier.padding(start = 15.dp)) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_attach_file),
+                                contentDescription = ""
+                            )
+                            Text(
+                                text = "Attach file",
+                                Modifier.padding(start = 15.dp, bottom = 12.dp),
+                                color = Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    items(items = uiState.filesState) { t -> AttachFile(t) }
+                    item {
+                        if (!readOnly.value) {
+                            Row(modifier = Modifier.padding(start = 25.dp)) {
+                                ButtonAddFile(viewModel::addFile)
+                            }
+                        }
+                    }
                     item { Spacer(modifier = Modifier.height(10.dp)) }
                     item {
                         Text(
@@ -128,17 +153,18 @@ fun DetailTask(
                                 Modifier
                                     .padding(start = 25.dp, bottom = 12.dp)
                                     .clickable {
-                                        if (numberCommentShow.value ==0){
-                                            numberCommentShow.value =4
-                                        }else{
-                                            when (uiState.commentState.size / numberCommentShow.value >1) {
+                                        if (numberCommentShow.value == 0) {
+                                            numberCommentShow.value = 4
+                                        } else {
+                                            when (uiState.commentState.size / numberCommentShow.value > 1) {
                                                 true -> {
                                                     val n =
                                                         uiState.commentState.size / numberCommentShow.value
                                                     numberCommentShow.value = 4 * n
                                                 }
                                                 false -> {
-                                                    numberCommentShow.value = uiState.commentState.size
+                                                    numberCommentShow.value =
+                                                        uiState.commentState.size
                                                 }
                                             }
                                         }
@@ -206,6 +232,38 @@ fun DetailTask(
 }
 
 @Composable
+fun ButtonAddFile(callback: (String) -> Unit) {
+    val intent = Intent(Intent.ACTION_GET_CONTENT)
+    intent.type = "*/*";
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
+            if (imageUri != null) {
+                val a = imageUri
+                callback(imageUri.path!!)
+
+            }
+        }
+
+    Button(
+        onClick = {
+            launcher.launch("*/*")
+        },
+        content = {
+            Text(
+                text = "Add file",
+                style = MaterialTheme.typography.button,
+                color = White
+            )
+        },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Button
+        )
+    )
+
+}
+
+@Composable
 fun LoadingAnimation(
     modifier: Modifier = Modifier,
     circleSize: Dp = 10.dp,
@@ -269,43 +327,9 @@ fun LoadingAnimation(
 
 }
 
+
 @Composable
-fun RowAttachFile() {
-    Spacer(modifier = Modifier.height(15.dp))
-    Row(Modifier.padding(start = 15.dp)) {
-        Icon(painter = painterResource(id = R.drawable.ic_attach_file), contentDescription = "")
-        Text(
-            text = "Attach file",
-            Modifier.padding(start = 15.dp, bottom = 12.dp),
-            color = Black,
-            fontWeight = FontWeight.Bold
-        )
-    }
-
-    AttachFile()
-    AttachFile()
-    AttachFile()
-    Row(modifier = Modifier.padding(start = 25.dp)) {
-        Button(
-            onClick = { /*TODO*/ },
-            content = {
-                Text(
-                    text = "Add file",
-                    style = MaterialTheme.typography.button,
-                    color = White
-                )
-            },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Button
-            )
-        )
-    }
-
-}
-
-@Preview
-@Composable
-fun AttachFile() {
+fun AttachFile(name: String) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -315,7 +339,7 @@ fun AttachFile() {
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = "kindpng_3651626.png", style = MaterialTheme.typography.caption)
+        Text(text = name, style = MaterialTheme.typography.caption)
 
     }
 }

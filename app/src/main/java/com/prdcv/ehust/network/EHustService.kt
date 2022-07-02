@@ -11,6 +11,7 @@ import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.model.TaskData
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,8 +19,10 @@ import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface EHustService {
@@ -132,4 +135,8 @@ interface EHustService {
      */
     @DELETE("deleteComment")
     suspend fun deleteComment(@Path("id") id: Int): Response<ResponseBody>
+
+    @Multipart
+    @POST("upload")
+    suspend fun uploadFile(@Part file: MultipartBody.Part )
 }

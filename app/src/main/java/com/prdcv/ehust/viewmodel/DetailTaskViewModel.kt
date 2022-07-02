@@ -72,6 +72,9 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
+    fun addFile(name: String){
+        uiTaskState = uiTaskState.copy(filesState = uiTaskState.addFile(name))
+    }
     fun onChangeDescription(mDes: String) {
         uiTaskState = uiTaskState.copy(onDescriptionTextChange = mDes)
     }
