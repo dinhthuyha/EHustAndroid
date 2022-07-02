@@ -34,4 +34,6 @@ class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun submitTopicSuggestion() {}
 }

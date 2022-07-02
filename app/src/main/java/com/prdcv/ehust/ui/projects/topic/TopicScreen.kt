@@ -8,7 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +51,10 @@ fun TopicScreen(
 
     val bottomSheetSate = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
+        skipHalfExpanded = true,
+        confirmStateChange = {
+            false
+        }
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -56,27 +63,10 @@ fun TopicScreen(
         ModalBottomSheetLayout(
             sheetShape = Shapes.small,
             sheetContent = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        label = { Text("ten de tai") })
-                    OutlinedTextField(value = "", onValueChange = {}, label = { Text("noi dung") })
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(onClick = { /*TODO*/ }) {
-                            Text(text = "Submit")
-                        }
-                        Button(onClick = { /*TODO*/ }) {
-                            Text(text = "Cancel")
-                        }
-                    }
-                }
+                AddTopicModal(
+                    onCancel = { coroutineScope.launch { bottomSheetSate.hide() } },
+                    onSubmit = viewModel::submitTopicSuggestion
+                )
             },
             sheetState = bottomSheetSate
         ) {
@@ -116,6 +106,56 @@ fun TopicScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddTopicModal(onSubmit: (String, String) -> Unit = { _, _ -> }, onCancel: () -> Unit = {}) {
+    var topicName by remember { mutableStateOf("") }
+    var topicDescription by remember { mutableStateOf("") }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
+        OutlinedTextField(
+            value = topicName,
+            onValueChange = { topicName = it },
+            label = { Text("Tên đề tài") },
+            leadingIcon = { Icon(Icons.Filled.Edit, null) },
+            trailingIcon = {
+                IconButton(onClick = { topicName = "" }) {
+                    Icon(Icons.Filled.Clear, null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = topicDescription,
+            onValueChange = { topicDescription = it },
+            label = { Text("Mô tả đề tài") },
+            leadingIcon = { Icon(Icons.Filled.Info, null) },
+            trailingIcon = {
+                IconButton(onClick = { topicDescription = "" }) {
+                    Icon(Icons.Filled.Clear, null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(onClick = { onSubmit(topicName, topicDescription) }) {
+                Text(text = "Gửi đề xuất")
+            }
+            Button(onClick = { onCancel() }) {
+                Text(text = "Hủy")
             }
         }
     }
@@ -183,7 +223,7 @@ fun TopicTeacherRow(
         ) {
             TitleTopic(topic = topic)
             ShowNameStudent(topic = topic)
-            ShowStatusTopic(topic = topic, viewModel) {}
+            ShowStatusTopic(topic = topic, viewModel)
         }
 
     }
@@ -200,7 +240,7 @@ fun TopicSuggestionRow(onClick: () -> Unit = {}) {
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
             .dashedBorder(2.dp, Color.LightGray, MaterialTheme.shapes.medium, 8.dp, 5.dp)
-            .clickable {}
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier
@@ -245,8 +285,7 @@ fun TitleTopic(topic: Topic) {
 @Composable
 fun ShowStatusTopic(
     topic: Topic,
-    viewModel: TopicsViewModel?,
-    refreshData: () -> Unit
+    viewModel: TopicsViewModel?
 ) {
     Row(
         horizontalArrangement = Arrangement.End,

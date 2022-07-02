@@ -22,7 +22,6 @@ data class TopicScreenState(
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
-    var updateState: ResponseBody = "".toResponseBody(),
 ) {
     fun addTopicsFromState(state: State<List<Topic>>) {
         when (val _state = state) {
@@ -116,12 +115,15 @@ class TopicsViewModel @Inject constructor(
             topicRepository.updateTopicTable(idTopic, status, idStudent).collect {
                 when (val state = it) {
                     is State.Success -> {
-                        uiState.updateState = state.data
                         fetchTopicList()
                     }
                     else -> {}
                 }
             }
         }
+    }
+
+    fun submitTopicSuggestion(name: String, description: String) {
+        Topic(name = name, idStudent = mUserId, idTeacher = mProject?.idTeacher, subject = mProject.idProject)
     }
 }
