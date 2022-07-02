@@ -1,6 +1,6 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.StatusTopic
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
@@ -11,12 +11,7 @@ import com.prdcv.ehust.model.User
 import com.prdcv.ehust.model.TaskData
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface EHustService {
     @FormUrlEncoded
@@ -81,7 +76,7 @@ interface EHustService {
     @PUT("updatetopic/{id_topic}")
     suspend fun updateStatusAndIdStudentTopic(
         @Path("id_topic") id: Int,
-        @Field(value = "status") status: StatusTopic,
+        @Field(value = "status") status: TopicStatus,
         @Field(value = "id_student") idStudent: Int
     ): Response<ResponseBody>
 
@@ -104,4 +99,7 @@ interface EHustService {
     suspend fun newTask(
         @Field(value = "task") taskData: TaskData
     )
+
+    @POST("topic/suggestion")
+    suspend fun submitTopicSuggestion(@Body topic: Topic): Response<ResponseBody>
 }

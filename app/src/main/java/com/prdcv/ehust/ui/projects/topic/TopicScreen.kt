@@ -6,116 +6,94 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.hadt.ehust.model.StatusTopic
-import com.prdcv.ehust.common.State
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.Shapes
+import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
-import com.prdcv.ehust.ui.projects.ProjectArg
-import com.prdcv.ehust.viewmodel.ProjectsViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import com.prdcv.ehust.viewmodel.TopicsViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.Exception
 
-//@Preview(showBackground = true)
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun DefaultPreview(
-    id: Int,
-    role: Role,
+fun TopicScreen(
     navController: NavController,
-    project: ProjectArg,
-    viewModel: ProjectsViewModel = viewModel()
+    viewModel: TopicsViewModel = viewModel()
 ) {
-    viewModel.mProject = project
-    viewModel.mRole = role
     val uiState = viewModel.uiState
+    uiState.coroutineScope = rememberCoroutineScope()
+    val updateTopics = {
+        viewModel.fetchTopicList()
+    }
+
     LaunchedEffect(key1 = Unit) {
-        viewModel.callbackGetData()
-    }
-
-    fun checkTopic(topics: List<Topic>): List<Topic> {
-        try {
-            //chi sho cac de tai chua co sinh vien nao request
-            topics.firstOrNull { it.idStudent == id && it.status == StatusTopic.ACCEPT }?.let {
-                return listOf(it)
-            }
-            topics.filter { it.status == StatusTopic.REQUEST }.let {
-                return it
-            }
-        } catch (e: Exception) {
-            return listOf<Topic>()
-        }
-    }
-
-    val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
-    val coroutineScope = rememberCoroutineScope()
-    fun refreshTaskList() {
-
-        refreshingState.isRefreshing = true
-        coroutineScope.launch {
-            withContext(Dispatchers.IO + Job()) {
-                viewModel.callbackGetData()
-            }
-        }
-        coroutineScope.launch {
-            delay(3000)
-            refreshingState.isRefreshing = false
-        }
+        updateTopics()
     }
 
     DefaultTheme {
-        Scaffold(topBar = { ToolBar("Đề tài") }) {
-            SwipeRefresh(
-                state = refreshingState,
-                onRefresh = ::refreshTaskList
+
+        ModalBottomSheetLayout(
+            sheetShape = Shapes.small,
+            sheetContent = {
+                AddTopicModal(
+                    onCancel = uiState::hideBottomSheet,
+                    onSubmit = viewModel::submitTopicSuggestion
+                )
+            },
+            sheetState = uiState.bottomSheetState
+        ) {
+
+            Scaffold(
+                topBar = { ToolBar("Đề tài") },
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                    ) {
-                        when (role) {
-                            Role.ROLE_TEACHER -> {
-                                items(items = uiState.topics) { t ->
-                                    TopicTeacherRow(t, navController, viewModel) {
-                                        coroutineScope.launch {
-                                            delay(4000)
-                                        }
-                                        refreshTaskList()
+                SwipeRefresh(
+                    state = uiState.refreshState,
+                    onRefresh = updateTopics
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                        ) {
+                            when (viewModel.mRole) {
+                                Role.ROLE_TEACHER -> {
+                                    items(items = uiState.topics) {
+                                        TopicTeacherRow(it, navController, viewModel)
                                     }
                                 }
-                            }
-                            Role.ROLE_STUDENT -> {
-                                var items = checkTopic(uiState.topics)
-                                items(items = items) { t ->
-                                    //update status, id sv
-                                    TopicStudentRow(t, viewModel, id, navController)
+                                Role.ROLE_STUDENT -> {
+                                    items(items = uiState.topics) {
+                                        //update status, id sv
+                                        TopicStudentRow(it, viewModel, navController)
+                                    }
+                                    if (uiState.topicSuggestionAllowed.value) {
+                                        item {
+                                            TopicSuggestionRow(onClick = uiState::showBottomSheet)
+                                        }
+                                    }
                                 }
+                                else -> {}
                             }
-                            else -> {}
                         }
                     }
                 }
@@ -124,14 +102,64 @@ fun DefaultPreview(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun AddTopicModal(onSubmit: ((String, String) -> Unit)? = null, onCancel: (() -> Unit)? = null) {
+    var topicName by remember { mutableStateOf("") }
+    var topicDescription by remember { mutableStateOf("") }
 
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
+        OutlinedTextField(
+            value = topicName,
+            onValueChange = { topicName = it },
+            label = { Text("Tên đề tài") },
+            leadingIcon = { Icon(Icons.Filled.Edit, null) },
+            trailingIcon = {
+                IconButton(onClick = { topicName = "" }) {
+                    Icon(Icons.Filled.Clear, null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = topicDescription,
+            onValueChange = { topicDescription = it },
+            label = { Text("Mô tả đề tài") },
+            leadingIcon = { Icon(Icons.Filled.Info, null) },
+            trailingIcon = {
+                IconButton(onClick = { topicDescription = "" }) {
+                    Icon(Icons.Filled.Clear, null)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                enabled = topicName.isNotBlank(),
+                onClick = { onSubmit?.invoke(topicName, topicDescription) }) {
+                Text(text = "Gửi đề xuất")
+            }
+            Button(onClick = { onCancel?.invoke() }) {
+                Text(text = "Hủy")
+            }
+        }
+    }
+}
 
+@Preview(showBackground = true)
 @Composable
 fun TopicStudentRow(
-    topic: Topic = Topic(123, "lập trình web bán hàng online"),
-    viewModel: ProjectsViewModel,
-    idUser: Int,
-    navController: NavController
+    topic: Topic = fakeTopicPreview,
+    viewModel: TopicsViewModel? = null,
+    navController: NavController? = null
 ) {
     Card(
         elevation = 2.dp,
@@ -140,8 +168,8 @@ fun TopicStudentRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                if (topic.status == StatusTopic.ACCEPT) {
-                    navController.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+                if (topic.status == TopicStatus.ACCEPT) {
+                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
                 }
             }
     ) {
@@ -150,28 +178,27 @@ fun TopicStudentRow(
                 .width(IntrinsicSize.Max)
                 .padding(10.dp)
         ) {
-           TitleTopic(topic = topic)
+            TitleTopic(topic = topic)
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 FilterItemStudent(
-                    text = "${topic.status?.name}",
-                    callback = {
-                        if (topic.status == StatusTopic.REQUEST)
-                            viewModel.updateTopicTable(topic.id!!, StatusTopic.REQUESTING, idUser)
-                    })
+                    status = topic.status
+                ) {
+                    if (topic.status == TopicStatus.REQUEST)
+                        viewModel?.updateTopicStatus(topic.id!!, TopicStatus.REQUESTING)
+                }
             }
         }
 
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun TopicTeacherRow(
-    topic: Topic = Topic(123, "lập trình web bán hàng online"),
-    navController: NavController,
-    viewModel: ProjectsViewModel,
-    refreshData: () -> Unit
+    topic: Topic = fakeTopicPreview,
+    navController: NavController? = null,
+    viewModel: TopicsViewModel? = null
 ) {
-    val buttonVisible = remember { mutableStateOf(true) }
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -179,7 +206,7 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
             }
     ) {
         Column(
@@ -189,9 +216,43 @@ fun TopicTeacherRow(
         ) {
             TitleTopic(topic = topic)
             ShowNameStudent(topic = topic)
-            ShowStatusTopic(topic = topic, viewModel, buttonVisible) { refreshData.invoke() }
+            ShowStatusTopic(topic = topic, viewModel)
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopicSuggestionRow(onClick: () -> Unit = {}) {
+    Card(
+        elevation = 0.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .dashedBorder(2.dp, Color.LightGray, MaterialTheme.shapes.medium, 8.dp, 5.dp)
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(10.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Đề xuất đề tài", color = Color.Gray, fontSize = 17.sp)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.padding(5.dp)
+                )
+            }
+        }
     }
 }
 
@@ -217,49 +278,28 @@ fun TitleTopic(topic: Topic) {
 @Composable
 fun ShowStatusTopic(
     topic: Topic,
-    viewModel: ProjectsViewModel,
-    buttonVisible: MutableState<Boolean>,
-    refreshData: ()-> Unit
+    viewModel: TopicsViewModel?
 ) {
-
-    when (topic.status) {
-        StatusTopic.REQUEST, StatusTopic.ACCEPT -> {
-            buttonVisible.value = false
-        }
-        StatusTopic.REQUESTING -> {
-            buttonVisible.value = true
-        }
-    }
-
     Row(
-        horizontalArrangement = Arrangement.End, modifier = Modifier
-            .fillMaxWidth()
-
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        if (topic.status == StatusTopic.REQUESTING) {
 
-        }
         when (topic.status) {
-            StatusTopic.REQUEST, StatusTopic.ACCEPT -> {}
-            StatusTopic.REQUESTING -> {
-                FilterItemTeacher(text = "Chấp nhận", callback = {
+            TopicStatus.REQUEST, TopicStatus.ACCEPT -> {}
+            TopicStatus.REQUESTING -> {
+                FilterItemTeacher(text = "Chấp nhận") {
                     //update lại status
-                    refreshData.invoke()
-                    viewModel.updateTopicTable(idTopic = topic.id!!, status = StatusTopic.ACCEPT)
-
-                })
+                    viewModel?.updateTopicStatus(idTopic = topic.id!!, status = TopicStatus.ACCEPT)
+                }
                 Spacer(modifier = Modifier.width(8.dp))
-                FilterItemTeacher(text = "Xoá", callback = {
+                FilterItemTeacher(text = "Xoá") {
                     //xoa yeu cau cua sinh vien
-                    viewModel.updateTopicTable(
-                        idTopic = topic.id!!,
-                        status = StatusTopic.REQUEST,
-                        idStudent = 0
-                    )
-                    refreshData.invoke()
-                })
+                    viewModel?.updateTopicStatus(idTopic = topic.id!!, status = TopicStatus.REQUEST)
+                }
 
             }
+            else -> {}
         }
 
     }
@@ -269,8 +309,8 @@ fun ShowStatusTopic(
 fun ShowNameStudent(topic: Topic) {
     Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.fillMaxWidth()) {
         when (topic.status) {
-            StatusTopic.REQUEST -> {}
-            StatusTopic.REQUESTING -> {
+            TopicStatus.REQUEST -> {}
+            TopicStatus.REQUESTING -> {
                 Spacer(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp))
                 Text(
                     text = "Sinh viên: ${topic.nameStudent ?: ""} yêu cầu được làm đề tài.",
@@ -278,31 +318,26 @@ fun ShowNameStudent(topic: Topic) {
                 )
 
             }
-            StatusTopic.ACCEPT -> {
+            TopicStatus.ACCEPT -> {
                 Text(
                     text = "Sinh viên: ${topic.nameStudent ?: ""}",
                     color = Color.Gray
                 )
             }
+            else -> {}
         }
     }
 
 }
 
 @Composable
-fun FilterItemStudent(text: String, callback: () -> Unit) {
-    val content = remember { mutableStateOf(text) }
-
-    Button(onClick = {
-        if (text == StatusTopic.REQUEST.name) {
-            callback.invoke()
-            content.value = StatusTopic.REQUESTING.name
-        }
-
-    }, enabled = text != StatusTopic.ACCEPT.name)
-    {
+fun FilterItemStudent(status: TopicStatus?, callback: () -> Unit) {
+    Button(
+        onClick = callback,
+        enabled = status != TopicStatus.ACCEPT && status != TopicStatus.REQUESTING
+    ) {
         Text(
-            text = content.value,
+            text = status?.name ?: "UNKNOWN",
             fontSize = 11.sp
         )
     }
@@ -321,3 +356,11 @@ fun FilterItemTeacher(text: String, callback: () -> Unit) {
         )
     }
 }
+
+private val fakeTopicPreview =
+    Topic(
+        id = 123,
+        nameStudent = "Dinh Thuy Ha",
+        name = "lập trình web bán hàng online",
+        status = TopicStatus.REQUESTING
+    )
