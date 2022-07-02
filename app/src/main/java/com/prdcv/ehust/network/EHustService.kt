@@ -100,11 +100,7 @@ interface EHustService {
         @Path("id_topic") id: Int
     ): Response<List<TaskData>>
 
-    @FormUrlEncoded
-    @PUT("updateTask")
-    suspend fun updateTask(
-        @Field(value = "task") taskData: TaskData
-    )
+
 
     @FormUrlEncoded
     @POST("newTask")
@@ -118,6 +114,8 @@ interface EHustService {
     @GET("task/{id}")
     suspend fun getDetailTask(@Path("id") id: Int): Response<TaskDetail>
 
+    @PUT("updateTask")
+    suspend fun updateTask(@Body taskDetail: TaskDetail): Response<ResponseBody>
     /**
      * get lít comment
      */
