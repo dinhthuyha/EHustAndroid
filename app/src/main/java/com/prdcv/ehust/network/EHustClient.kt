@@ -7,6 +7,7 @@ import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.Subject
+import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import retrofit2.Response
@@ -80,6 +81,8 @@ class EHustClient @Inject constructor(
     ) = ehustService.findAllTaskByIdTopic(idTopic)
 
     suspend fun getDetailTask(id: Int) = ehustService.getDetailTask(id)
+
+    suspend fun updateTask(taskDetail: TaskDetail) = ehustService.updateTask(taskDetail)
 
     suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)
 
