@@ -47,6 +47,7 @@ import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,6 +64,7 @@ fun DetailTask(
         viewModel.getDetailTask()
     }
     val uiState = viewModel.uiTaskState
+    val numberCommentShow: MutableState<Int> = mutableStateOf(1)
     val readOnly = rememberSaveable {
         mutableStateOf(true)
     }
@@ -120,9 +122,32 @@ fun DetailTask(
                             color = Black,
                             fontWeight = FontWeight.Bold
                         )
+                        if (uiState.commentState.size > 4) {
+                            Text(
+                                text = "See Previous replies",
+                                Modifier
+                                    .padding(start = 25.dp, bottom = 12.dp)
+                                    .clickable {
+                                        numberCommentShow.value += 1
+                                    },
+                                color = Purple500,
+                                style = MaterialTheme.typography.caption,
+                            )
+                            Text(
+                                text = "Collapse Previous replies",
+                                Modifier
+                                    .padding(start = 25.dp, bottom = 12.dp)
+                                    .clickable {
+                                        if (numberCommentShow.value > 0)
+                                            numberCommentShow.value -= 1
+                                    },
+                                color = Purple500,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
                     }
 
-                    items(items = uiState.commentState) { cmt ->
+                    items(items = uiState.commentState.takeLast(4 * numberCommentShow.value)) { cmt ->
                         RowComment(comment = cmt)
                     }
 
