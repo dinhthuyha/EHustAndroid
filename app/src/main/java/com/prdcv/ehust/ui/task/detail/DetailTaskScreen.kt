@@ -1,9 +1,7 @@
 package com.prdcv.ehust.ui.task.detail
 
 
-import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.text.TextUtils.split
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,19 +47,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.extension.getFileName
+import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
-import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 lateinit var navController: NavController
 
@@ -279,9 +276,11 @@ fun String.convertToDate(): LocalDate {
 fun ButtonAddFile(callback: (String) -> Unit) {
     val context = LocalContext.current
     val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { content ->
-            if (content != null) {
-                context.getFileName(content)?.let(callback)
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+//                val file = context.openInputStream(uri)
+//                val type = context.getType(uri)
+                context.getFileName(uri)?.let(callback)
             }
         }
 

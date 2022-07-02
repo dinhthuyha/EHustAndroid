@@ -6,7 +6,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.view.View
-import com.google.android.material.snackbar.Snackbar
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -53,3 +52,7 @@ private fun Context.getContentFileName(uri: Uri): String? = runCatching {
         return@use cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME).let(cursor::getString)
     }
 }.getOrNull()
+
+fun Context.openInputStream(uri: Uri) = contentResolver.openInputStream(uri)
+
+fun Context.getType(uri: Uri) = contentResolver.getType(uri)
