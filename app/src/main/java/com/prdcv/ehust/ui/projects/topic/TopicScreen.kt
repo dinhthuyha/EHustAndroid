@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +40,7 @@ fun TopicScreen(
     viewModel: TopicsViewModel = viewModel()
 ) {
     val uiState = viewModel.uiState
+    uiState.coroutineScope = rememberCoroutineScope()
     val updateTopics = {
         viewModel.fetchTopicList()
     }
@@ -49,26 +49,17 @@ fun TopicScreen(
         updateTopics()
     }
 
-    val bottomSheetSate = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
-        confirmStateChange = {
-            false
-        }
-    )
-    val coroutineScope = rememberCoroutineScope()
-
     DefaultTheme {
 
         ModalBottomSheetLayout(
             sheetShape = Shapes.small,
             sheetContent = {
                 AddTopicModal(
-                    onCancel = { coroutineScope.launch { bottomSheetSate.hide() } },
+                    onCancel = uiState::hideBottomSheet,
                     onSubmit = viewModel::submitTopicSuggestion
                 )
             },
-            sheetState = bottomSheetSate
+            sheetState = uiState.bottomSheetState
         ) {
 
             Scaffold(
@@ -95,9 +86,9 @@ fun TopicScreen(
                                         //update status, id sv
                                         TopicStudentRow(it, viewModel, navController)
                                     }
-                                    item {
-                                        TopicSuggestionRow {
-                                            coroutineScope.launch { bottomSheetSate.show() }
+                                    if (uiState.topicSuggestionAllowed.value) {
+                                        item {
+                                            TopicSuggestionRow(onClick = uiState::showBottomSheet)
                                         }
                                     }
                                 }
@@ -113,7 +104,7 @@ fun TopicScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun AddTopicModal(onSubmit: (String, String) -> Unit = { _, _ -> }, onCancel: () -> Unit = {}) {
+fun AddTopicModal(onSubmit: ((String, String) -> Unit)? = null, onCancel: (() -> Unit)? = null) {
     var topicName by remember { mutableStateOf("") }
     var topicDescription by remember { mutableStateOf("") }
 
@@ -151,10 +142,12 @@ fun AddTopicModal(onSubmit: (String, String) -> Unit = { _, _ -> }, onCancel: ()
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Button(onClick = { onSubmit(topicName, topicDescription) }) {
+            Button(
+                enabled = topicName.isNotBlank(),
+                onClick = { onSubmit?.invoke(topicName, topicDescription) }) {
                 Text(text = "Gửi đề xuất")
             }
-            Button(onClick = { onCancel() }) {
+            Button(onClick = { onCancel?.invoke() }) {
                 Text(text = "Hủy")
             }
         }

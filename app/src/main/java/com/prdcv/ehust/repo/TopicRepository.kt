@@ -35,5 +35,11 @@ class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
         }.asFlow()
     }
 
-    fun submitTopicSuggestion() {}
+    fun submitTopicSuggestion(topic: Topic): Flow<State<ResponseBody>> {
+        return object: NetworkBoundRepository<ResponseBody>() {
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.submitTopicSuggestion(topic)
+            }
+        }.asFlow()
+    }
 }

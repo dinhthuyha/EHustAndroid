@@ -1,6 +1,11 @@
 package com.prdcv.ehust.viewmodel
 
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,20 +13,26 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.repo.TopicRepository
 import com.prdcv.ehust.ui.projects.ProjectArg
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import javax.inject.Inject
 
-data class TopicScreenState(
+data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
+    var coroutineScope: CoroutineScope? = null,
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
+    val bottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
+        ModalBottomSheetValue.Hidden,
+        isSkipHalfExpanded = true,
+        confirmStateChange = { false }),
+    val topicSuggestionAllowed: MutableState<Boolean> = mutableStateOf(false)
 ) {
     fun addTopicsFromState(state: State<List<Topic>>) {
         when (val _state = state) {
@@ -36,6 +47,10 @@ data class TopicScreenState(
 
     fun filterUnassignedTopic(id: Int, role: Role) {
         topics.clear()
+
+        topicSuggestionAllowed.value = !_topics
+            .filter { it.idStudent == id }
+            .any { it.status == TopicStatus.ACCEPT || it.status == TopicStatus.REQUESTING }
 
         when (role) {
             Role.ROLE_STUDENT -> {
@@ -54,6 +69,21 @@ data class TopicScreenState(
             else -> {
                 topics.addAll(_topics)
             }
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun hideBottomSheet() {
+        coroutineScope?.launch {
+            bottomSheetState.overflow
+            bottomSheetState.hide()
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun showBottomSheet() {
+        coroutineScope?.launch {
+            bottomSheetState.show()
         }
     }
 
@@ -124,6 +154,23 @@ class TopicsViewModel @Inject constructor(
     }
 
     fun submitTopicSuggestion(name: String, description: String) {
-        Topic(name = name, idStudent = mUserId, idTeacher = mProject?.idTeacher, subject = mProject.idProject)
+        val sTopic = Topic(
+            name = name,
+            idStudent = mUserId,
+            nameTeacher = mProject?.nameTeacher,
+            subject = Subject(mProject?.idProject, "", true)
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            topicRepository.submitTopicSuggestion(sTopic).collect {
+                when (val _state = it) {
+                    is State.Error -> {}
+                    State.Loading -> {}
+                    is State.Success -> {
+                        uiState.hideBottomSheet()
+                        fetchTopicList()
+                    }
+                }
+            }
+        }
     }
 }

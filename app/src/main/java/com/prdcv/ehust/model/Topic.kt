@@ -18,5 +18,8 @@ data class Topic(
     val status: TopicStatus? = null,
 
     @SerializedName(value = "id_subject")
-    val subject: Subject? = null
+    val subject: Subject? = null,
+
+    @SerializedName("name_teacher")
+    val nameTeacher: String? = null
 )
