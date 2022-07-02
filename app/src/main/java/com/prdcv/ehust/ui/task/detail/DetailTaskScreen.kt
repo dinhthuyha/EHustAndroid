@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prdcv.ehust.R
+import com.prdcv.ehust.extension.getFileName
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
@@ -233,15 +235,11 @@ fun DetailTask(
 
 @Composable
 fun ButtonAddFile(callback: (String) -> Unit) {
-    val intent = Intent(Intent.ACTION_GET_CONTENT)
-    intent.type = "*/*";
-    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    val context = LocalContext.current
     val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
-            if (imageUri != null) {
-                val a = imageUri
-                callback(imageUri.path!!)
-
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { content ->
+            if (content != null) {
+                context.getFileName(content)?.let(callback)
             }
         }
 
