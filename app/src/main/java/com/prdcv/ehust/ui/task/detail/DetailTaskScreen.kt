@@ -64,7 +64,7 @@ fun DetailTask(
         viewModel.getDetailTask()
     }
     val uiState = viewModel.uiTaskState
-    val numberCommentShow: MutableState<Int> = mutableStateOf(1)
+    val numberCommentShow: MutableState<Int> = mutableStateOf(4)
     val readOnly = rememberSaveable {
         mutableStateOf(true)
     }
@@ -128,18 +128,30 @@ fun DetailTask(
                                 Modifier
                                     .padding(start = 25.dp, bottom = 12.dp)
                                     .clickable {
-                                        numberCommentShow.value += 1
+                                        if (numberCommentShow.value ==0){
+                                            numberCommentShow.value =4
+                                        }else{
+                                            when (uiState.commentState.size / numberCommentShow.value >1) {
+                                                true -> {
+                                                    val n =
+                                                        uiState.commentState.size / numberCommentShow.value
+                                                    numberCommentShow.value = 4 * n
+                                                }
+                                                false -> {
+                                                    numberCommentShow.value = uiState.commentState.size
+                                                }
+                                            }
+                                        }
                                     },
                                 color = Purple500,
                                 style = MaterialTheme.typography.caption,
                             )
                             Text(
-                                text = "Collapse Previous replies",
+                                text = "Collapse all",
                                 Modifier
                                     .padding(start = 25.dp, bottom = 12.dp)
                                     .clickable {
-                                        if (numberCommentShow.value > 0)
-                                            numberCommentShow.value -= 1
+                                        numberCommentShow.value = 0
                                     },
                                 color = Purple500,
                                 style = MaterialTheme.typography.caption,
@@ -147,7 +159,7 @@ fun DetailTask(
                         }
                     }
 
-                    items(items = uiState.commentState.takeLast(4 * numberCommentShow.value)) { cmt ->
+                    items(items = uiState.commentState.takeLast(numberCommentShow.value)) { cmt ->
                         RowComment(comment = cmt)
                     }
 
