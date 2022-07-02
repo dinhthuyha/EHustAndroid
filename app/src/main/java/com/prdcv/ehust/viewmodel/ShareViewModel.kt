@@ -13,7 +13,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.*
+import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
@@ -52,7 +56,7 @@ class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val sharedPreferences: SharedPreferences,
     private val newsRepository: NewsRepository
-) : ViewModel() {
+) : BaseViewModel() {
     private var _profileState = SingleLiveEvent<State<User>>()
     val profileState get() = _profileState
 
@@ -62,8 +66,6 @@ class ShareViewModel @Inject constructor(
 
     private var _newsState = MutableStateFlow<State<List<News>>>(State.Loading)
     val newsState: StateFlow<State<List<News>>> get() = _newsState
-
-    var user: User? = null
 
     private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token

@@ -33,9 +33,9 @@ private val semibold = Font(R.font.raleway_semibold, FontWeight.W600)
 private val craneFontFamily = FontFamily(fonts = listOf(light, regular, medium, semibold))
 
 val captionTextStyle = TextStyle(
-    fontFamily = craneFontFamily,
-    fontWeight = FontWeight.W400,
-    fontSize = 16.sp
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
 )
 
 val craneTypography = Typography(
@@ -103,5 +103,6 @@ val craneTypography = Typography(
         fontFamily = craneFontFamily,
         fontWeight = FontWeight.W400,
         fontSize = 12.sp
-    )
+    ),
+
 )

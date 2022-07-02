@@ -1,7 +1,8 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
+import com.hadt.ehust.model.TopicStatus
+import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
@@ -79,4 +80,12 @@ class EHustClient @Inject constructor(
     ) = ehustService.findAllTaskByIdTopic(idTopic)
 
     suspend fun submitTopicSuggestion(topic: Topic) = ehustService.submitTopicSuggestion(topic)
+
+    suspend fun getDetailTask(id: Int) = ehustService.getDetailTask(id)
+
+    suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)
+
+    suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
+
+    suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
 }

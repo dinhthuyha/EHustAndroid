@@ -41,12 +41,12 @@ import java.time.Period
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun TaskScreen(navController: NavController) {
+fun TaskScreenPreview(navController: NavController, idTopic: Int) {
     val viewModel: TaskViewModel = viewModel()
     val uiState = viewModel.uiState
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.findAllTaskByIdTopic(19)
+        viewModel.findAllTaskByIdTopic(idTopic)
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -78,7 +78,7 @@ fun TaskScreen(navController: NavController) {
                     ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
                     SwipeRefresh(
                         state = uiState.refreshState,
-                        onRefresh = { viewModel.findAllTaskByIdTopic(19) }
+                        onRefresh = { viewModel.findAllTaskByIdTopic(idTopic) }
                     ) {
                         LazyColumn(
                             Modifier
@@ -97,7 +97,7 @@ fun TaskScreen(navController: NavController) {
                                             .animateItemPlacement()
                                             .padding(it)
                                             .clickable {
-                                                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment())
+                                                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(item.id))
                                             }
                                     )
                                 }

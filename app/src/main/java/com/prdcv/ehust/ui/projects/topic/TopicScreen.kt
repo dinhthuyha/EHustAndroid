@@ -30,7 +30,6 @@ import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.TopicsViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -169,7 +168,7 @@ fun TopicStudentRow(
             .fillMaxWidth()
             .clickable {
                 if (topic.status == TopicStatus.ACCEPT) {
-                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
                 }
             }
     ) {
@@ -206,7 +205,7 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment())
+                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
             }
     ) {
         Column(

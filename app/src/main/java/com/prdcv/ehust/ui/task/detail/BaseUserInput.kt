@@ -13,6 +13,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,7 +30,8 @@ fun CraneUserInput(
     onClick: () -> Unit = { },
     caption: String? = null,
     @DrawableRes vectorImageId: Int? = null,
-    tint: Color = LocalContentColor.current
+    tint: Color = LocalContentColor.current,
+    readOnly: MutableState<Boolean> = mutableStateOf(true)
 ) {
     CraneBaseUserInput(
         modifier = modifier,

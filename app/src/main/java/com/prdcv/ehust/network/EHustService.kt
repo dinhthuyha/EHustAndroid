@@ -2,16 +2,28 @@ package com.prdcv.ehust.network
 
 import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.Subject
+import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.model.TaskData
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface EHustService {
     @FormUrlEncoded
@@ -102,4 +114,32 @@ interface EHustService {
 
     @POST("topic/suggestion")
     suspend fun submitTopicSuggestion(@Body topic: Topic): Response<ResponseBody>
+
+    /**
+     * get detail task
+     */
+    @GET("task/{id}")
+    suspend fun getDetailTask(@Path("id") id: Int): Response<TaskDetail>
+
+    /**
+     * get list comments
+     */
+    @GET("comments/{id_task}")
+    suspend fun findAllCommentByIdTask(@Path("id_task") idTask: Int): Response<List<Comment>>
+
+    /**
+     * post comment
+     */
+    @POST("comments/{id_task}")
+    suspend fun postComment(@Path("id_task") idTask: Int, @Body comment: Comment): Response<List<Comment>>
+
+    /**
+     * delete comment
+     */
+    @DELETE("deleteComment")
+    suspend fun deleteComment(@Path("id") id: Int): Response<ResponseBody>
+
+    @Multipart
+    @POST("upload")
+    suspend fun uploadFile(@Part file: MultipartBody.Part )
 }
