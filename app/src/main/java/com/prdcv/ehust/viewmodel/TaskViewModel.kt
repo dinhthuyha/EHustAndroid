@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -86,6 +87,12 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             delay(2000)
             taskRepository.findAllTaskByIdTopic(idTopic).collect { uiState.addTasksFromState(it) }
+        }
+    }
+
+    fun findAllTaskWillExpire() {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.findAllTaskWillExpire().collect { uiState.addTasksFromState(it) }
         }
     }
 }

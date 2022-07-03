@@ -37,4 +37,13 @@ class TaskRepository @Inject constructor(
             }
         }.asFlow()
     }
+
+    fun findAllTaskWillExpire(): Flow<State<List<TaskData>>> {
+        return object : NetworkBoundRepository<List<TaskData>>() {
+            override suspend fun fetchFromRemote(): Response<List<TaskData>> {
+                return eHustClient.findAllTaskWillExpire()
+            }
+        }.asFlow()
+    }
+
 }

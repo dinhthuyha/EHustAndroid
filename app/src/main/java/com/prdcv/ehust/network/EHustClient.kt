@@ -91,4 +91,6 @@ class EHustClient @Inject constructor(
     suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
+
+    suspend fun findAllTaskWillExpire() = ehustService.findAllTaskWillExpire()
 }

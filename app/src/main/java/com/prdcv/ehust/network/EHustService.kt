@@ -140,4 +140,7 @@ interface EHustService {
     @Multipart
     @POST("upload")
     suspend fun uploadFile(@Part file: MultipartBody.Part )
+
+    @GET("task/willexpire")
+    suspend fun findAllTaskWillExpire(): Response<List<TaskData>>
 }
