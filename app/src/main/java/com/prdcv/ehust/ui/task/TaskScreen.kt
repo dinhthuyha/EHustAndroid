@@ -157,7 +157,6 @@ fun TaskRow(
         modifier = Modifier
             .padding(5.dp)
             .fillMaxWidth()
-            .clickable { }
             .then(modifier)
     ) {
         Row(

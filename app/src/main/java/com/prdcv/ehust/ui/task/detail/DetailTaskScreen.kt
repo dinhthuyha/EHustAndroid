@@ -5,6 +5,7 @@ import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -18,11 +19,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,15 +46,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
 import com.prdcv.ehust.extension.getFileName
-import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
+import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -70,20 +71,17 @@ fun DetailTask(
     LaunchedEffect(key1 = Unit) {
         viewModel.getDetailTask()
     }
-    val uiState = viewModel.uiTaskState
+    val uiState = viewModel.uiState
     val numberCommentShow: MutableState<Int> = mutableStateOf(4)
-    val readOnly = rememberSaveable {
-        mutableStateOf(true)
-    }
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
     DefaultTheme {
         Scaffold(topBar = {
             ToolBar(
-                title = uiState.taskDetailState.title,
+                title = uiState.taskTitle.value,
                 onCloseScreen = { (navController.popBackStack()) },
-                onEditTask = { readOnly.value = false })
+                onEditTask = { uiState.readOnly.value = false })
         }, bottomBar = {
             BottomBarComment(onSendClick = {
                 viewModel.postComment(it)
@@ -96,7 +94,7 @@ fun DetailTask(
                 }
             })
         }) {
-            if (uiState.taskDetailState.id == null) {
+            if (uiState.isLoading.value) {
                 LoadingAnimation()
             } else {
                 LazyColumn(
@@ -106,17 +104,15 @@ fun DetailTask(
                 ) {
                     item {
                         RowDescription(
-                            des = uiState.taskDetailState.description ?: "",
-                            onTextChanged = viewModel::onChangeDescription,
-                            readOnly
+                            text = uiState.taskDescription,
+                            uiState.readOnly
                         )
                     }
                     item {
                         RowTaskSetup(
-                            task = uiState.taskDetailState,
                             viewModel = viewModel,
                             onDateSelectionClicked,
-                            readOnly = readOnly
+                            uiState = uiState
                         )
                     }
                     item {
@@ -134,9 +130,9 @@ fun DetailTask(
                             )
                         }
                     }
-                    items(items = uiState.filesState) { t -> AttachFile(t) }
+                    items(items = uiState.taskAttachments) { t -> AttachFile(t) }
                     item {
-                        if (!readOnly.value) {
+                        if (!uiState.readOnly.value) {
                             Row(modifier = Modifier.padding(start = 25.dp)) {
                                 ButtonAddFile(viewModel::addFile)
                             }
@@ -144,76 +140,21 @@ fun DetailTask(
                     }
                     item { Spacer(modifier = Modifier.height(10.dp)) }
                     item {
-                        Text(
-                            text = "Comments",
-                            Modifier.padding(start = 25.dp, bottom = 12.dp),
-                            color = Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                        if (uiState.commentState.size > 4) {
-                            Text(
-                                text = "See Previous replies",
-                                Modifier
-                                    .padding(start = 25.dp, bottom = 12.dp)
-                                    .clickable {
-                                        if (numberCommentShow.value == 0) {
-                                            numberCommentShow.value = 4
-                                        } else {
-                                            when (uiState.commentState.size / numberCommentShow.value > 1) {
-                                                true -> {
-                                                    val n =
-                                                        uiState.commentState.size / numberCommentShow.value
-                                                    numberCommentShow.value = 4 * n
-                                                }
-                                                false -> {
-                                                    numberCommentShow.value =
-                                                        uiState.commentState.size
-                                                }
-                                            }
-                                        }
-                                    },
-                                color = Purple500,
-                                style = MaterialTheme.typography.caption,
-                            )
-                            Text(
-                                text = "Collapse all",
-                                Modifier
-                                    .padding(start = 25.dp, bottom = 12.dp)
-                                    .clickable {
-                                        numberCommentShow.value = 0
-                                    },
-                                color = Purple500,
-                                style = MaterialTheme.typography.caption,
-                            )
-                        }
+                        CommentSection(uiState, numberCommentShow)
                     }
 
-                    items(items = uiState.commentState.takeLast(numberCommentShow.value)) { cmt ->
+                    items(items = uiState.taskComments.value.takeLast(numberCommentShow.value)) { cmt ->
                         RowComment(comment = cmt)
                     }
 
-                    if (!readOnly.value) {
+                    if (!uiState.readOnly.value) {
                         item {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxSize()
                             ) {
                                 Button(
-                                    onClick = {
-                                        viewModel.uiTaskState.apply {
-                                            Log.d(
-                                                "TAG",
-                                                "DetailTask: ${onDescriptionTextChange}," +
-                                                        " ${viewModel.calendarState?.calendarUiState?.value?.selectedDatesFormatted}," +
-                                                        " ${onEstimateTimeTextChange}," +
-                                                        " ${onSpendTimeTextChange}," +
-                                                        "${onPercentDoneTextChange}," +
-                                                        " ${onAssigneeTextChange}"
-                                            )
-                                        }
-                                        viewModel.updateTask()
-
-                                    },
+                                    onClick = viewModel::updateTaskDetails,
                                     content = {
                                         Text(
                                             text = "Submit",
@@ -235,22 +176,55 @@ fun DetailTask(
     }
 }
 
-fun String.convertToDate(): LocalDate {
-    //  val arr =calendarState?.calendarUiState?.value?.selectedDatesFormatted.split(" - ")
-    var spf = SimpleDateFormat("MMM dd")
-    val newDate = spf.parse(this)
-    spf = SimpleDateFormat("yyyy-MM-dd")
-    val date = spf.format(newDate)
-
-    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
-    //convert String to LocalDate
-
-    //convert String to LocalDate
-    val localDate = LocalDate.parse(date, formatter)
-   return localDate
-
-
+@Composable
+private fun CommentSection(
+    uiState: TaskDetailScreenState,
+    numberCommentShow: MutableState<Int>
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Comments",
+            Modifier.padding(start = 25.dp, bottom = 12.dp),
+            color = Black,
+            fontWeight = FontWeight.Bold
+        )
+        if (uiState.taskComments.value.size > 4) {
+            Text(
+                text = "See Previous replies",
+                Modifier
+                    .padding(start = 25.dp, bottom = 12.dp)
+                    .clickable {
+                        if (numberCommentShow.value == 0) {
+                            numberCommentShow.value = 4
+                        } else {
+                            when (uiState.taskComments.value.size / numberCommentShow.value > 1) {
+                                true -> {
+                                    val n =
+                                        uiState.taskComments.value.size / numberCommentShow.value
+                                    numberCommentShow.value = 4 * n
+                                }
+                                false -> {
+                                    numberCommentShow.value =
+                                        uiState.taskComments.value.size
+                                }
+                            }
+                        }
+                    },
+                color = Purple500,
+                style = MaterialTheme.typography.caption,
+            )
+            Text(
+                text = "Collapse all",
+                Modifier
+                    .padding(start = 25.dp, bottom = 12.dp)
+                    .clickable {
+                        numberCommentShow.value = 0
+                    },
+                color = Purple500,
+                style = MaterialTheme.typography.caption,
+            )
+        }
+    }
 }
 
 @Composable
@@ -343,8 +317,6 @@ fun LoadingAnimation(
             }
         }
     }
-
-
 }
 
 
@@ -366,14 +338,11 @@ fun AttachFile(name: String) {
 
 @Composable
 fun RowTaskSetup(
-    task: TaskDetail = TaskDetail(),
     viewModel: DetailTaskViewModel,
     onDateSelectionClicked: () -> Unit = {},
-    readOnly: MutableState<Boolean>
-
+    uiState: TaskDetailScreenState
 ) {
-
-    val selectedDates = viewModel?.calendarState?.calendarUiState?.value?.selectedDatesFormatted
+    val activity = LocalContext.current as? AppCompatActivity
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -387,31 +356,53 @@ fun RowTaskSetup(
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
-
         ) {
             Column {
-                DatesUserInput(
-                    cationText = task.selectedDatesFormatted,
-                    datesSelected = selectedDates.toString(),
-                    onDateSelectionClicked = DateContentUpdates(
-                        onDateSelectionClicked = onDateSelectionClicked,
-                    ).onDateSelectionClicked,
-                    readOnly = readOnly
-                )
-                Row {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)) {
+                    RowElementSetupTask(
+                        value = uiState.uiDateRange,
+                        title = "",
+                        readOnly = mutableStateOf(true),
+                        idIcon = R.drawable.ic_date,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+                            if (uiState.readOnly.value) return@clickable
+                            val picker = MaterialDatePicker.Builder
+                                .dateRangePicker()
+                                .setTitleText("Select dates")
+                                .apply {
+                                    uiState
+                                        .getSelectedDates()
+                                        ?.let(::setSelection)
+                                }
+                                .build()
 
+                            picker.addOnPositiveButtonClickListener {
+                                uiState.updateSelectedDates(it)
+                            }
+
+                            activity?.let {
+                                picker.show(it.supportFragmentManager, picker.toString())
+                            }
+                        }) {}
+                }
+
+                Row {
                     Column(
                         modifier = Modifier.weight(0.45f),
                         horizontalAlignment = Alignment.Start
                     ) {
                         RowElementSetupTask(
-                            onTextChanged = viewModel::onEstimateTimeTextChange,
-                            content = task.estimateTime.toString(),
+                            value = uiState.taskEstimateTime,
                             title = "Estimate time",
                             idIcon = R.drawable.ic_time,
                             "Hours",
-                            readOnly = readOnly
+                            readOnly = uiState.readOnly
                         )
                     }
 
@@ -420,11 +411,11 @@ fun RowTaskSetup(
                         horizontalAlignment = Alignment.Start
                     ) {
                         RowElementSetupTask(
-                            onTextChanged = viewModel::onSpendTimeTextChange,
-                            content = task.spendTime.toString(),
+                            value = uiState.taskSpendTime,
                             title = "Spend time",
                             idIcon = R.drawable.ic_spendtime,
-                            "Hours", readOnly = readOnly
+                            "Hours",
+                            readOnly = uiState.readOnly
                         )
                     }
 
@@ -435,11 +426,10 @@ fun RowTaskSetup(
                         horizontalAlignment = Alignment.Start
                     ) {
                         RowElementSetupTask(
-                            onTextChanged = viewModel::onPercentDoneTextChange,
-                            content = task.progress?.percent.toString(),
+                            value = uiState.taskProgress,
                             title = "Done",
                             idIcon = R.drawable.ic_done,
-                            readOnly = readOnly,
+                            readOnly = uiState.readOnly,
                             trailingTitle = "%"
                         )
                     }
@@ -448,12 +438,11 @@ fun RowTaskSetup(
                         horizontalAlignment = Alignment.Start
                     ) {
                         RowElementSetupTask(
-                            onTextChanged = viewModel::onAssigneeTextChange,
-                            content = task.assignee.toString(),
+                            value = uiState.taskAssignee,
                             title = "Assignee",
                             idIcon = R.drawable.ic_assignee,
                             modifier = Modifier.fillMaxWidth(),
-                            readOnly = readOnly,
+                            readOnly = uiState.readOnly,
                             keyboardType = KeyboardType.Text
                         )
                     }
@@ -469,8 +458,7 @@ fun RowTaskSetup(
 
 @Composable
 fun RowElementSetupTask(
-    onTextChanged: (String) -> Unit,
-    content: String,
+    value: MutableState<String>,
     title: String,
     idIcon: Int? = null,
     trailingTitle: String? = null,
@@ -480,15 +468,11 @@ fun RowElementSetupTask(
 
 ) {
     val focusManager = LocalFocusManager.current
-    var txt = remember { mutableStateOf(content) }
     Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
-            value = txt.value,
+            value = value.value,
             maxLines = 1,
-            onValueChange = {
-                txt.value = it
-                onTextChanged(txt.value)
-            },
+            onValueChange = { value.value = it },
             modifier = modifier
                 .width(95.dp)
                 .then(modifier),
@@ -522,10 +506,7 @@ fun RowElementSetupTask(
                 imeAction = ImeAction.Done,
                 keyboardType = keyboardType
             ),
-            keyboardActions = KeyboardActions(onDone = {
-                onTextChanged(txt.value)
-                focusManager.clearFocus()
-            })
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
         )
         trailingTitle?.let {
             Text(
@@ -537,20 +518,16 @@ fun RowElementSetupTask(
                 style = MaterialTheme.typography.caption
             )
         }
-
-
     }
 }
 
 
 @Composable
 fun RowDescription(
-    des: String,
-    onTextChanged: (String) -> Unit,
+    text: MutableState<String>,
     readOnly: MutableState<Boolean>
 ) {
     val focusManager = LocalFocusManager.current
-    val txt = mutableStateOf(des)
 
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
@@ -565,13 +542,11 @@ fun RowDescription(
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
-
         ) {
             OutlinedTextField(
-                value = txt.value,
+                value = text.value,
                 onValueChange = {
-                    txt.value = it
+                    text.value = it
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Transparent,
@@ -581,7 +556,6 @@ fun RowDescription(
                 textStyle = TextStyle(fontWeight = FontWeight.W400),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
-                    onTextChanged(txt.value)
                     focusManager.clearFocus()
                 })
             )
@@ -641,7 +615,7 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
             }
         },
         backgroundColor = colorResource(id = R.color.text_color),
-        contentColor = Color.White,
+        contentColor = White,
         elevation = 2.dp,
         actions = {
             // RowScope here, so these icons will be placed horizontally
@@ -657,7 +631,7 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun BottomBarComment(onSendClick: (String) -> Unit = {}) {
+fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
         var txt by remember { mutableStateOf("") }
 
@@ -697,7 +671,7 @@ fun BottomBarComment(onSendClick: (String) -> Unit = {}) {
 
             IconButton(
                 onClick = {
-                    onSendClick(txt)
+                    onSendClick?.invoke(txt)
                     txt = ""
                 }, enabled = txt.isNotBlank(), modifier = Modifier
                     .weight(1f)
@@ -710,11 +684,5 @@ fun BottomBarComment(onSendClick: (String) -> Unit = {}) {
                 )
             }
         }
-
-
     }
-
 }
-
-private val Float.percent: String
-    get() = "${(this * 100).toInt()}"
