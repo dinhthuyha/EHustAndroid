@@ -10,6 +10,7 @@ import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
+import com.prdcv.ehust.ui.task.detail.convertToDate
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -74,11 +75,40 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun updateTask(taskDetail: TaskDetail){
+    fun updateTask(){
+        var task = TaskDetail()
+        uiTaskState.apply {
+            val id = taskDetailState.id
+            val des = if (uiTaskState.onDescriptionTextChange == "") null else onDescriptionTextChange
+            val spendTime = if (uiTaskState.onSpendTimeTextChange== "")null else onSpendTimeTextChange.toInt()
+            val estimateTime = if (uiTaskState.onEstimateTimeTextChange== "")null else onEstimateTimeTextChange.toInt()
+            val done = if (uiTaskState.onPercentDoneTextChange== "")null else (onPercentDoneTextChange.toFloat()/100)
+            val assign = if (uiTaskState.onAssigneeTextChange == "") null else onAssigneeTextChange
+            var startDate: LocalDate? = null
+            var dueDate: LocalDate? = null
+            val arr = if (calendarState.calendarUiState.value.selectedDatesFormatted == "") null else{
+                calendarState.calendarUiState.value.selectedDatesFormatted.split(" - ")
+            }
+            arr?.let {
+                startDate = if (it[0]=="") null else {it[0].convertToDate()}
+                dueDate = if (it[1]=="") null else {it[1].convertToDate()}
+            }
+            task = TaskDetail(id = id,
+                description = des,
+                spendTime = spendTime,
+                estimateTime = estimateTime,
+                progress = done,
+                assignee = assign,
+                startDate = startDate,
+                dueDate = dueDate)
+        }
+
         viewModelScope.launch {
-            taskRepository.updateTask(taskDetail).collect{
+            taskRepository.updateTask(task).collect{
                 when(val state = it){
-                    is State.Success -> {}
+                    is State.Success -> {
+                        getDetailTask()
+                    }
                     else -> {}
                 }
             }

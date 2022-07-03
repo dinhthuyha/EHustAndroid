@@ -213,24 +213,7 @@ fun DetailTask(
                                                         " ${onAssigneeTextChange}"
                                             )
                                         }
-                                        val id = uiState.taskDetailState.id
-                                        val des = uiState.onDescriptionTextChange
-                                        val spendTime = if (uiState.onSpendTimeTextChange== "")null else uiState.onSpendTimeTextChange.toInt()
-                                        val estimateTime = if (uiState.onEstimateTimeTextChange== "")null else uiState.onEstimateTimeTextChange.toInt()
-                                        val done = if (uiState.onPercentDoneTextChange== "")null else (uiState.onPercentDoneTextChange.toString().toFloat()/100)
-                                        val assign = uiState.onAssigneeTextChange
-                                        var startDate: LocalDate? = null
-                                        var dueDate: LocalDate? = null
-                                        val arr = if ( viewModel.calendarState.calendarUiState.value.selectedDatesFormatted == "") null else{
-                                            viewModel.calendarState.calendarUiState.value.selectedDatesFormatted.split(" - ")
-                                        }
-                                        arr?.let {
-                                            startDate = if (it[0]=="") null else {it[0].convertToDate()}
-                                            dueDate = if (it[1]=="") null else {it[1].convertToDate()}
-                                        }
-
-                                        val taskDetail = TaskDetail(id = id, description = des, spendTime = spendTime , estimateTime = estimateTime, progress = done, assignee = assign, startDate = startDate, dueDate = dueDate)
-                                        viewModel.updateTask(taskDetail)
+                                        viewModel.updateTask()
 
                                     },
                                     content = {
