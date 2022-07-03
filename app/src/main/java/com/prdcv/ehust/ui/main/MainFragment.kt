@@ -21,7 +21,6 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
     private lateinit var viewPager: ViewPager
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var viewPagerAdapterAdapter: MainViewPagerAdapter
-
     override fun getViewBinding(inflater: LayoutInflater): MainFragmentBinding =
         MainFragmentBinding.inflate(inflater)
 
