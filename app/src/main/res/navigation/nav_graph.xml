@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_mainFragment_to_detailTaskFragment"
             app:destination="@id/detailTaskFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment
@@ -75,6 +78,9 @@
             android:name="user"
             app:argType="com.prdcv.ehust.model.User"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/studentsFragment"
