@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
@@ -24,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
     private val scheduleTodayAdapter = ScheduleTodayAdapter()
+    val taskViewModel:TaskViewModel by viewModels()
     companion object {
         fun newInstance() = HomeFragment()
         private const val TAG = "HomeFragment"
@@ -37,22 +41,21 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        taskViewModel.findAllTaskWillExpire()
     }
     @OptIn(ExperimentalFoundationApi::class)
     override fun init() {
         binding.viewStudent.composeTask.setContent {
             val taskViewModel: TaskViewModel = hiltViewModel()
             LaunchedEffect(key1 = Unit) {
-                taskViewModel.findAllTaskWillExpire()
+
             }
             val uiState = taskViewModel.uiState
-            LazyColumn {
-                items(items = uiState.filteredTaskList, key = { it.id }) { item ->
+            Column(modifier = Modifier.wrapContentHeight()) {
+                uiState.filteredTaskList.forEach { item ->
                     TaskRow(
                         data = item,
                         modifier = Modifier
-                            .animateItemPlacement()
                             .clickable {
                                 findNavController().navigate(
                                     MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
