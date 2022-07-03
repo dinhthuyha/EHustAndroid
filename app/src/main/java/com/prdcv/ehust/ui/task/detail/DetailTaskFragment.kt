@@ -48,7 +48,7 @@ class DetailTaskFragment : BaseFragment() {
                                 navController.navigate(Routes.Calendar.route)
                             },
                             viewModel = viewModel,
-                            mNavController = findNavController()
+                            navController = findNavController()
                         )
                         Log.d("hadinh", "onViewCreated: "+ viewModel?.calendarState.calendarUiState.value.selectedDatesFormatted)
                     }

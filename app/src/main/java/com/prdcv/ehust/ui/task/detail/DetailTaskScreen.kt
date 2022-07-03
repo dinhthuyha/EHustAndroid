@@ -60,13 +60,12 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-lateinit var navController: NavController
 
 @Composable
 fun DetailTask(
     onDateSelectionClicked: () -> Unit,
     viewModel: DetailTaskViewModel,
-    mNavController: NavController
+    navController: NavController
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.getDetailTask()
@@ -100,7 +99,6 @@ fun DetailTask(
             if (uiState.taskDetailState.id == null) {
                 LoadingAnimation()
             } else {
-                navController = mNavController
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.padding(it),
