@@ -1,7 +1,7 @@
 package com.prdcv.ehust.ui.task.detail
 
 
-import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prdcv.ehust.R
+import com.prdcv.ehust.extension.getFileName
+import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
@@ -54,6 +57,8 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 lateinit var navController: NavController
 
@@ -208,6 +213,24 @@ fun DetailTask(
                                                         " ${onAssigneeTextChange}"
                                             )
                                         }
+                                        val id = uiState.taskDetailState.id
+                                        val des = uiState.onDescriptionTextChange
+                                        val spendTime = if (uiState.onSpendTimeTextChange== "")null else uiState.onSpendTimeTextChange.toInt()
+                                        val estimateTime = if (uiState.onEstimateTimeTextChange== "")null else uiState.onEstimateTimeTextChange.toInt()
+                                        val done = if (uiState.onPercentDoneTextChange== "")null else (uiState.onPercentDoneTextChange.toString().toFloat()/100)
+                                        val assign = uiState.onAssigneeTextChange
+                                        var startDate: LocalDate? = null
+                                        var dueDate: LocalDate? = null
+                                        val arr = if ( viewModel.calendarState.calendarUiState.value.selectedDatesFormatted == "") null else{
+                                            viewModel.calendarState.calendarUiState.value.selectedDatesFormatted.split(" - ")
+                                        }
+                                        arr?.let {
+                                            startDate = if (it[0]=="") null else {it[0].convertToDate()}
+                                            dueDate = if (it[1]=="") null else {it[1].convertToDate()}
+                                        }
+
+                                        val taskDetail = TaskDetail(id = id, description = des, spendTime = spendTime , estimateTime = estimateTime, progress = done, assignee = assign, startDate = startDate, dueDate = dueDate)
+                                        viewModel.updateTask(taskDetail)
 
                                     },
                                     content = {
@@ -231,17 +254,33 @@ fun DetailTask(
     }
 }
 
+fun String.convertToDate(): LocalDate {
+    //  val arr =calendarState?.calendarUiState?.value?.selectedDatesFormatted.split(" - ")
+    var spf = SimpleDateFormat("MMM dd")
+    val newDate = spf.parse(this)
+    spf = SimpleDateFormat("yyyy-MM-dd")
+    val date = spf.format(newDate)
+
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    //convert String to LocalDate
+
+    //convert String to LocalDate
+    val localDate = LocalDate.parse(date, formatter)
+   return localDate
+
+
+}
+
 @Composable
 fun ButtonAddFile(callback: (String) -> Unit) {
-    val intent = Intent(Intent.ACTION_GET_CONTENT)
-    intent.type = "*/*";
-    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    val context = LocalContext.current
     val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { imageUri ->
-            if (imageUri != null) {
-                val a = imageUri
-                callback(imageUri.path!!)
-
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+//                val file = context.openInputStream(uri)
+//                val type = context.getType(uri)
+                context.getFileName(uri)?.let(callback)
             }
         }
 
@@ -470,7 +509,7 @@ fun RowElementSetupTask(
                 onTextChanged(txt.value)
             },
             modifier = modifier
-                .width(90.dp)
+                .width(95.dp)
                 .then(modifier),
             colors =
             TextFieldDefaults.outlinedTextFieldColors(

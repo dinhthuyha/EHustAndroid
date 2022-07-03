@@ -3,18 +3,19 @@ package com.prdcv.ehust.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import javax.annotation.meta.When
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +34,7 @@ class DetailTaskViewModel @Inject constructor(
             calendarState.setSelectedDay(daySelected)
         }
     }
+
 
     fun postComment(content: String){
         viewModelScope.launch {
@@ -72,6 +74,17 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
+    fun updateTask(taskDetail: TaskDetail){
+        viewModelScope.launch {
+            taskRepository.updateTask(taskDetail).collect{
+                when(val state = it){
+                    is State.Success -> {}
+                    else -> {}
+                }
+            }
+        }
+
+    }
     fun addFile(name: String){
         uiTaskState = uiTaskState.copy(filesState = uiTaskState.addFile(name))
     }
@@ -99,5 +112,9 @@ class DetailTaskViewModel @Inject constructor(
     fun onAssigneeTextChange(value: String) {
         uiTaskState = uiTaskState.copy(onAssigneeTextChange = value)
 
+    }
+
+    companion object {
+        private val DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     }
 }

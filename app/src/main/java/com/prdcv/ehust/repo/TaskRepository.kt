@@ -6,6 +6,7 @@ import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.network.EHustClient
 import com.prdcv.ehust.model.TaskData
 import kotlinx.coroutines.flow.Flow
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -25,6 +26,14 @@ class TaskRepository @Inject constructor(
         return object : NetworkBoundRepository<TaskDetail>() {
             override suspend fun fetchFromRemote(): Response<TaskDetail> {
                 return eHustClient.getDetailTask(id)
+            }
+        }.asFlow()
+    }
+
+    fun updateTask(taskDetail: TaskDetail): Flow<State<ResponseBody>> {
+        return object : NetworkBoundRepository<ResponseBody>() {
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.updateTask(taskDetail)
             }
         }.asFlow()
     }
