@@ -1,8 +1,5 @@
 package com.prdcv.ehust.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
@@ -12,12 +9,11 @@ import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import java.io.InputStream
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,9 +22,7 @@ class DetailTaskViewModel @Inject constructor(
     private val commentRepository: CommentRepository
 ) : BaseViewModel()  {
     var idTask: Int = 0
-
-    var uiTaskState by mutableStateOf(TaskDetailScreenState())
-        private set
+    val uiState = TaskDetailScreenState()
 
     val calendarState = CalendarState()
     fun onDaySelected(daySelected: LocalDate) {
@@ -44,31 +38,31 @@ class DetailTaskViewModel @Inject constructor(
             commentRepository.postComment(idTask, comment).collect{
                 when (val state = it) {
                     is State.Success -> {
-                        uiTaskState = uiTaskState.copy(commentState = state.data)
-
+                        uiState.taskComments.value = state.data
                     }
                     else -> {}
                 }
-                uiTaskState.commentState
             }
         }
     }
 
     fun getDetailTask() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getDetailTask(idTask).collect {
                 when (val state = it) {
+                    is State.Loading -> uiState.isLoading.value = true
                     is State.Success -> {
-                        uiTaskState = uiTaskState.copy(taskDetailState = state.data)
-
+                        uiState.updateStates(state.data)
+                        uiState.isLoading.value = false
                     }
-                    else -> {}
+                    else -> uiState.isLoading.value = false
                 }
             }
+            delay(300)
             commentRepository.findAllCommentByIdTask(idTask).collect{
                 when(val state = it){
                     is State.Success -> {
-                        uiTaskState = uiTaskState.copy(commentState = state.data)
+                        uiState.taskComments.value = state.data
                     }
                     else -> {}
                 }
@@ -76,47 +70,42 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun updateTask(taskDetail: TaskDetail){
+    fun updateTaskDetails(){
+        val task = uiState.run {
+            val id = uiState._taskDetail.id
+            val des = taskDescription.value.takeIf { it.isNotBlank() }
+            val startDate = taskStartDate.value
+            val dueDate = taskDueDate.value
+            val estimateTime = taskEstimateTime.value.takeIf { it.isNotBlank() }?.toInt()
+            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
+            val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.div(100f)
+            val assignee = taskAssignee.value.takeIf { it.isNotBlank() }
+
+            TaskDetail(
+                id = id,
+                description = des,
+                spendTime = spendTime,
+                estimateTime = estimateTime,
+                progress = progress,
+                assignee = assignee,
+                startDate = startDate,
+                dueDate = dueDate
+            )
+        }
+
         viewModelScope.launch {
-            taskRepository.updateTask(taskDetail).collect{
-                when(val state = it){
-                    is State.Success -> {}
+            taskRepository.updateTask(task).collect {
+                when (it) {
+                    is State.Success -> {
+                        getDetailTask()
+                    }
                     else -> {}
                 }
             }
         }
-
     }
+
     fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?){
 
-    }
-    fun onChangeDescription(mDes: String) {
-        uiTaskState = uiTaskState.copy(onDescriptionTextChange = mDes)
-    }
-
-    fun onDateDistanceTextChange(value: String) {
-        uiTaskState = uiTaskState.copy(onDateDistanceTextChange = value)
-    }
-
-    fun onEstimateTimeTextChange(value: String) {
-        uiTaskState = uiTaskState.copy(onEstimateTimeTextChange = value)
-    }
-
-    fun onSpendTimeTextChange(value: String) {
-        uiTaskState = uiTaskState.copy(onSpendTimeTextChange = value)
-    }
-
-    fun onPercentDoneTextChange(value: String) {
-        uiTaskState = uiTaskState.copy(onPercentDoneTextChange = value)
-    }
-
-
-    fun onAssigneeTextChange(value: String) {
-        uiTaskState = uiTaskState.copy(onAssigneeTextChange = value)
-
-    }
-
-    companion object {
-        private val DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     }
 }

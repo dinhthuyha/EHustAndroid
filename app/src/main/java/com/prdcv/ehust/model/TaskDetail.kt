@@ -30,15 +30,4 @@ data class TaskDetail(
 
     val progress: Float? = 0f,
     val assignee: String? = null,
-) {
-    val selectedDatesFormatted: String
-        get() {
-            val output =
-                "${startDate?.format(SHORT_DATE_FORMAT)} - ${dueDate?.format(SHORT_DATE_FORMAT)}"
-            return output
-        }
-
-    companion object {
-        private val SHORT_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd")
-    }
-}
+)

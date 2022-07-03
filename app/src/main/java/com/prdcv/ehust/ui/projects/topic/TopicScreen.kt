@@ -30,6 +30,7 @@ import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.TopicsViewModel
+import java.net.IDN
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -68,6 +69,20 @@ fun TopicScreen(
                     state = uiState.refreshState,
                     onRefresh = updateTopics
                 ) {
+                    fun checkTopic(topics: List<Topic>): List<Topic> {
+                        try {
+                            //chi sho cac de tai chua co sinh vien nao request
+                            topics.firstOrNull { it.idStudent == viewModel.mUserId && it.status == TopicStatus.ACCEPT }?.let {
+                                return listOf(it)
+                            }
+                            topics.filter { it.status == TopicStatus.REQUEST ||( it.idStudent == viewModel.mUserId && it.status == TopicStatus.REQUESTING) }.let {
+                                return it
+                            }
+                        } catch (e: Exception) {
+                            return listOf<Topic>()
+                        }
+                    }
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         LazyColumn(
                             modifier = Modifier
@@ -81,7 +96,8 @@ fun TopicScreen(
                                     }
                                 }
                                 Role.ROLE_STUDENT -> {
-                                    items(items = uiState.topics) {
+                                    val items = checkTopic(uiState.topics)
+                                    items(items = items) {
                                         //update status, id sv
                                         TopicStudentRow(it, viewModel, navController)
                                     }

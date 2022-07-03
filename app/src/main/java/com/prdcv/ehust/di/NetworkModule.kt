@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializer
 import com.prdcv.ehust.network.EHustClient
 import com.prdcv.ehust.network.EHustService
 import com.prdcv.ehust.utils.SharedPreferencesKey.EHUST
@@ -40,6 +42,10 @@ object NetworkModule {
         }
     }
 
+    private val localDateSerializer = JsonSerializer<LocalDate> { id, _, _ ->
+        JsonPrimitive(id.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+    }
+
     @Provides
     @Singleton
     fun provideRetrofit(authenticator: Authenticator): Retrofit {
@@ -60,6 +66,7 @@ object NetworkModule {
                         .setLenient()
                         .registerTypeAdapter(LocalTime::class.java, localTimeDeserializer)
                         .registerTypeAdapter(LocalDate::class.java, localDateDeserializer)
+                        .registerTypeAdapter(LocalDate::class.java, localDateSerializer)
                         .create()
                 )
             )
