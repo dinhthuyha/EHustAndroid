@@ -1,6 +1,6 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.StatusTopic
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.News
@@ -88,7 +88,7 @@ interface EHustService {
     @PUT("updatetopic/{id_topic}")
     suspend fun updateStatusAndIdStudentTopic(
         @Path("id_topic") id: Int,
-        @Field(value = "status") status: StatusTopic,
+        @Field(value = "status") status: TopicStatus,
         @Field(value = "id_student") idStudent: Int
     ): Response<ResponseBody>
 
@@ -108,6 +108,9 @@ interface EHustService {
         @Field(value = "task") taskData: TaskData
     )
 
+    @POST("topic/suggestion")
+    suspend fun submitTopicSuggestion(@Body topic: Topic): Response<ResponseBody>
+
     /**
      * get detail task
      */
@@ -117,7 +120,7 @@ interface EHustService {
     @PUT("updateTask")
     suspend fun updateTask(@Body taskDetail: TaskDetail): Response<ResponseBody>
     /**
-     * get lít comment
+     * get list comments
      */
     @GET("comments/{id_task}")
     suspend fun findAllCommentByIdTask(@Path("id_task") idTask: Int): Response<List<Comment>>

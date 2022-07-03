@@ -11,7 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,44 +21,31 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ShareViewModel
-import kotlinx.coroutines.*
 import kotlinx.parcelize.Parcelize
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun DefaultPreview(
+fun ProjectScreen(
     viewModel: ShareViewModel = viewModel(),
     navController: NavController,
 ) {
-    val uiState = viewModel.uiProjectsState
+    val uiState = viewModel.projectsScreenState
 
-    val refreshingState = rememberSwipeRefreshState(isRefreshing = false)
-    val coroutineScope = rememberCoroutineScope()
-    fun refreshTaskList() {
-
-        refreshingState.isRefreshing = true
-        coroutineScope.launch {
-            withContext(Dispatchers.IO + Job()) {
-                viewModel.callbackGetData()
-            }
-        }
-        coroutineScope.launch {
-            delay(3000)
-            refreshingState.isRefreshing = false
-        }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.findAllProjectsById()
     }
 
     DefaultTheme {
         Scaffold(topBar = { ToolBar("Projects ") }) {
             SwipeRefresh(
-                state = refreshingState,
-                onRefresh = ::refreshTaskList
+                state = uiState.refreshState,
+                onRefresh = { viewModel.findAllProjectsById() }
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     LazyColumn(
@@ -72,7 +59,7 @@ fun DefaultPreview(
                                     ProjectStudent(t, navController)
                                 }
                                 Role.ROLE_TEACHER -> {
-                                    ProjectTeacher(t, navController, viewModel)
+                                    ProjectTeacher(t, navController, viewModel.user)
                                 }
                                 else -> {}
                             }
@@ -115,7 +102,7 @@ fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavC
         ) {
             Row(modifier = Modifier.padding(8.dp)) {
                 Text(
-                    text = "${data.toString()} ",
+                    text = data.toString(),
                     fontSize = 17.sp,
                     modifier = Modifier
                         .padding(1.dp),
@@ -125,7 +112,7 @@ fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavC
             }
             Row(modifier = Modifier.padding(8.dp)) {
                 Text(
-                    text = "${data.line2()}",
+                    text = data.line2(),
                     fontSize = 16.sp,
                     modifier = Modifier
                         .padding(1.dp),
@@ -137,11 +124,12 @@ fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavC
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun ProjectTeacher(
-    data: ClassStudent,
-    navController: NavController,
-    shareViewModel: ShareViewModel
+    data: ClassStudent = classStudentPreview,
+    navController: NavController? = null,
+    teacher: User? = User(id = 123, roleId = Role.ROLE_TEACHER)
 ) {
     Card(
         elevation = 2.dp,
@@ -150,15 +138,14 @@ fun ProjectTeacher(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController.navigate(
+                navController?.navigate(
                     ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(
                         ProjectArg(
-                            idTeacher = shareViewModel.user?.id,
+                            idTeacher = teacher?.id,
                             idProject = data.codeCourse
                         )
                     )
                 )
-
             }
     ) {
         Row(modifier = Modifier.padding(8.dp)) {

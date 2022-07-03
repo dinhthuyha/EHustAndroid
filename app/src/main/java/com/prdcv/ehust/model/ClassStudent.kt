@@ -21,10 +21,10 @@ data class ClassStudent(
 
     ) : ItemSearch, Parcelable {
     override fun toString(): String {
-        return if (semester ==0){
-            "${name} - ${codeCourse}"
-        }else
-         "${name} - ${semester}"
+        return if (semester == 0) {
+            "$name - $codeCourse"
+        } else
+            "$name - $semester"
     }
 
     fun line2(): String {
@@ -33,9 +33,8 @@ data class ClassStudent(
         else if (nameTeacher.isNullOrEmpty() && codeClass == 0) {
             ""
         } else {
-            "Lớp: $codeClass - GV:$nameTeacher"
+            "Lớp: $codeClass - GV: $nameTeacher"
         }
-
     }
 
 }

@@ -1,7 +1,7 @@
 package com.prdcv.ehust.network
 
-import com.hadt.ehust.model.StatusTopic
 import com.prdcv.ehust.model.ClassStudent
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
@@ -72,13 +72,15 @@ class EHustClient @Inject constructor(
 
     suspend fun updateTopicTable(
         idTopic: Int,
-        status: StatusTopic,
+        status: TopicStatus,
         idStudent: Int
     ) = ehustService.updateStatusAndIdStudentTopic(idTopic, status, idStudent)
 
     suspend fun findAllTaskByIdTopic(
         idTopic: Int
     ) = ehustService.findAllTaskByIdTopic(idTopic)
+
+    suspend fun submitTopicSuggestion(topic: Topic) = ehustService.submitTopicSuggestion(topic)
 
     suspend fun getDetailTask(id: Int) = ehustService.getDetailTask(id)
 
