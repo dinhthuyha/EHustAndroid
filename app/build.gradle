@@ -82,6 +82,9 @@ dependencies {
     implementation "com.google.accompanist:accompanist-swiperefresh:0.24.11-rc"
     implementation "com.google.accompanist:accompanist-placeholder-material:0.24.11-rc"
 
+    // minio client
+    implementation "io.minio:minio:8.4.2"
+
     // dagger
     implementation "com.google.dagger:hilt-android:2.42"
     kapt "com.google.dagger:hilt-compiler:2.42"

@@ -13,6 +13,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.minio.MinioClient
 import okhttp3.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -96,5 +97,14 @@ object NetworkModule {
     @Provides
     fun provideMDLClient(mdlService: EHustService): EHustClient {
         return EHustClient(mdlService)
+    }
+
+    @Singleton
+    @Provides
+    fun minioClient(): MinioClient {
+        return MinioClient.builder()
+            .endpoint("http://104.215.150.77:9000")
+            .credentials("iylnllsY1LIML1Kc", "NbjEzIcII2jjwCDju73D89urAdAGVrQx")
+            .build()
     }
 }
