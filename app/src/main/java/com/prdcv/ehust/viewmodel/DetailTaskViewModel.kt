@@ -13,6 +13,8 @@ import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.bouncycastle.asn1.x500.style.RFC4519Style.name
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -85,8 +87,8 @@ class DetailTaskViewModel @Inject constructor(
         }
 
     }
-    fun addFile(name: String){
-        uiTaskState = uiTaskState.copy(filesState = uiTaskState.addFile(name))
+    fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?){
+
     }
     fun onChangeDescription(mDes: String) {
         uiTaskState = uiTaskState.copy(onDescriptionTextChange = mDes)

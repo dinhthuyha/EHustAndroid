@@ -1,20 +1,19 @@
 package com.prdcv.ehust.network
 
-import com.prdcv.ehust.model.ClassStudent
 import com.hadt.ehust.model.TopicStatus
-import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.Subject
-import com.prdcv.ehust.model.TaskDetail
-import com.prdcv.ehust.model.Topic
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.model.*
+import io.minio.MinioClient
+import io.minio.ObjectWriteResponse
+import io.minio.PutObjectArgs
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.io.InputStream
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
-    private val ehustService: EHustService
+    private val ehustService: EHustService,
+    private val minioClient: MinioClient
 ) {
     suspend fun login(id: Int, password: String): Response<Map<String,Any>> {
         return ehustService.login(id, password)
@@ -91,4 +90,19 @@ class EHustClient @Inject constructor(
     suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
+
+    suspend fun uploadAttachment(attachmentInfo: AttachmentInfo): ObjectWriteResponse = withContext(Dispatchers.IO) {
+        minioClient.putObject(
+            PutObjectArgs.builder()
+                .bucket("attachment")
+                .`object`(attachmentInfo.filename)
+                .apply { attachmentInfo.contentType?.let(this::contentType) }
+                .stream(
+                    attachmentInfo.inputStream,
+                    attachmentInfo.inputStream.available().toLong(),
+                    -1
+                )
+                .build()
+        )
+    }
 }

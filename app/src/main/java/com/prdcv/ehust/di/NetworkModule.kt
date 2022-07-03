@@ -95,8 +95,8 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideMDLClient(mdlService: EHustService): EHustClient {
-        return EHustClient(mdlService)
+    fun provideMDLClient(mdlService: EHustService, minioClient: MinioClient): EHustClient {
+        return EHustClient(mdlService, minioClient)
     }
 
     @Singleton

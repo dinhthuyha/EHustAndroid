@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.extension.getFileName
 import com.prdcv.ehust.extension.getType
+import com.prdcv.ehust.extension.openInputStream
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.ui.compose.BGBottomBar
@@ -57,6 +58,7 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -140,7 +142,7 @@ fun DetailTask(
                     item {
                         if (!readOnly.value) {
                             Row(modifier = Modifier.padding(start = 25.dp)) {
-                                ButtonAddFile(viewModel::addFile)
+                                ButtonAddFile(viewModel::onAttachmentSelected)
                             }
                         }
                     }
@@ -273,14 +275,15 @@ fun String.convertToDate(): LocalDate {
 }
 
 @Composable
-fun ButtonAddFile(callback: (String) -> Unit) {
+fun ButtonAddFile(onAttachmentSelected: (inputStream: InputStream?, filename: String?, contentType: String?) -> Unit) {
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
-//                val file = context.openInputStream(uri)
-//                val type = context.getType(uri)
-                context.getFileName(uri)?.let(callback)
+                val file = context.openInputStream(uri)
+                val type = context.getType(uri)
+                val filename = context.getFileName(uri)
+                onAttachmentSelected(file, filename, type)
             }
         }
 
