@@ -132,7 +132,8 @@ fun DetailTask(
                     items(items = uiState.taskAttachments) { t -> AttachFile(t) }
                     item {
                         if (!uiState.readOnly.value) {
-                            Row(modifier = Modifier.padding(start = 25.dp)) {
+                            Column(modifier = Modifier.padding(start = 25.dp)) {
+                                LinearProgressIndicator(progress = uiState.uploadProgress.value, color = Button)
                                 ButtonAddFile(viewModel::onAttachmentSelected)
                             }
                         }

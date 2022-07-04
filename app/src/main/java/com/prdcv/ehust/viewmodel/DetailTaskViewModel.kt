@@ -3,24 +3,27 @@ package com.prdcv.ehust.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
+import com.prdcv.ehust.utils.ProgressStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.time.LocalDate
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailTaskViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val commentRepository: CommentRepository
-) : BaseViewModel()  {
+) : BaseViewModel() {
     var idTask: Int = 0
     val uiState = TaskDetailScreenState()
 
@@ -32,10 +35,10 @@ class DetailTaskViewModel @Inject constructor(
     }
 
 
-    fun postComment(content: String){
+    fun postComment(content: String) {
         viewModelScope.launch {
             val comment = Comment(content = content)
-            commentRepository.postComment(idTask, comment).collect{
+            commentRepository.postComment(idTask, comment).collect {
                 when (val state = it) {
                     is State.Success -> {
                         uiState.taskComments.value = state.data
@@ -59,8 +62,8 @@ class DetailTaskViewModel @Inject constructor(
                 }
             }
             delay(300)
-            commentRepository.findAllCommentByIdTask(idTask).collect{
-                when(val state = it){
+            commentRepository.findAllCommentByIdTask(idTask).collect {
+                when (val state = it) {
                     is State.Success -> {
                         uiState.taskComments.value = state.data
                     }
@@ -70,7 +73,7 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun updateTaskDetails(){
+    fun updateTaskDetails() {
         val task = uiState.run {
             val id = uiState._taskDetail.id
             val des = taskDescription.value.takeIf { it.isNotBlank() }
@@ -105,7 +108,24 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?){
+    fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?) {
+        if (inputStream == null) return
+        filename?.let(uiState.taskAttachments::add)
+        val attachmentInfo = AttachmentInfo(
+            ProgressStream(inputStream, uiState::updateUploadProgress),
+            filename ?: UUID.randomUUID().toString(),
+            contentType
+        )
 
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.uploadAttachment(attachmentInfo).collect {
+                // TOOD: update status
+                when (it) {
+                    is State.Error -> {}
+                    State.Loading -> {}
+                    is State.Success -> {}
+                }
+            }
+        }
     }
 }

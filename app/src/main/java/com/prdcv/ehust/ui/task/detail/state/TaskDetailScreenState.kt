@@ -26,14 +26,9 @@ data class TaskDetailScreenState(
     val taskProgress: MutableState<String> = mutableStateOf(""),
     val taskAssignee: MutableState<String> = mutableStateOf(""),
     val taskComments: MutableState<List<Comment>> = mutableStateOf(emptyList()),
-    val taskAttachments: SnapshotStateList<String> = mutableStateListOf(
-        "kindpng_3651626.png",
-        "kindpng_3651626.png",
-        "kindpng_3651626.png",
-        "kindpng_3651626.png",
-        "kindpng_3651626.png"
-    ),
-    val uiDateRange: MutableState<String> = mutableStateOf("")
+    val taskAttachments: SnapshotStateList<String> = mutableStateListOf(),
+    val uiDateRange: MutableState<String> = mutableStateOf(""),
+    val uploadProgress: MutableState<Float> = mutableStateOf(0f)
 ) {
     fun updateStates(taskDetail: TaskDetail) {
         _taskDetail = taskDetail
@@ -67,6 +62,10 @@ data class TaskDetailScreenState(
         taskStartDate.value = Instant.ofEpochMilli(selected.first).atZone(ZoneOffset.UTC).toLocalDate()
         taskDueDate.value = Instant.ofEpochMilli(selected.second).atZone(ZoneOffset.UTC).toLocalDate()
         uiDateRange.value = selectedDatesFormatted
+    }
+
+    fun updateUploadProgress(p: Float) {
+        uploadProgress.value = p
     }
 
     companion object {

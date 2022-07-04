@@ -84,6 +84,8 @@ dependencies {
 
     // minio client
     implementation "io.minio:minio:8.4.2"
+    implementation 'javax.xml.stream:stax-api:1.0'
+    implementation 'com.fasterxml:aalto-xml:1.3.2'
 
     // dagger
     implementation "com.google.dagger:hilt-android:2.42"
