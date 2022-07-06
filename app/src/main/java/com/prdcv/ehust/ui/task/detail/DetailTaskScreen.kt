@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
+import com.prdcv.ehust.extension.findActivity
 import com.prdcv.ehust.extension.getFileName
 import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.extension.openInputStream
@@ -348,7 +349,7 @@ fun RowTaskSetup(
     viewModel: DetailTaskViewModel
 ) {
     val uiState = viewModel.uiState
-    val activity = LocalContext.current as? AppCompatActivity
+    val activity = LocalContext.current.findActivity() as? AppCompatActivity
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(

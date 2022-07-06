@@ -1,8 +1,10 @@
 package com.prdcv.ehust.extension
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.view.View
@@ -56,3 +58,12 @@ private fun Context.getContentFileName(uri: Uri): String? = runCatching {
 fun Context.openInputStream(uri: Uri) = contentResolver.openInputStream(uri)
 
 fun Context.getType(uri: Uri) = contentResolver.getType(uri)
+
+fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("should be called in the context of an Activity")
+}
