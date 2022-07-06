@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializer
 import com.prdcv.ehust.network.EHustClient
 import com.prdcv.ehust.network.EHustService
 import com.prdcv.ehust.utils.SharedPreferencesKey.EHUST
@@ -13,6 +15,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.minio.MinioClient
 import okhttp3.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -39,6 +42,10 @@ object NetworkModule {
         }
     }
 
+    private val localDateSerializer = JsonSerializer<LocalDate> { id, _, _ ->
+        JsonPrimitive(id.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+    }
+
     @Provides
     @Singleton
     fun provideRetrofit(authenticator: Authenticator): Retrofit {
@@ -59,6 +66,7 @@ object NetworkModule {
                         .setLenient()
                         .registerTypeAdapter(LocalTime::class.java, localTimeDeserializer)
                         .registerTypeAdapter(LocalDate::class.java, localDateDeserializer)
+                        .registerTypeAdapter(LocalDate::class.java, localDateSerializer)
                         .create()
                 )
             )
@@ -94,7 +102,16 @@ object NetworkModule {
     }
 
     @Provides
-    fun provideMDLClient(mdlService: EHustService): EHustClient {
-        return EHustClient(mdlService)
+    fun provideMDLClient(mdlService: EHustService, minioClient: MinioClient): EHustClient {
+        return EHustClient(mdlService, minioClient)
+    }
+
+    @Singleton
+    @Provides
+    fun minioClient(): MinioClient {
+        return MinioClient.builder()
+            .endpoint("http://104.215.150.77:9000")
+            .credentials("iylnllsY1LIML1Kc", "NbjEzIcII2jjwCDju73D89urAdAGVrQx")
+            .build()
     }
 }

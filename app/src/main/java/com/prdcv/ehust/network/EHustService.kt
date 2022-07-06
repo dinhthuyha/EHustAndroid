@@ -1,16 +1,7 @@
 package com.prdcv.ehust.network
 
 import com.hadt.ehust.model.TopicStatus
-import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.Subject
-import com.prdcv.ehust.model.TaskDetail
-import com.prdcv.ehust.model.Topic
-import com.prdcv.ehust.model.User
-import com.prdcv.ehust.model.TaskData
+import com.prdcv.ehust.model.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -100,11 +91,7 @@ interface EHustService {
         @Path("id_topic") id: Int
     ): Response<List<TaskData>>
 
-    @FormUrlEncoded
-    @PUT("updateTask")
-    suspend fun updateTask(
-        @Field(value = "task") taskData: TaskData
-    )
+
 
     @FormUrlEncoded
     @POST("newTask")
@@ -121,6 +108,8 @@ interface EHustService {
     @GET("task/{id}")
     suspend fun getDetailTask(@Path("id") id: Int): Response<TaskDetail>
 
+    @PUT("updateTask")
+    suspend fun updateTask(@Body taskDetail: TaskDetail): Response<ResponseBody>
     /**
      * get list comments
      */
@@ -142,4 +131,10 @@ interface EHustService {
     @Multipart
     @POST("upload")
     suspend fun uploadFile(@Part file: MultipartBody.Part )
+
+    @POST("task/{id_task}/attachment")
+    suspend fun addAttachment(@Path("id_task") idTask: Int, @Body attachment: Attachment): Response<List<Attachment>>
+
+    @GET("task/{id_task}/attachment")
+    suspend fun getAttachments(@Path("id_task") idTask: Int): Response<List<Attachment>>
 }

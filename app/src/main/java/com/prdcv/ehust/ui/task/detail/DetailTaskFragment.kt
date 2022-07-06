@@ -17,7 +17,9 @@ import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.calendar.CalendarScreen
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailTaskFragment : BaseFragment() {
 
     private var idTask: Int=0
@@ -38,38 +40,13 @@ class DetailTaskFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = Routes.Home.route) {
-                    composable(Routes.Home.route) {
-                        val viewModel = hiltViewModel<DetailTaskViewModel>()
-                        viewModel.idTask = idTask
-                        DetailTask(
-                            onDateSelectionClicked = {
-                                navController.navigate(Routes.Calendar.route)
-                            },
-                            viewModel = viewModel,
-                            mNavController = findNavController()
-                        )
-                        Log.d("hadinh", "onViewCreated: "+ viewModel?.calendarState.calendarUiState.value.selectedDatesFormatted)
-                    }
-                    composable(Routes.Calendar.route) {
-                        val parentEntry = remember {
-                            navController.getBackStackEntry(Routes.Home.route)
-                        }
-                        val parentViewModel = hiltViewModel<DetailTaskViewModel>(
-                            parentEntry
-                        )
-                        CalendarScreen(onBackPressed = {
-                            navController.popBackStack()
-                        }, mainViewModel = parentViewModel)
-                    }
-                }
+                val viewModel = hiltViewModel<DetailTaskViewModel>()
+                viewModel.idTask = idTask
+                DetailTask(
+                    viewModel = viewModel,
+                    mNavController = findNavController()
+                )
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 }
