@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.util.Pair
+import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import java.time.Instant
@@ -26,8 +27,9 @@ data class TaskDetailScreenState(
     val taskProgress: MutableState<String> = mutableStateOf(""),
     val taskAssignee: MutableState<String> = mutableStateOf(""),
     val taskComments: MutableState<List<Comment>> = mutableStateOf(emptyList()),
-    val taskAttachments: SnapshotStateList<String> = mutableStateListOf(),
+    val taskAttachments: MutableState<List<Attachment>> = mutableStateOf(emptyList()),
     val uiDateRange: MutableState<String> = mutableStateOf(""),
+    val progressBarVisible: MutableState<Boolean> = mutableStateOf(false),
     val uploadProgress: MutableState<Float> = mutableStateOf(0f)
 ) {
     fun updateStates(taskDetail: TaskDetail) {
@@ -43,11 +45,7 @@ data class TaskDetailScreenState(
         uiDateRange.value = selectedDatesFormatted
     }
 
-    fun addFile(name: String) {
-        taskAttachments.add(name)
-    }
-
-    val selectedDatesFormatted: String
+    private val selectedDatesFormatted: String
         get() = "${taskStartDate.value?.format(SHORT_DATE_FORMAT)} - ${taskDueDate.value?.format(SHORT_DATE_FORMAT)}"
 
     fun getSelectedDates(): Pair<Long, Long>? {

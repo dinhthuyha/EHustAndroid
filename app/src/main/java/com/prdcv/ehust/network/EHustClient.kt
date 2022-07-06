@@ -91,6 +91,8 @@ class EHustClient @Inject constructor(
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
 
+    suspend fun addAttachment(idTask: Int, attachment: Attachment) = ehustService.addAttachment(idTask, attachment)
+
     suspend fun uploadAttachment(attachmentInfo: AttachmentInfo): ObjectWriteResponse = withContext(Dispatchers.IO) {
         minioClient.putObject(
             PutObjectArgs.builder()
@@ -105,4 +107,6 @@ class EHustClient @Inject constructor(
                 .build()
         )
     }
+
+    suspend fun getAttachments(idTask: Int): Response<List<Attachment>> = ehustService.getAttachments(idTask)
 }

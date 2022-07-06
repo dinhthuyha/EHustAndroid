@@ -3,6 +3,7 @@ package com.prdcv.ehust.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
@@ -61,13 +62,29 @@ class DetailTaskViewModel @Inject constructor(
                     else -> uiState.isLoading.value = false
                 }
             }
-            delay(300)
+        }
+    }
+
+    fun getComments() {
+        viewModelScope.launch(Dispatchers.IO) {
             commentRepository.findAllCommentByIdTask(idTask).collect {
                 when (val state = it) {
                     is State.Success -> {
                         uiState.taskComments.value = state.data
                     }
                     else -> {}
+                }
+            }
+        }
+    }
+
+    fun getAttachments() {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.getAttachments(idTask).collect {
+                when (val state = it) {
+                    is State.Error -> {}
+                    State.Loading -> {}
+                    is State.Success -> uiState.taskAttachments.value = state.data
                 }
             }
         }
@@ -108,14 +125,28 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
+    private fun addAttachment(attachment: Attachment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.addAttachment(idTask, attachment).collect {
+                when (val state = it) {
+                    is State.Error -> {}
+                    State.Loading -> {}
+                    is State.Success -> uiState.taskAttachments.value = state.data
+                }
+            }
+        }
+    }
+
     fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?) {
         if (inputStream == null) return
-        filename?.let(uiState.taskAttachments::add)
+//        filename?.let(uiState.taskAttachments::add)
+        val filePath = UUID.randomUUID().toString()
         val attachmentInfo = AttachmentInfo(
             ProgressStream(inputStream, uiState::updateUploadProgress),
-            filename ?: UUID.randomUUID().toString(),
+            filePath,
             contentType
         )
+        uiState.progressBarVisible.value = true
 
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.uploadAttachment(attachmentInfo).collect {
@@ -123,7 +154,10 @@ class DetailTaskViewModel @Inject constructor(
                 when (it) {
                     is State.Error -> {}
                     State.Loading -> {}
-                    is State.Success -> {}
+                    is State.Success -> {
+                        uiState.progressBarVisible.value = false
+                        addAttachment(Attachment(filename, filePath))
+                    }
                 }
             }
         }

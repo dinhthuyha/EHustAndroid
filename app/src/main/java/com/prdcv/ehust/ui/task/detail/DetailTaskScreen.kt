@@ -47,6 +47,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.extension.getFileName
 import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.extension.openInputStream
+import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
@@ -56,13 +57,13 @@ import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import java.io.InputStream
 
 lateinit var navController: NavController
 
 @Composable
 fun DetailTask(
-    onDateSelectionClicked: () -> Unit,
     viewModel: DetailTaskViewModel,
     mNavController: NavController
 ) {
@@ -108,13 +109,12 @@ fun DetailTask(
                         )
                     }
                     item {
-                        RowTaskSetup(
-                            viewModel = viewModel,
-                            onDateSelectionClicked,
-                            uiState = uiState
-                        )
+                        RowTaskSetup(viewModel = viewModel)
                     }
                     item {
+                        LaunchedEffect(key1 = Unit) {
+                            viewModel.getAttachments()
+                        }
                         Spacer(modifier = Modifier.height(15.dp))
                         Row(Modifier.padding(start = 15.dp)) {
                             Icon(
@@ -122,25 +122,27 @@ fun DetailTask(
                                 contentDescription = ""
                             )
                             Text(
-                                text = "Attach file",
+                                text = "Attachments",
                                 Modifier.padding(start = 15.dp, bottom = 12.dp),
                                 color = Black,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                     }
-                    items(items = uiState.taskAttachments) { t -> AttachFile(t) }
+                    items(items = uiState.taskAttachments.value) { t -> AttachmentRow(t) }
                     item {
                         if (!uiState.readOnly.value) {
                             Column(modifier = Modifier.padding(start = 25.dp)) {
-                                LinearProgressIndicator(progress = uiState.uploadProgress.value, color = Button)
+                                if (uiState.progressBarVisible.value) {
+                                    LinearProgressIndicator(progress = uiState.uploadProgress.value, color = Button)
+                                }
                                 ButtonAddFile(viewModel::onAttachmentSelected)
                             }
                         }
                     }
                     item { Spacer(modifier = Modifier.height(10.dp)) }
                     item {
-                        CommentSection(uiState, numberCommentShow)
+                        CommentSection(viewModel, numberCommentShow)
                     }
 
                     items(items = uiState.taskComments.value.takeLast(numberCommentShow.value)) { cmt ->
@@ -178,10 +180,14 @@ fun DetailTask(
 
 @Composable
 private fun CommentSection(
-    uiState: TaskDetailScreenState,
+    viewModel: DetailTaskViewModel,
     numberCommentShow: MutableState<Int>
 ) {
+    val uiState = viewModel.uiState
     Column(modifier = Modifier.fillMaxWidth()) {
+        LaunchedEffect(key1 = Unit) {
+            viewModel.getComments()
+        }
         Text(
             text = "Comments",
             Modifier.padding(start = 25.dp, bottom = 12.dp),
@@ -322,7 +328,7 @@ fun LoadingAnimation(
 
 
 @Composable
-fun AttachFile(name: String) {
+fun AttachmentRow(attachment: Attachment) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -332,17 +338,16 @@ fun AttachFile(name: String) {
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = name, style = MaterialTheme.typography.caption)
+        Text(text = attachment.filename ?: "", style = MaterialTheme.typography.caption)
 
     }
 }
 
 @Composable
 fun RowTaskSetup(
-    viewModel: DetailTaskViewModel,
-    onDateSelectionClicked: () -> Unit = {},
-    uiState: TaskDetailScreenState
+    viewModel: DetailTaskViewModel
 ) {
+    val uiState = viewModel.uiState
     val activity = LocalContext.current as? AppCompatActivity
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
