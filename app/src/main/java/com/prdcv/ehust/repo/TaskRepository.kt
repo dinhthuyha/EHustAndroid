@@ -66,4 +66,13 @@ class TaskRepository @Inject constructor(
     }.catch {
         emit(State.Error("attachment upload failed: ${it.message}"))
     }
+
+    fun findAllTaskWillExpire(): Flow<State<List<TaskData>>> {
+        return object : NetworkBoundRepository<List<TaskData>>() {
+            override suspend fun fetchFromRemote(): Response<List<TaskData>> {
+                return eHustClient.findAllTaskWillExpire()
+            }
+        }.asFlow()
+    }
+
 }

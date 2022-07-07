@@ -44,7 +44,7 @@ class DetailTaskFragment : BaseFragment() {
                 viewModel.idTask = idTask
                 DetailTask(
                     viewModel = viewModel,
-                    mNavController = findNavController()
+                    navController = findNavController()
                 )
             }
         }

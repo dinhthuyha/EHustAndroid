@@ -61,12 +61,11 @@ import kotlinx.coroutines.launch
 import org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import java.io.InputStream
 
-lateinit var navController: NavController
 
 @Composable
 fun DetailTask(
     viewModel: DetailTaskViewModel,
-    mNavController: NavController
+    navController: NavController
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.getDetailTask()
@@ -97,7 +96,6 @@ fun DetailTask(
             if (uiState.isLoading.value) {
                 LoadingAnimation()
             } else {
-                navController = mNavController
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.padding(it),

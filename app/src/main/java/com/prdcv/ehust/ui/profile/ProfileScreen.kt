@@ -1,8 +1,10 @@
 package com.prdcv.ehust.ui.profile
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
@@ -18,10 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.main.MainFragmentDirections
+import com.prdcv.ehust.utils.SharedPreferencesKey
 
 @Composable
 fun ProfileInfoRow(label: String, content: String) {
@@ -133,11 +139,11 @@ fun ProfileName(fullName: String?) {
 }
 
 @Composable
-fun ProfileCard(user: User?) {
+fun ProfileCard(user: User?, navController: NavController, sharedPreferences: SharedPreferences) {
     DefaultTheme {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            ToolBar(stringResource(id = R.string.profile_title))
-            Row {
+        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+            item { ToolBar(stringResource(id = R.string.profile_title)) }
+            item { Row {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(painter = painterResource(id = R.drawable.background_hust), null)
                     Surface(
@@ -160,9 +166,31 @@ fun ProfileCard(user: User?) {
                             }
                         }
                     }
+                    Button(
+                        onClick = {
+                            try {
+                                navController?.navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
+                            } catch (e: Exception) {
+                                navController?.navigate(MainFragmentDirections.actionMainFragmentToLoginFragment())
+                            }
+                            sharedPreferences.edit().remove(SharedPreferencesKey.TOKEN).commit()
+                        },
+                        modifier = Modifier
+                            .width(200.dp)
+                            .offset(y = (-30).dp),
+                        content = {
+                            Text(
+                                text = "Logout",
+                                style = MaterialTheme.typography.button,
+                                color = Color.White
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = com.prdcv.ehust.ui.compose.Button
+                        )
+                    )
                 }
-            }
-
+            } }
         }
     }
 }
@@ -179,5 +207,5 @@ fun DefaultPreview() {
         instituteOfManagement = "Viện công nghệ thông tin và truyền thông",
         email = "ha.dt173086@sis.hust.edu.vn"
     )
-    ProfileCard(placeholderUser)
+    //ProfileCard(placeholderUser)
 }

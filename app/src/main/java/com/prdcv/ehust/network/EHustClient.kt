@@ -8,7 +8,6 @@ import io.minio.PutObjectArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.io.InputStream
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -109,4 +108,6 @@ class EHustClient @Inject constructor(
     }
 
     suspend fun getAttachments(idTask: Int): Response<List<Attachment>> = ehustService.getAttachments(idTask)
+
+    suspend fun findAllTaskWillExpire() = ehustService.findAllTaskWillExpire()
 }

@@ -137,4 +137,7 @@ interface EHustService {
 
     @GET("task/{id_task}/attachment")
     suspend fun getAttachments(@Path("id_task") idTask: Int): Response<List<Attachment>>
+
+    @GET("task/willexpire")
+    suspend fun findAllTaskWillExpire(): Response<List<TaskData>>
 }
