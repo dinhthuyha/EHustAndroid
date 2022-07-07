@@ -3,9 +3,7 @@ package com.prdcv.ehust.ui.task.detail
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,24 +11,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -39,8 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
@@ -54,11 +52,8 @@ import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
-import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.bouncycastle.asn1.x500.style.RFC4519Style.name
 import java.io.InputStream
 
 
@@ -78,7 +73,7 @@ fun DetailTask(
     DefaultTheme {
         Scaffold(topBar = {
             ToolBar(
-                title = uiState.taskTitle.value,
+                title = "Chi tiết công việc",
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { uiState.readOnly.value = false })
         }, bottomBar = {
@@ -102,8 +97,9 @@ fun DetailTask(
                     state = lazyListState
                 ) {
                     item {
-                        RowDescription(
-                            text = uiState.taskDescription,
+                        RowTaskDescription(
+                            taskTitle = uiState.taskTitle,
+                            taskDescription = uiState.taskDescription,
                             uiState.readOnly
                         )
                     }
@@ -262,69 +258,6 @@ fun ButtonAddFile(onAttachmentSelected: (inputStream: InputStream?, filename: St
     )
 
 }
-
-@Composable
-fun LoadingAnimation(
-    modifier: Modifier = Modifier,
-    circleSize: Dp = 10.dp,
-    circleColor: Color = MaterialTheme.colors.primary,
-    spaceBetween: Dp = 8.dp,
-    travelDistance: Dp = 8.dp
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        val circles = listOf(
-            remember { Animatable(initialValue = 0f) },
-            remember { Animatable(initialValue = 0f) },
-            remember { Animatable(initialValue = 0f) }
-        )
-
-        circles.forEachIndexed { index, animatable ->
-            LaunchedEffect(key1 = animatable) {
-                delay(index * 100L)
-                animatable.animateTo(
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1200
-                            0.0f at 0 with LinearOutSlowInEasing
-                            1.0f at 300 with LinearOutSlowInEasing
-                            0.0f at 600 with LinearOutSlowInEasing
-                            0.0f at 1200 with LinearOutSlowInEasing
-                        },
-                        repeatMode = RepeatMode.Restart
-                    )
-                )
-            }
-        }
-
-        val circleValues = circles.map { it.value }
-        val distance = with(LocalDensity.current) { travelDistance.toPx() }
-
-        Row(
-            modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(spaceBetween)
-        ) {
-            circleValues.forEach { value ->
-                Box(
-                    modifier = Modifier
-                        .size(circleSize)
-                        .graphicsLayer {
-                            translationY = -value * distance
-                        }
-                        .background(
-                            color = circleColor,
-                            shape = CircleShape
-                        )
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun AttachmentRow(attachment: Attachment) {
@@ -528,8 +461,9 @@ fun RowElementSetupTask(
 
 
 @Composable
-fun RowDescription(
-    text: MutableState<String>,
+fun RowTaskDescription(
+    taskTitle: MutableState<String>,
+    taskDescription: MutableState<String>,
     readOnly: MutableState<Boolean>
 ) {
     val focusManager = LocalFocusManager.current
@@ -537,10 +471,9 @@ fun RowDescription(
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = "Desciption",
+            text = "Description",
             Modifier.padding(start = 15.dp, bottom = 12.dp),
-            color = Black,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Card(
             elevation = 4.dp,
@@ -548,22 +481,37 @@ fun RowDescription(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = text.value,
-                onValueChange = {
-                    text.value = it
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Transparent,
-                    unfocusedBorderColor = Transparent
-                ),
-                readOnly = readOnly.value,
-                textStyle = TextStyle(fontWeight = FontWeight.W400),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = {
-                    focusManager.clearFocus()
-                })
-            )
+            Column {
+                BasicTextField(
+                    value = taskTitle.value,
+                    modifier = Modifier.fillMaxWidth().padding(10.dp).padding(start = 5.dp),
+                    onValueChange = { taskTitle.value = it },
+                    readOnly = readOnly.value,
+                    textStyle = TextStyle(fontWeight = FontWeight.SemiBold),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        focusManager.clearFocus()
+                    })
+                )
+                Divider(thickness = 0.5.dp)
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = taskDescription.value,
+                    onValueChange = {
+                        taskTitle.value = it
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Transparent,
+                        unfocusedBorderColor = Transparent
+                    ),
+                    readOnly = readOnly.value,
+                    textStyle = TextStyle(fontWeight = FontWeight.W400),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        focusManager.clearFocus()
+                    })
+                )
+            }
         }
 
     }
@@ -690,4 +638,18 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DescriptionRowPreview() {
+    val title = mutableStateOf("Mockup UI")
+    val des = mutableStateOf("Thiết kế giao diện các màn hình Home, Search, Project, Topic, Calendar, Profile, News")
+    RowTaskDescription(taskTitle = title, taskDescription = des, readOnly = mutableStateOf(false))
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CommentRowPreview() {
+    RowComment(comment = Comment(content = "comment content \uD83E\uDD2A", nameUserPost = "User name"))
 }

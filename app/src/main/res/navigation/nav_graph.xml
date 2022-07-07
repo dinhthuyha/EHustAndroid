@@ -116,5 +116,9 @@
         <argument
             android:name="idTask"
             app:argType="integer" />
+
+        <argument
+            android:name="isNewTask"
+            app:argType="boolean" />
     </fragment>
 </navigation>

@@ -13,8 +13,8 @@ import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.utils.ProgressStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.bouncycastle.asn1.x500.style.RFC4519Style.description
 import java.io.InputStream
 import java.time.LocalDate
 import java.util.*
@@ -26,6 +26,11 @@ class DetailTaskViewModel @Inject constructor(
     private val commentRepository: CommentRepository
 ) : BaseViewModel() {
     var idTask: Int = 0
+    var isNewTask = false
+        set(value) {
+            uiState.readOnly.value = !value
+            field = value
+        }
     val uiState = TaskDetailScreenState()
 
     val calendarState = CalendarState()
@@ -51,6 +56,7 @@ class DetailTaskViewModel @Inject constructor(
     }
 
     fun getDetailTask() {
+        if (isNewTask) return
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getDetailTask(idTask).collect {
                 when (val state = it) {
@@ -66,6 +72,7 @@ class DetailTaskViewModel @Inject constructor(
     }
 
     fun getComments() {
+        if (isNewTask) return
         viewModelScope.launch(Dispatchers.IO) {
             commentRepository.findAllCommentByIdTask(idTask).collect {
                 when (val state = it) {
@@ -79,6 +86,7 @@ class DetailTaskViewModel @Inject constructor(
     }
 
     fun getAttachments() {
+        if (isNewTask) return
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getAttachments(idTask).collect {
                 when (val state = it) {
@@ -93,6 +101,7 @@ class DetailTaskViewModel @Inject constructor(
     fun updateTaskDetails() {
         val task = uiState.run {
             val id = uiState._taskDetail.id
+            val title = taskTitle.value.takeIf { it.isNotBlank() }
             val des = taskDescription.value.takeIf { it.isNotBlank() }
             val startDate = taskStartDate.value
             val dueDate = taskDueDate.value
@@ -103,6 +112,7 @@ class DetailTaskViewModel @Inject constructor(
 
             TaskDetail(
                 id = id,
+                title = title,
                 description = des,
                 spendTime = spendTime,
                 estimateTime = estimateTime,

@@ -59,7 +59,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                             .clickable {
                                 findNavController().navigate(
                                     MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
-                                        item.id
+                                        item.id, false
                                     )
                                 )
                             }

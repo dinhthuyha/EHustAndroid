@@ -22,15 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DetailTaskFragment : BaseFragment() {
 
-    private var idTask: Int=0
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initArg()
-    }
-    private fun initArg(){
-        val args: DetailTaskFragmentArgs by navArgs()
-        idTask = args.idTask
-    }
+    private val args: DetailTaskFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +33,8 @@ class DetailTaskFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val viewModel = hiltViewModel<DetailTaskViewModel>()
-                viewModel.idTask = idTask
+                viewModel.idTask = args.idTask
+                viewModel.isNewTask = args.isNewTask
                 DetailTask(
                     viewModel = viewModel,
                     navController = findNavController()

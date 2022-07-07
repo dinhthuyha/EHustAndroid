@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,57 +51,41 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetSate = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
-    )
 
     DefaultTheme {
-        ModalBottomSheetLayout(
-            sheetShape = Shapes.small,
-            sheetContent = {
-                LazyColumn {
-                    items(10) {
-                        ListItem(
-                            text = { Text("Item $it") },
-                            icon = { Icon(Icons.Default.Favorite, null) }
-                        )
-                    }
-                }
-            },
-            sheetState = bottomSheetSate
+        Scaffold(
+            floatingActionButton = { FloatButton {
+                if (uiState.refreshState.isRefreshing) return@FloatButton
+                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(0, true))
+            } },
+            topBar = { ToolBar("Chi tiết đề tài") },
         ) {
-            Scaffold(
-                floatingActionButton = { FloatButton { coroutineScope.launch { bottomSheetSate.show() } } },
-                topBar = { ToolBar("My tasks") },
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
-                    SwipeRefresh(
-                        state = uiState.refreshState,
-                        onRefresh = { viewModel.findAllTaskByIdTopic(idTopic) }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
+                SwipeRefresh(
+                    state = uiState.refreshState,
+                    onRefresh = { viewModel.findAllTaskByIdTopic(idTopic) }
+                ) {
+                    LazyColumn(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(start = 5.dp, end = 5.dp)
                     ) {
-                        LazyColumn(
-                            Modifier
-                                .fillMaxSize()
-                                .padding(start = 5.dp, end = 5.dp)
-                        ) {
-                            if (uiState.refreshState.isRefreshing) {
-                                items(7) {
-                                    TaskRow(isLoading = true)
-                                }
-                            } else {
-                                items(items = uiState.filteredTaskList, key = { it.id }) { item ->
-                                    TaskRow(
-                                        data = item,
-                                        modifier = Modifier
-                                            .animateItemPlacement()
-                                            .padding(it)
-                                            .clickable {
-                                                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(item.id))
-                                            }
-                                    )
-                                }
+                        if (uiState.refreshState.isRefreshing) {
+                            items(7) {
+                                TaskRow(isLoading = true)
+                            }
+                        } else {
+                            items(items = uiState.filteredTaskList, key = { it.id }) { item ->
+                                TaskRow(
+                                    data = item,
+                                    modifier = Modifier
+                                        .animateItemPlacement()
+                                        .padding(it)
+                                        .clickable {
+                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(item.id, false))
+                                        }
+                                )
                             }
                         }
                     }
