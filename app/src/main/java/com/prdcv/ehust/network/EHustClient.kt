@@ -82,6 +82,8 @@ class EHustClient @Inject constructor(
 
     suspend fun getDetailTask(id: Int) = ehustService.getDetailTask(id)
 
+    suspend fun newTask(idTopic: Int, task: TaskDetail) = ehustService.newTask(idTopic, task)
+
     suspend fun updateTask(taskDetail: TaskDetail) = ehustService.updateTask(taskDetail)
 
     suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)

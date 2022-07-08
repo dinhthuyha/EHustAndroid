@@ -91,13 +91,8 @@ interface EHustService {
         @Path("id_topic") id: Int
     ): Response<List<TaskData>>
 
-
-
-    @FormUrlEncoded
-    @POST("newTask")
-    suspend fun newTask(
-        @Field(value = "task") taskData: TaskData
-    )
+    @POST("topic/{id_topic}/task")
+    suspend fun newTask(@Path("id_topic") idTopic: Int, @Body taskData: TaskDetail): Response<Int>
 
     @POST("topic/suggestion")
     suspend fun submitTopicSuggestion(@Body topic: Topic): Response<ResponseBody>
@@ -127,10 +122,6 @@ interface EHustService {
      */
     @DELETE("deleteComment")
     suspend fun deleteComment(@Path("id") id: Int): Response<ResponseBody>
-
-    @Multipart
-    @POST("upload")
-    suspend fun uploadFile(@Part file: MultipartBody.Part )
 
     @POST("task/{id_task}/attachment")
     suspend fun addAttachment(@Path("id_task") idTask: Int, @Body attachment: Attachment): Response<List<Attachment>>

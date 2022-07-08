@@ -15,8 +15,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
@@ -55,6 +53,7 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.launch
 import java.io.InputStream
+import kotlin.reflect.KFunction0
 
 
 @Composable
@@ -74,26 +73,31 @@ fun DetailTask(
         Scaffold(topBar = {
             ToolBar(
                 title = "Chi tiết công việc",
+                isEditing = !uiState.readOnly.value,
                 onCloseScreen = { (navController.popBackStack()) },
-                onEditTask = { uiState.readOnly.value = false })
+                onEditTask = { uiState.readOnly.value = false },
+                onSaveTask = viewModel::saveTask
+            )
         }, bottomBar = {
-            BottomBarComment(onSendClick = {
-                viewModel.postComment(it)
-                coroutineScope.launch {
-                    lazyListState.layoutInfo.run {
-                        while (visibleItemsInfo.last().index < totalItemsCount) {
-                            lazyListState.animateScrollToItem(totalItemsCount)
+            if (!viewModel.isNewTask) {
+                BottomBarComment(onSendClick = {
+                    viewModel.postComment(it)
+                    coroutineScope.launch {
+                        lazyListState.layoutInfo.run {
+                            while (visibleItemsInfo.last().index < totalItemsCount) {
+                                lazyListState.animateScrollToItem(totalItemsCount)
+                            }
                         }
                     }
-                }
-            })
+                })
+            }
         }) {
             if (uiState.isLoading.value) {
                 LoadingAnimation()
             } else {
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.padding(it),
+                    modifier = Modifier.padding(it).fillMaxSize(),
                     state = lazyListState
                 ) {
                     item {
@@ -105,6 +109,9 @@ fun DetailTask(
                     }
                     item {
                         RowTaskSetup(viewModel = viewModel)
+                    }
+                    if (!uiState.readOnly.value) {
+                        return@LazyColumn
                     }
                     item {
                         LaunchedEffect(key1 = Unit) {
@@ -142,30 +149,6 @@ fun DetailTask(
 
                     items(items = uiState.taskComments.value.takeLast(numberCommentShow.value)) { cmt ->
                         RowComment(comment = cmt)
-                    }
-
-                    if (!uiState.readOnly.value) {
-                        item {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                Button(
-                                    onClick = viewModel::updateTaskDetails,
-                                    content = {
-                                        Text(
-                                            text = "Submit",
-                                            style = MaterialTheme.typography.button,
-                                            color = White
-                                        )
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Button
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(60.dp))
-                            }
-                        }
                     }
                 }
             }
@@ -484,7 +467,10 @@ fun RowTaskDescription(
             Column {
                 BasicTextField(
                     value = taskTitle.value,
-                    modifier = Modifier.fillMaxWidth().padding(10.dp).padding(start = 5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .padding(start = 5.dp),
                     onValueChange = { taskTitle.value = it },
                     readOnly = readOnly.value,
                     textStyle = TextStyle(fontWeight = FontWeight.SemiBold),
@@ -498,7 +484,7 @@ fun RowTaskDescription(
                     modifier = Modifier.fillMaxWidth(),
                     value = taskDescription.value,
                     onValueChange = {
-                        taskTitle.value = it
+                        taskDescription.value = it
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Transparent,
@@ -551,7 +537,13 @@ fun RowComment(comment: Comment) {
 
 
 @Composable
-fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
+fun ToolBar(
+    title: String?,
+    isEditing: Boolean,
+    onEditTask: () -> Unit,
+    onCloseScreen: () -> Unit,
+    onSaveTask: () -> Unit
+) {
 
     TopAppBar(
         title = {
@@ -573,9 +565,14 @@ fun ToolBar(title: String?, onEditTask: () -> Unit, onCloseScreen: () -> Unit) {
         actions = {
             // RowScope here, so these icons will be placed horizontally
             IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Edit,
-                    contentDescription = "Localized description",
-                    modifier = Modifier.clickable { onEditTask.invoke() }
+                Icon(if (isEditing) Icons.Filled.Check else Icons.Filled.Edit,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        when (isEditing) {
+                            true -> onSaveTask()
+                            false -> onEditTask()
+                        }
+                    }
                 )
             }
         }
@@ -638,6 +635,18 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ToolBarPreview() {
+    ToolBar(
+        title = "Tiêu đề",
+        isEditing = true,
+        onEditTask = {},
+        onCloseScreen = {},
+        onSaveTask = {}
+    )
 }
 
 @Preview(showBackground = true)

@@ -6,7 +6,6 @@ import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
@@ -14,7 +13,6 @@ import com.prdcv.ehust.utils.ProgressStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.bouncycastle.asn1.x500.style.RFC4519Style.description
 import java.io.InputStream
 import java.time.LocalDate
 import java.util.*
@@ -25,6 +23,7 @@ class DetailTaskViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val commentRepository: CommentRepository
 ) : BaseViewModel() {
+    var idTopic: Int = 0
     var idTask: Int = 0
     var isNewTask = false
         set(value) {
@@ -98,35 +97,38 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun updateTaskDetails() {
-        val task = uiState.run {
-            val id = uiState._taskDetail.id
-            val title = taskTitle.value.takeIf { it.isNotBlank() }
-            val des = taskDescription.value.takeIf { it.isNotBlank() }
-            val startDate = taskStartDate.value
-            val dueDate = taskDueDate.value
-            val estimateTime = taskEstimateTime.value.takeIf { it.isNotBlank() }?.toInt()
-            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
-            val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.div(100f)
-            val assignee = taskAssignee.value.takeIf { it.isNotBlank() }
-
-            TaskDetail(
-                id = id,
-                title = title,
-                description = des,
-                spendTime = spendTime,
-                estimateTime = estimateTime,
-                progress = progress,
-                assignee = assignee,
-                startDate = startDate,
-                dueDate = dueDate
-            )
+    fun saveTask() {
+        if (isNewTask) {
+            postNewTask()
+        } else {
+            updateTaskDetails()
         }
+    }
+
+    private fun postNewTask() {
+        val task = uiState.newTaskDetail.copy(id = 0)
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.newTask(idTopic, task).collect {
+                when (it) {
+                    is State.Success -> {
+                        idTask = it.data
+                        uiState.readOnly.value = true
+                        getDetailTask()
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun updateTaskDetails() {
+        val task = uiState.newTaskDetail
 
         viewModelScope.launch {
             taskRepository.updateTask(task).collect {
                 when (it) {
                     is State.Success -> {
+                        uiState.readOnly.value = true
                         getDetailTask()
                     }
                     else -> {}

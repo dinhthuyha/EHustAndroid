@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -33,6 +34,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
@@ -43,7 +45,7 @@ import java.time.Period
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun TaskScreenPreview(navController: NavController, idTopic: Int) {
-    val viewModel: TaskViewModel = viewModel()
+    val viewModel: TaskViewModel = hiltViewModel()
     val uiState = viewModel.uiState
 
     LaunchedEffect(key1 = Unit) {
@@ -56,7 +58,9 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
         Scaffold(
             floatingActionButton = { FloatButton {
                 if (uiState.refreshState.isRefreshing) return@FloatButton
-                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(0, true))
+                navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(
+                    TaskDetailArgs(idTopic = idTopic, isNewTask = true)
+                ))
             } },
             topBar = { ToolBar("Chi tiết đề tài") },
         ) {
@@ -83,7 +87,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                                         .animateItemPlacement()
                                         .padding(it)
                                         .clickable {
-                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(item.id, false))
+                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(TaskDetailArgs(idTask = item.id)))
                                         }
                                 )
                             }

@@ -21,6 +21,7 @@ import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
+import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -59,7 +60,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                             .clickable {
                                 findNavController().navigate(
                                     MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
-                                        item.id, false
+                                        TaskDetailArgs(idTask = item.id)
                                     )
                                 )
                             }

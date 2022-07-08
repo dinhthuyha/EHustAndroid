@@ -1,16 +1,13 @@
 package com.prdcv.ehust.ui.task.detail.state
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.util.Pair
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -46,7 +43,11 @@ data class TaskDetailScreenState(
     }
 
     private val selectedDatesFormatted: String
-        get() = "${taskStartDate.value?.format(SHORT_DATE_FORMAT)} - ${taskDueDate.value?.format(SHORT_DATE_FORMAT)}"
+        get() = "${taskStartDate.value?.format(SHORT_DATE_FORMAT)} - ${
+            taskDueDate.value?.format(
+                SHORT_DATE_FORMAT
+            )
+        }"
 
     fun getSelectedDates(): Pair<Long, Long>? {
         if (_taskDetail.startDate == null || _taskDetail.dueDate == null) return null
@@ -57,14 +58,41 @@ data class TaskDetailScreenState(
     }
 
     fun updateSelectedDates(selected: Pair<Long, Long>) {
-        taskStartDate.value = Instant.ofEpochMilli(selected.first).atZone(ZoneOffset.UTC).toLocalDate()
-        taskDueDate.value = Instant.ofEpochMilli(selected.second).atZone(ZoneOffset.UTC).toLocalDate()
+        taskStartDate.value =
+            Instant.ofEpochMilli(selected.first).atZone(ZoneOffset.UTC).toLocalDate()
+        taskDueDate.value =
+            Instant.ofEpochMilli(selected.second).atZone(ZoneOffset.UTC).toLocalDate()
         uiDateRange.value = selectedDatesFormatted
     }
 
     fun updateUploadProgress(p: Float) {
         uploadProgress.value = p
     }
+
+    val newTaskDetail: TaskDetail
+        get() {
+            val id = _taskDetail.id
+            val title = taskTitle.value.takeIf { it.isNotBlank() }
+            val des = taskDescription.value.takeIf { it.isNotBlank() }
+            val startDate = taskStartDate.value
+            val dueDate = taskDueDate.value
+            val estimateTime = taskEstimateTime.value.takeIf { it.isNotBlank() }?.toInt()
+            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
+            val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.div(100f)
+            val assignee = taskAssignee.value.takeIf { it.isNotBlank() }
+
+            return TaskDetail(
+                id = id,
+                title = title,
+                description = des,
+                spendTime = spendTime,
+                estimateTime = estimateTime,
+                progress = progress,
+                assignee = assignee,
+                startDate = startDate,
+                dueDate = dueDate
+            )
+        }
 
     companion object {
         private val SHORT_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd")

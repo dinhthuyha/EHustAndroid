@@ -33,8 +33,9 @@ class DetailTaskFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val viewModel = hiltViewModel<DetailTaskViewModel>()
-                viewModel.idTask = args.idTask
-                viewModel.isNewTask = args.isNewTask
+                viewModel.idTopic = args.arg.idTopic
+                viewModel.idTask = args.arg.idTask
+                viewModel.isNewTask = args.arg.isNewTask
                 DetailTask(
                     viewModel = viewModel,
                     navController = findNavController()

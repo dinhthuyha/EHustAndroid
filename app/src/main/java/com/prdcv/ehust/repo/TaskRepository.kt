@@ -35,6 +35,14 @@ class TaskRepository @Inject constructor(
         }.asFlow()
     }
 
+    fun newTask(idTopic: Int, task: TaskDetail): Flow<State<Int>> {
+        return object : NetworkBoundRepository<Int>() {
+            override suspend fun fetchFromRemote(): Response<Int> {
+                return eHustClient.newTask(idTopic, task)
+            }
+        }.asFlow()
+    }
+
     fun updateTask(taskDetail: TaskDetail): Flow<State<ResponseBody>> {
         return object : NetworkBoundRepository<ResponseBody>() {
             override suspend fun fetchFromRemote(): Response<ResponseBody> {
