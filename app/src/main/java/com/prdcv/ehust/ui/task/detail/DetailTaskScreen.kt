@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.task.detail
 
+import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
@@ -55,6 +58,7 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.launch
 import java.io.InputStream
+import java.sql.Timestamp
 
 
 @Composable
@@ -530,6 +534,7 @@ fun RowTaskDescription(
 
 @Composable
 fun RowComment(comment: Comment) {
+    val scope = rememberCoroutineScope()
     Row(
         modifier = Modifier
             .padding(top = 5.dp, bottom = 5.dp, start = 15.dp)
@@ -548,12 +553,21 @@ fun RowComment(comment: Comment) {
             modifier = Modifier
                 .padding(end = 20.dp, bottom = 5.dp)
         ) {
-            Text(
-                text = comment.nameUserPost ?: "",
-                fontWeight = FontWeight.W400,
-                style = MaterialTheme.typography.subtitle1,
-                color = Button
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = comment.nameUserPost ?: "",
+                    fontWeight = FontWeight.W400,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = Button
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = comment.timestampFormatted,
+                    fontWeight = FontWeight.W400,
+                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 12.sp),
+                    color = LightGray
+                )
+            }
             Text(text = comment.content, style = MaterialTheme.typography.caption)
         }
 
@@ -617,9 +631,7 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_ava),
                 contentDescription = "",
-                modifier = Modifier
-                    .size(width = 35.dp, height = 35.dp)
-                    .weight(1f),
+                modifier = Modifier.size(width = 35.dp, height = 35.dp),
                 tint = DarkGray
             )
             OutlinedTextField(
@@ -628,7 +640,7 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
                 modifier = Modifier
                     .border(BorderStroke(0.5.dp, Gray), CircleShape)
                     .fillMaxHeight()
-                    .weight(8f),
+                    .weight(1f),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Transparent,
                     unfocusedBorderColor = Transparent
@@ -648,8 +660,7 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
                 onClick = {
                     onSendClick?.invoke(txt)
                     txt = ""
-                }, enabled = txt.isNotBlank(), modifier = Modifier
-                    .weight(1f)
+                }, enabled = txt.isNotBlank()
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_send),
@@ -661,6 +672,11 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
         }
     }
 }
+
+private val Comment.timestampFormatted: String
+    get() = timestamp?.let {
+        DateUtils.getRelativeTimeSpanString(it.time).toString()
+    } ?: ""
 
 @Preview(showBackground = true)
 @Composable
@@ -689,7 +705,8 @@ private fun CommentRowPreview() {
     RowComment(
         comment = Comment(
             content = "comment content \uD83E\uDD2A",
-            nameUserPost = "User name"
+            nameUserPost = "User name",
+            timestamp = Timestamp.valueOf("2022-07-10 04:12:10")
         )
     )
 }
