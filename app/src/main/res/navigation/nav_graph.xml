@@ -116,6 +116,24 @@
         <argument
             android:name="arg"
             app:argType="com.prdcv.ehust.ui.task.detail.TaskDetailArgs" />
+        <action
+            android:id="@+id/action_detailTaskFragment_to_attachmentViewerFragment"
+            app:destination="@id/attachmentViewerFragment" />
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/attachmentViewerFragment"
+        android:name="com.prdcv.ehust.ui.task.detail.AttachmentViewerFragment"
+        android:label="AttachmentViewerFragment">
+
+        <argument
+            android:name="attachmentId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="fileName"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>

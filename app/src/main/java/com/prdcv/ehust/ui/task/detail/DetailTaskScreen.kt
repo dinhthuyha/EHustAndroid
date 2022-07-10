@@ -23,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -53,7 +55,6 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import kotlinx.coroutines.launch
 import java.io.InputStream
-import kotlin.reflect.KFunction0
 
 
 @Composable
@@ -97,7 +98,9 @@ fun DetailTask(
             } else {
                 LazyColumn(
                     horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.padding(it).fillMaxSize(),
+                    modifier = Modifier
+                        .padding(it)
+                        .fillMaxSize(),
                     state = lazyListState
                 ) {
                     item {
@@ -110,9 +113,7 @@ fun DetailTask(
                     item {
                         RowTaskSetup(viewModel = viewModel)
                     }
-                    if (!uiState.readOnly.value) {
-                        return@LazyColumn
-                    }
+
                     item {
                         LaunchedEffect(key1 = Unit) {
                             viewModel.getAttachments()
@@ -131,16 +132,31 @@ fun DetailTask(
                             )
                         }
                     }
-                    items(items = uiState.taskAttachments.value) { t -> AttachmentRow(t) }
+                    items(items = uiState.taskAttachments.value) { t ->
+                        AttachmentRow(t) {
+                            navController.navigate(
+                                DetailTaskFragmentDirections.actionDetailTaskFragmentToAttachmentViewerFragment(
+                                    t.filePath,
+                                    t.filename
+                                )
+                            )
+                        }
+                    }
                     item {
                         if (!uiState.readOnly.value) {
                             Column(modifier = Modifier.padding(start = 25.dp)) {
                                 if (uiState.progressBarVisible.value) {
-                                    LinearProgressIndicator(progress = uiState.uploadProgress.value, color = Button)
+                                    LinearProgressIndicator(
+                                        progress = uiState.uploadProgress.value,
+                                        color = Button
+                                    )
                                 }
                                 ButtonAddFile(viewModel::onAttachmentSelected)
                             }
                         }
+                    }
+                    if (!uiState.readOnly.value) {
+                        return@LazyColumn
                     }
                     item { Spacer(modifier = Modifier.height(10.dp)) }
                     item {
@@ -243,17 +259,24 @@ fun ButtonAddFile(onAttachmentSelected: (inputStream: InputStream?, filename: St
 }
 
 @Composable
-fun AttachmentRow(attachment: Attachment) {
+fun AttachmentRow(attachment: Attachment, onClick: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(
-            start = 30.dp, end = 10.dp, bottom = 8.dp,
-        )
+        modifier = Modifier
+            .padding(
+                start = 30.dp, end = 10.dp, bottom = 8.dp,
+            )
+            .clickable { onClick() }
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = attachment.filename ?: "", style = MaterialTheme.typography.caption)
+        Text(
+            text = attachment.filename ?: "",
+            style = MaterialTheme.typography.caption,
+            color = Blue,
+            textDecoration = TextDecoration.Underline
+        )
 
     }
 }
@@ -279,9 +302,11 @@ fun RowTaskSetup(
                 .fillMaxWidth()
         ) {
             Column {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                ) {
                     RowElementSetupTask(
                         value = uiState.uiDateRange,
                         title = "",
@@ -653,12 +678,18 @@ private fun ToolBarPreview() {
 @Composable
 private fun DescriptionRowPreview() {
     val title = mutableStateOf("Mockup UI")
-    val des = mutableStateOf("Thiết kế giao diện các màn hình Home, Search, Project, Topic, Calendar, Profile, News")
+    val des =
+        mutableStateOf("Thiết kế giao diện các màn hình Home, Search, Project, Topic, Calendar, Profile, News")
     RowTaskDescription(taskTitle = title, taskDescription = des, readOnly = mutableStateOf(false))
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun CommentRowPreview() {
-    RowComment(comment = Comment(content = "comment content \uD83E\uDD2A", nameUserPost = "User name"))
+    RowComment(
+        comment = Comment(
+            content = "comment content \uD83E\uDD2A",
+            nameUserPost = "User name"
+        )
+    )
 }
