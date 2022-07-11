@@ -36,5 +36,9 @@
     <string name="click_label_select">select</string>
     <string name="calendar_select_dates_title">Select Dates</string>
     <string name="cd_back">Back</string>
+    <string name="title">Chọn thời gian</string>
+    <string name="time_prefix"><![CDATA[>>]]></string>
+    <string name="time_suffix"><![CDATA[<<]]></string>
+    <string name="selected_time_format">%1$s:%2$s</string>
 
 </resources>

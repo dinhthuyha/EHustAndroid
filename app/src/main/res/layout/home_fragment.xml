@@ -64,6 +64,15 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
+                    <ImageView
+                        android:id="@+id/imgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_add"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        visible="@{user.roleId == Role.ROLE_TEACHER}"/>
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/title"
                         android:layout_width="match_parent"

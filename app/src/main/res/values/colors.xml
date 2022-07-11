@@ -25,5 +25,7 @@
     <color name="pink_700">#C2185B</color>
     <color name="green_700">#388E3C</color>
     <color name="example_5_text_grey_light">#616161</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorWhite">#FFFFFF</color>
 
 </resources>

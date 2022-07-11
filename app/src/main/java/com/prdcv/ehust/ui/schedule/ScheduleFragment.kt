@@ -5,11 +5,18 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.children
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.internal.ViewUtils.dpToPx
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
@@ -45,7 +52,6 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
 
     private val scheduleAdapter = ScheduleEventAdapter( clickListener = ::navigateToDetailNews)
     private var schedule= mapOf<String, List<ScheduleEvent>>()
-
     override fun getViewBinding(inflater: LayoutInflater)= FragmentScheduleBinding.inflate(inflater).apply {
 
     }
@@ -169,6 +175,10 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                 binding.exFiveCalendar.smoothScrollToMonth(it.yearMonth.previous)
             }
         }
+
+//        binding.exThreeAddButton.setOnClickListener {
+//            inputDialog.show()
+//        }
     }
 
     private fun updateAdapterForDate(date: LocalDate?) {
