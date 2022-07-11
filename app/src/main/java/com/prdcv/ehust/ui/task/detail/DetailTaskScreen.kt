@@ -1,6 +1,7 @@
 package com.prdcv.ehust.ui.task.detail
 
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +52,8 @@ import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.extension.openInputStream
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.model.User
+import com.prdcv.ehust.ui.admin.SpinnerStudent
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
@@ -313,10 +316,12 @@ fun RowTaskSetup(
                 ) {
                     RowElementSetupTask(
                         value = uiState.uiDateRange,
-                        title = "",
+                        title = "Thời gian thực hiện",
                         readOnly = mutableStateOf(true),
                         idIcon = R.drawable.ic_date,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .heightIn(20.dp, 50.dp)
+                            .fillMaxWidth()
                     )
                     Row(modifier = Modifier
                         .fillMaxSize()
@@ -324,7 +329,7 @@ fun RowTaskSetup(
                             if (uiState.readOnly.value) return@clickable
                             val picker = MaterialDatePicker.Builder
                                 .dateRangePicker()
-                                .setTitleText("Select dates")
+                                .setTitleText("Chọn thời gian")
                                 .apply {
                                     uiState
                                         .getSelectedDates()
@@ -344,60 +349,65 @@ fun RowTaskSetup(
 
                 Row {
                     Column(
-                        modifier = Modifier.weight(0.45f),
-                        horizontalAlignment = Alignment.Start
+                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskEstimateTime,
-                            title = "Estimate time",
+                            title = "Số giờ hoàn thành công việc",
                             idIcon = R.drawable.ic_time,
                             "Hours",
-                            readOnly = uiState.readOnly
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier.weight(0.55f),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        RowElementSetupTask(
-                            value = uiState.taskSpendTime,
-                            title = "Spend time",
-                            idIcon = R.drawable.ic_spendtime,
-                            "Hours",
-                            readOnly = uiState.readOnly
+                            readOnly = uiState.readOnly,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
 
                 }
                 Row {
                     Column(
-                        modifier = Modifier.weight(0.45f),
-                        horizontalAlignment = Alignment.Start
+                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskProgress,
-                            title = "Done",
+                            title = "Tiến độ hoàn thành",
                             idIcon = R.drawable.ic_done,
                             readOnly = uiState.readOnly,
+                            modifier = Modifier.fillMaxWidth(),
                             trailingTitle = "%"
                         )
                     }
+
+
+                }
+                Row {
                     Column(
-                        modifier = Modifier.weight(0.55f),
-                        horizontalAlignment = Alignment.Start
+                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskAssignee,
-                            title = "Assignee",
+                            title = "Người tạo task",
                             idIcon = R.drawable.ic_assignee,
                             modifier = Modifier.fillMaxWidth(),
                             readOnly = uiState.readOnly,
                             keyboardType = KeyboardType.Text
                         )
                     }
-
                 }
+                Row {
+                    Column(
+                        horizontalAlignment = Alignment.Start, modifier = Modifier
+                            .fillMaxSize(),
+                    ) {
+                        SpinnerStatusTask(
+                            label = "Trạng thái công việc: ",
+                            options = uiState.listStatusTask,
+                            selectedOption = uiState.selectedStatusTask,
+                            onItemClick = viewModel::onStatusTaskSelected
+                        )
+
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
             }
 
         }
@@ -405,7 +415,53 @@ fun RowTaskSetup(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SpinnerStatusTask(
+    label: String,
+    options: List<String>,
+    selectedOption: String?,
+    onItemClick: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedOption?: "",
+            onValueChange = {},
+            label = { Text(label) },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Purple500,
+                unfocusedBorderColor = LightGray
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            }
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemClick(selectionOption)
+                        expanded = false
+                    }
+                ) {
+                    Text(text = selectionOption)
+                }
+            }
+        }
+    }
+}
 @Composable
 fun RowElementSetupTask(
     value: MutableState<String>,

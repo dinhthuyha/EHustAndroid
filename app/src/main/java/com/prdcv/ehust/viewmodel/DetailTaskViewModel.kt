@@ -6,6 +6,7 @@ import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
@@ -30,7 +31,7 @@ class DetailTaskViewModel @Inject constructor(
             uiState.readOnly.value = !value
             field = value
         }
-    val uiState = TaskDetailScreenState()
+    var uiState = TaskDetailScreenState()
 
     val calendarState = CalendarState()
     fun onDaySelected(daySelected: LocalDate) {
@@ -38,7 +39,9 @@ class DetailTaskViewModel @Inject constructor(
             calendarState.setSelectedDay(daySelected)
         }
     }
-
+    fun onStatusTaskSelected(status: String) {
+        uiState = uiState.copy(selectedStatusTask = status)
+    }
 
     fun postComment(content: String) {
         viewModelScope.launch {

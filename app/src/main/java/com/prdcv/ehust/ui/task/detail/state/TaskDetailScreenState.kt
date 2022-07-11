@@ -3,9 +3,12 @@ package com.prdcv.ehust.ui.task.detail.state
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.Pair
+import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
+import com.prdcv.ehust.model.User
+import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -27,7 +30,9 @@ data class TaskDetailScreenState(
     val taskAttachments: MutableState<List<Attachment>> = mutableStateOf(emptyList()),
     val uiDateRange: MutableState<String> = mutableStateOf(""),
     val progressBarVisible: MutableState<Boolean> = mutableStateOf(false),
-    val uploadProgress: MutableState<Float> = mutableStateOf(0f)
+    val uploadProgress: MutableState<Float> = mutableStateOf(0f),
+    val listStatusTask: List<String> = listOf(TaskStatus.NEW.text,TaskStatus.IN_PROGRESS.text, TaskStatus.FINISHED.text, TaskStatus.CANCELED.text),
+    val selectedStatusTask: String? = null,
 ) {
     fun updateStates(taskDetail: TaskDetail) {
         _taskDetail = taskDetail
