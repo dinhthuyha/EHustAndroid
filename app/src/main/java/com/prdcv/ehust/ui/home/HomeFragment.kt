@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -23,12 +24,18 @@ import com.akexorcist.snaptimepicker.SnapTimePickerDialog
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.HomeFragmentBinding
+import com.prdcv.ehust.extension.toLocalDate
+import com.prdcv.ehust.extension.toLocalTime
+import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.bouncycastle.asn1.x500.style.RFC4519Style.title
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -37,6 +44,8 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
     private val scheduleTodayAdapter = ScheduleTodayAdapter()
     val taskViewModel: TaskViewModel by viewModels()
     private var mDateSetListener: DatePickerDialog.OnDateSetListener? = null
+    private var meeting: Meeting? = null
+
     companion object {
         fun newInstance() = HomeFragment()
         private const val TAG = "HomeFragment"
@@ -51,6 +60,8 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         val timeFrom = dialog.findViewById(R.id.timeFrom) as TextView
         val timeTo = dialog.findViewById(R.id.timeTo) as TextView
         val dateFrom = dialog.findViewById(R.id.txtDate) as TextView
+        val txtSV = dialog.findViewById(R.id.txtSv) as EditText
+        val title = dialog.findViewById(R.id.event) as EditText
         dateFrom.setOnClickListener {
             val cal: Calendar = Calendar.getInstance()
             val year: Int = cal.get(Calendar.YEAR)
@@ -71,8 +82,9 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                 var month = month
                 month = month + 1
                 Log.d(TAG, "onDateSet: mm/dd/yyy: $month/$day/$year")
-                val date = "$month/$day/$year"
-               dateFrom.text = date
+                val date = "$year-$month-$day"
+                val selectedDate = LocalDate.of(year, month +1, day)
+                dateFrom.text = selectedDate.format(DateTimeFormatter.ISO_DATE)
             }
         timeFrom.setOnClickListener {
             // Custom text and color
@@ -102,8 +114,18 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                 setButtonTextAllCaps(false)
             }.build().apply {
                 setListener { hour, minute -> onTimePicked(hour, minute, timeTo) }
-            }.show(requireActivity().supportFragmentManager, SnapTimePickerDialog.TAG) }
+            }.show(requireActivity().supportFragmentManager, SnapTimePickerDialog.TAG)
+        }
         btnSave.setOnClickListener {
+            meeting = Meeting(
+                idUserTeacher = shareViewModel.user?.id!!,
+                nameStudent = txtSV.text.toString(),
+                title = title.text.toString(),
+                date = dateFrom.text.toString().toLocalDate(),
+                startTime = timeFrom.text.toString().toLocalTime(),
+                endTime = timeTo.text.toString().toLocalTime()
+            )
+            shareViewModel.postMeeting(meeting!!)
             dialog.dismiss()
         }
 

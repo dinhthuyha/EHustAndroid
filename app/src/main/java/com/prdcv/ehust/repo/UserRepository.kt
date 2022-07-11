@@ -3,6 +3,7 @@ package com.prdcv.ehust.repo
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.model.User
@@ -92,6 +93,14 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         return object : NetworkBoundRepository<ResponseBody>() {
             override suspend fun fetchFromRemote(): Response<ResponseBody> {
                 return eHustClient.assignProjectInstructions(idStudent, idTeacher, nameProject)
+            }
+        }.asFlow()
+    }
+
+    fun postMeeting(meeting: Meeting): Flow<State<ResponseBody>>{
+        return object : NetworkBoundRepository<ResponseBody>(){
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.postMeeting(meeting)
             }
         }.asFlow()
     }

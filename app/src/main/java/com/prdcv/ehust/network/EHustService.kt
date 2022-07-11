@@ -131,4 +131,7 @@ interface EHustService {
 
     @GET("task/willexpire")
     suspend fun findAllTaskWillExpire(): Response<List<TaskData>>
+
+    @POST("metting")
+    suspend fun postMeeting(@Body meeting: Meeting): Response<ResponseBody>
 }

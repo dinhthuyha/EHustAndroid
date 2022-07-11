@@ -1,6 +1,7 @@
 package com.prdcv.ehust.viewmodel
 
 import android.content.SharedPreferences
+import android.util.Log
 import android.view.View
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -14,6 +15,7 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
@@ -25,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -181,4 +184,18 @@ class ShareViewModel @Inject constructor(
         }
     }
 
+    fun postMeeting(meeting: Meeting){
+        viewModelScope.launch {
+            userRepository.postMeeting(meeting).collect{
+                when(it){
+                    is State.Success -> {
+
+                    }
+                    else -> {
+                        Log.d("TAG", "postMeeting: ")}
+                }
+            }
+        }
+
+    }
 }

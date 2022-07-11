@@ -115,4 +115,6 @@ class EHustClient @Inject constructor(
     suspend fun getAttachments(idTask: Int): Response<List<Attachment>> = ehustService.getAttachments(idTask)
 
     suspend fun findAllTaskWillExpire() = ehustService.findAllTaskWillExpire()
+
+    suspend fun postMeeting(meeting: Meeting) = ehustService.postMeeting(meeting)
 }

@@ -52,7 +52,6 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
         app:boxCornerRadiusBottomEnd="10dp"
@@ -79,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:textSize="16sp"
         android:text="Thời gian trao đổi:"
         app:layout_constraintStart_toStartOf="@+id/edtSv"
         app:layout_constraintTop_toBottomOf="@id/edtSv" />
@@ -89,6 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Ngày:"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/txt"
         app:layout_constraintTop_toBottomOf="@id/txt" />
 
@@ -99,6 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="45dp"
         android:layout_marginTop="20dp"
+        android:textSize="16sp"
         android:background="@drawable/border_text"
         android:hint="dd/MM/YYYY"
         app:layout_constraintLeft_toRightOf="@id/date"
@@ -110,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Giờ:"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/txt"
         app:layout_constraintTop_toBottomOf="@id/date" />
 
@@ -122,6 +125,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/border_text"
         android:hint="hh:mm"
+        android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@id/time"
         app:layout_constraintTop_toBottomOf="@id/date" />
 
@@ -134,6 +138,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/border_text"
         android:hint="hh:mm"
+        android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@id/timeFrom"
         app:layout_constraintTop_toBottomOf="@id/date" />
 
