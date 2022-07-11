@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
@@ -30,6 +29,7 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TopicsViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -88,7 +88,7 @@ fun ProjectStudent(
     userId: Int?,
     topicsViewModel: TopicsViewModel
 ) {
-    val uiState = topicsViewModel.uiState
+    val coroutineScope = rememberCoroutineScope()
 
     Card(
         elevation = 2.dp,
@@ -97,17 +97,21 @@ fun ProjectStudent(
             .padding(5.dp)
             .fillMaxWidth()
             .clickable {
-                topicsViewModel.findTopicByIdTeacherAndIdProject(
-                    nameTeacher = data.nameTeacher ?: "", idProject = data.codeCourse
-                )
-                val id =
-                    uiState.topics.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == userId }?.id
-                data.nameTeacher?.let {
-                    navController?.navigate(
-                        ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
-                            id?:0
+                coroutineScope.launch {
+                    val id = topicsViewModel
+                        .findAcceptedTopic(
+                            nameTeacher = data.nameTeacher ?: "",
+                            idProject = data.codeCourse,
+                            currentUserId = userId
                         )
-                    )
+
+                    data.nameTeacher?.let {
+                        navController?.navigate(
+                            ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
+                                id ?: 0
+                            )
+                        )
+                    }
                 }
             }
     ) {

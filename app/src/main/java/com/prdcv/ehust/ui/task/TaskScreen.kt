@@ -86,7 +86,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                                 TaskRow(isLoading = true)
                             }
                         } else {
-                            item { TopicRow(navController =  navController) }
+                            item { TopicRow(navController =  navController, idTopic = idTopic) }
                             items(items = uiState.filteredTaskList, key = { it.id }) { item ->
 
                                 TaskRow(

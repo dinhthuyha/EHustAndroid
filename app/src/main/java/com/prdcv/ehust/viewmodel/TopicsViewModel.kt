@@ -20,7 +20,10 @@ import com.prdcv.ehust.ui.projects.ProjectArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
@@ -99,7 +102,7 @@ class TopicsViewModel @Inject constructor(
     var mProject: ProjectArg? = null
     var mRole: Role = Role.ROLE_UNKNOWN
 
-     fun findTopicByIdTeacherAndIdProject(
+    fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",
         idProject: String,
         idTeacher: Int = 0
@@ -113,6 +116,23 @@ class TopicsViewModel @Inject constructor(
                 uiState.addTopicsFromState(it)
                 uiState.filterUnassignedTopic(mUserId, mRole)
             }
+        }
+    }
+
+    suspend fun findAcceptedTopic(
+        nameTeacher: String = "a",
+        idProject: String,
+        idTeacher: Int = 0,
+        currentUserId: Int?
+    ): Int? {
+        return withContext(Dispatchers.IO) {
+            topicRepository.findTopicByIdTeacherAndIdProject(
+                nameTeacher = nameTeacher,
+                idProject = idProject,
+                idTeacher = idTeacher
+            )
+                .filterIsInstance<State.Success<List<Topic>>>()
+                .last().data.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == currentUserId }?.id
         }
     }
 
