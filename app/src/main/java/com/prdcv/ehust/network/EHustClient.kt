@@ -41,6 +41,9 @@ class EHustClient @Inject constructor(
     suspend fun searchUserById(id: Int, roleId: Role): Response<User> {
         return ehustService.searchUserById(id, roleId)
     }
+    suspend fun searchUserByFullName(fullName: String, roleId: Role): Response<User>{
+        return ehustService.searchUserByFullName(fullName, roleId)
+    }
 
     suspend fun findAllSchedules(id: Int): Response<List<ScheduleEvent>>{
         return ehustService.findAllSchedule(id)

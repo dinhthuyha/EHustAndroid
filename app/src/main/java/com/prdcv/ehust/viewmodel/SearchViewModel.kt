@@ -48,4 +48,15 @@ class SearchViewModel @Inject constructor(
 
         }
     }
+
+    fun searchUserByFullName(fullName: String, role: Role){
+        viewModelScope.launch {
+            withContext(Dispatchers.Default){
+                userRepository.searchUserByFullName(fullName, role).collect {
+                    _userSearchState.postValue(it)
+                }
+            }
+
+        }
+    }
 }

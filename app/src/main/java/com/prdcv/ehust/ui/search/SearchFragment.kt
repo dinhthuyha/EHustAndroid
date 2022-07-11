@@ -1,6 +1,7 @@
 package com.prdcv.ehust.ui.search
 
 
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -38,6 +39,25 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
         }
 
     override fun init() {
+        binding.rdSv.isChecked = true
+        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.rd_Gv -> {
+                    binding.edSearch.hint = "Mã giảng viên/ tên giảng viên"
+                }
+
+                R.id.rd_Sv -> {
+                    binding.edSearch.hint = "Mã số sinh viên/ tên sinh viên"
+
+                }
+
+                R.id.rd_class -> {
+                    binding.edSearch.hint = "Mã lớp"
+                    binding.edSearch.inputType = InputType.TYPE_CLASS_NUMBER
+                }
+            }
+        }
+
         binding.edSearch.setOnEditorActionListener { textView, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH && textView.text.toString().isNotEmpty()) {
                 hideKeyboard()
@@ -45,19 +65,25 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
                 when (binding.radioGroup.checkedRadioButtonId) {
                     R.id.rd_Gv -> {
                         try {
-                            searchViewModel.searchUserById(input.toString().toInt(), Role.ROLE_TEACHER)
+                            searchViewModel.searchUserById(
+                                input.toString().toInt(),
+                                Role.ROLE_TEACHER
+                            )
                         } catch (e: Exception) {
-
+                            searchViewModel.searchUserByFullName(input.toString(),Role.ROLE_TEACHER)
                         }
 
                     }
 
                     R.id.rd_Sv -> {
                         try {
-                            searchViewModel.searchUserById(input.toString().toInt(),Role.ROLE_STUDENT)
+                            searchViewModel.searchUserById(
+                                input.toString().toInt(),
+                                Role.ROLE_STUDENT
+                            )
 
                         } catch (e: Exception) {
-
+                            searchViewModel.searchUserByFullName(input.toString(),Role.ROLE_STUDENT)
                         }
                     }
 
@@ -113,15 +139,16 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
 
     private fun updateResultSuccessSearchClass(it: State.Success<ClassStudent>) {
         searchAdapter.setItems(listOf(it.data))
-        binding.searchResult.visibility= View.GONE
+        binding.searchResult.visibility = View.GONE
         binding.edSearch.text?.clear()
     }
+
     private fun updateResultSuccessSearchUser(it: State.Success<User>) {
         searchAdapter.setItems(listOf(it.data))
-        binding.searchResult.visibility= View.GONE
+        binding.searchResult.visibility = View.GONE
         binding.edSearch.text?.clear()
     }
-    
+
 
     fun navigateToProfile(itemSearch: ItemSearch) {
         when (itemSearch as? User) {

@@ -29,7 +29,7 @@ interface EHustService {
     suspend fun getProfileById(@Path("id") id: Int): Response<User>
 
     @GET("search/user/name/{fullName}/{roleId}")
-    suspend fun searchUserByFullName(@Path("fullName") fullName: String, @Path("roleId") roleId: Int): Response<User>
+    suspend fun searchUserByFullName(@Path("fullName") fullName: String, @Path("roleId") roleId: Role): Response<User>
 
     @GET("search/user/id/{id}/{roleId}")
     suspend fun searchUserById(@Path("id") id: Int, @Path("roleId") roleId: Role): Response<User>

@@ -61,6 +61,13 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         }.asFlow()
     }
 
+    fun searchUserByFullName(fullName: String, role: Role): Flow<State<User>> {
+        return object : NetworkBoundRepository<User>() {
+            override suspend fun fetchFromRemote(): Response<User> {
+                return eHustClient.searchUserByFullName(fullName, role)
+            }
+        }.asFlow()
+    }
     fun findAllSchedules(id: Int): Flow<State<List<ScheduleEvent>>> {
         return object : NetworkBoundRepository<List<ScheduleEvent>>() {
             override suspend fun fetchFromRemote(): Response<List<ScheduleEvent>> {
