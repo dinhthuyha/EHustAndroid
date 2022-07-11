@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.task
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,14 +31,19 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.TaskData
+import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.ui.projects.topic.FilterItemStudent
+import com.prdcv.ehust.ui.projects.topic.TitleTopic
+import com.prdcv.ehust.ui.projects.topic.TopicsFragmentDirections
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
-import kotlinx.coroutines.launch
+import com.prdcv.ehust.viewmodel.TopicsViewModel
 import java.time.LocalDate
 import java.time.Period
 
@@ -80,14 +86,20 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                                 TaskRow(isLoading = true)
                             }
                         } else {
+                            item { TopicRow() }
                             items(items = uiState.filteredTaskList, key = { it.id }) { item ->
+
                                 TaskRow(
                                     data = item,
                                     modifier = Modifier
                                         .animateItemPlacement()
                                         .padding(it)
                                         .clickable {
-                                            navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(TaskDetailArgs(idTask = item.id)))
+                                            navController.navigate(
+                                                NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(
+                                                    TaskDetailArgs(idTask = item.id)
+                                                )
+                                            )
                                         }
                                 )
                             }
@@ -99,6 +111,54 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun TopicRow(
+    topic: Topic = fakeTopicPreview,
+    viewModel: TopicsViewModel? = null,
+    navController: NavController? = null
+) {
+    Card(
+        elevation = 4.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .clickable {
+                if (topic.status == TopicStatus.ACCEPT) {
+                    navController?.navigate(
+                        TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(
+                            topic.id!!
+                        )
+                    )
+                }
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(10.dp)
+        ) {
+            TitleTopic(topic = topic)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "Sinh viên: Đinh Thuý Hà")
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { /*TODO*/ }) {
+                    Text(text = "Chi tiết", color = Color.White)
+                }
+            }
+        }
+
+    }
+}
+
+private val fakeTopicPreview =
+    Topic(
+        id = 123,
+        nameStudent = "Dinh Thuy Ha",
+        name = "lập trình web bán hàng online",
+        status = TopicStatus.REQUESTING
+    )
 @Preview(showBackground = true)
 @Composable
 fun ChipGroup(

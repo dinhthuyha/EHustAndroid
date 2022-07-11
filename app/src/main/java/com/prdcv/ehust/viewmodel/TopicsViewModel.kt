@@ -99,7 +99,7 @@ class TopicsViewModel @Inject constructor(
     var mProject: ProjectArg? = null
     var mRole: Role = Role.ROLE_UNKNOWN
 
-    private fun findTopicByIdTeacherAndIdProject(
+     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",
         idProject: String,
         idTeacher: Int = 0

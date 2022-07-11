@@ -12,6 +12,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,24 +22,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ShareViewModel
+import com.prdcv.ehust.viewmodel.TopicsViewModel
 import kotlinx.parcelize.Parcelize
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProjectScreen(
     viewModel: ShareViewModel = viewModel(),
+    topicsViewModel: TopicsViewModel = viewModel(),
     navController: NavController,
 ) {
     val uiState = viewModel.projectsScreenState
 
     LaunchedEffect(key1 = Unit) {
         viewModel.findAllProjectsById()
+
     }
 
     DefaultTheme {
@@ -56,7 +61,7 @@ fun ProjectScreen(
                         items(uiState.projects) { t ->
                             when (viewModel.user?.roleId) {
                                 Role.ROLE_STUDENT -> {
-                                    ProjectStudent(t, navController)
+                                    ProjectStudent(t, navController, viewModel.user?.id, topicsViewModel)
                                 }
                                 Role.ROLE_TEACHER -> {
                                     ProjectTeacher(t, navController, viewModel.user)
@@ -74,9 +79,15 @@ fun ProjectScreen(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavController? = null) {
+fun ProjectStudent(
+    data: ClassStudent = classStudentPreview,
+    navController: NavController? = null,
+    userId: Int?,
+    topicsViewModel: TopicsViewModel
+) {
+    val uiState = topicsViewModel.uiState
+
     Card(
         elevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
@@ -84,12 +95,15 @@ fun ProjectStudent(data: ClassStudent = classStudentPreview, navController: NavC
             .padding(5.dp)
             .fillMaxWidth()
             .clickable {
+                topicsViewModel.findTopicByIdTeacherAndIdProject(
+                    nameTeacher = data.nameTeacher ?: "", idProject = data.codeCourse
+                )
+                val id =
+                    uiState.topics.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == userId }?.id
                 data.nameTeacher?.let {
                     navController?.navigate(
-                        ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(
-                            ProjectArg(
-                                nameTeacher = it, idProject = data.codeCourse
-                            )
+                        ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
+                            id?:0
                         )
                     )
                 }

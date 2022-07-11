@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_projectGraduateFragment_to_topicsFragment"
             app:destination="@id/topicsFragment" />
+        <action
+            android:id="@+id/action_projectGraduateFragment_to_newTaskFragment"
+            app:destination="@id/newTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/newsFragment"
