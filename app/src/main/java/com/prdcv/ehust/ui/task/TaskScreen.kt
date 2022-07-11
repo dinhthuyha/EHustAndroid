@@ -68,7 +68,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                     TaskDetailArgs(idTopic = idTopic, isNewTask = true)
                 ))
             } },
-            topBar = { ToolBar("Chi tiết đề tài") },
+            topBar = { ToolBar("Các công việc") },
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
@@ -86,7 +86,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                                 TaskRow(isLoading = true)
                             }
                         } else {
-                            item { TopicRow() }
+                            item { TopicRow(navController =  navController) }
                             items(items = uiState.filteredTaskList, key = { it.id }) { item ->
 
                                 TaskRow(
@@ -113,7 +113,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
 
 @Preview(showBackground = true)
 @Composable
-fun TopicRow(
+fun TopicRow(idTopic: Int=0,
     topic: Topic = fakeTopicPreview,
     viewModel: TopicsViewModel? = null,
     navController: NavController? = null
@@ -125,13 +125,7 @@ fun TopicRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                if (topic.status == TopicStatus.ACCEPT) {
-                    navController?.navigate(
-                        TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(
-                            topic.id!!
-                        )
-                    )
-                }
+
             }
     ) {
         Column(
@@ -141,10 +135,14 @@ fun TopicRow(
         ) {
             TitleTopic(topic = topic)
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Sinh viên: Đinh Thuý Hà")
+            Text(text = "Sinh viên: Đinh Thuý Hà ${idTopic}")
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Chi tiết", color = Color.White)
+                Button(onClick = { }) {
+                    Text(text = "Chi tiết",
+                        color = Color.White,
+                        modifier = Modifier.clickable {
+                            navController?.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToInformationTopicFragment())
+                        })
                 }
             }
         }

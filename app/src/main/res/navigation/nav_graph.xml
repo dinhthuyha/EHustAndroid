@@ -55,6 +55,9 @@
         <argument
             android:name="idTopic"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_newTaskFragment_to_informationTopicFragment"
+            app:destination="@id/informationTopicFragment" />
     </fragment>
     <fragment
         android:id="@+id/projectGraduateFragment"
@@ -139,4 +142,8 @@
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/informationTopicFragment"
+        android:name="com.prdcv.ehust.ui.InformationTopicFragment"
+        android:label="InformationTopicFragment" />
 </navigation>

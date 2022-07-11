@@ -65,13 +65,13 @@ data class TaskScreenState(
 
 enum class TaskStatus(val text: String) {
     @SerializedName("New")
-    NEW("New"),
+    NEW("Mới"),
     @SerializedName("In progress")
-    IN_PROGRESS("In progress"),
+    IN_PROGRESS("Đang thực hiện"),
     @SerializedName("Finished")
-    FINISHED("Finished"),
+    FINISHED("Hoàn thành"),
     @SerializedName("Canceled")
-    CANCELED("Cancelled"),
+    CANCELED("Huỷ"),
     ALL("all")
 }
 
