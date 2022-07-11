@@ -46,6 +46,10 @@ object NetworkModule {
         JsonPrimitive(id.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
     }
 
+    private val localTimeSerializer = JsonSerializer<LocalTime> { id, _, _ ->
+        JsonPrimitive(id.format(DateTimeFormatter.ISO_TIME))
+    }
+
     @Provides
     @Singleton
     fun provideRetrofit(authenticator: Authenticator): Retrofit {
@@ -67,6 +71,7 @@ object NetworkModule {
                         .registerTypeAdapter(LocalTime::class.java, localTimeDeserializer)
                         .registerTypeAdapter(LocalDate::class.java, localDateDeserializer)
                         .registerTypeAdapter(LocalDate::class.java, localDateSerializer)
+                        .registerTypeAdapter(LocalTime::class.java, localTimeSerializer)
                         .create()
                 )
             )
