@@ -58,9 +58,11 @@ fun ProjectScreen(
                             .fillMaxWidth()
                             .padding(10.dp)
                     ) {
+
                         items(uiState.projects) { t ->
                             when (viewModel.user?.roleId) {
                                 Role.ROLE_STUDENT -> {
+                                    if (t.semester == uiState.maxSemester)
                                     ProjectStudent(t, navController, viewModel.user?.id, topicsViewModel)
                                 }
                                 Role.ROLE_TEACHER -> {
