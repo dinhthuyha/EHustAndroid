@@ -1,7 +1,6 @@
 package com.prdcv.ehust.ui.task.detail
 
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -52,8 +51,6 @@ import com.prdcv.ehust.extension.getType
 import com.prdcv.ehust.extension.openInputStream
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.User
-import com.prdcv.ehust.ui.admin.SpinnerStudent
 import com.prdcv.ehust.ui.compose.BGBottomBar
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
@@ -420,7 +417,7 @@ fun RowTaskSetup(
 fun SpinnerStatusTask(
     label: String,
     options: List<String>,
-    selectedOption: String?,
+    selectedOption: MutableState<String>,
     onItemClick: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -431,7 +428,7 @@ fun SpinnerStatusTask(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedOption?: "",
+            value = selectedOption.value,
             onValueChange = {},
             label = { Text(label) },
             colors = TextFieldDefaults.outlinedTextFieldColors(

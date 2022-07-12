@@ -40,7 +40,7 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
     fun onStatusTaskSelected(status: String) {
-        uiState = uiState.copy(selectedStatusTask = status)
+        uiState.selectedStatusTask.value = status
     }
 
     fun postComment(content: String) {

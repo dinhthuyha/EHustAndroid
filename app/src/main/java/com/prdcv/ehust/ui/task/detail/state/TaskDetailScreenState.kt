@@ -32,7 +32,7 @@ data class TaskDetailScreenState(
     val progressBarVisible: MutableState<Boolean> = mutableStateOf(false),
     val uploadProgress: MutableState<Float> = mutableStateOf(0f),
     val listStatusTask: List<String> = listOf(TaskStatus.NEW.text,TaskStatus.IN_PROGRESS.text, TaskStatus.FINISHED.text, TaskStatus.CANCELED.text),
-    val selectedStatusTask: String? = null,
+    val selectedStatusTask: MutableState<String> = mutableStateOf(""),
 ) {
     fun updateStates(taskDetail: TaskDetail) {
         _taskDetail = taskDetail
