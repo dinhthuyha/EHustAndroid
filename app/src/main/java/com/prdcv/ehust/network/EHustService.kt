@@ -134,4 +134,7 @@ interface EHustService {
 
     @POST("metting")
     suspend fun postMeeting(@Body meeting: Meeting): Response<ResponseBody>
+
+    @GET("all/meeting/{id_user_teacher}/{id_user_student}")
+    suspend fun findAllMeeting(@Path("id_user_teacher") idUserteacher: Int, @Path("id_user_student") idUserStudent: Int): Response<List<Meeting>>
 }

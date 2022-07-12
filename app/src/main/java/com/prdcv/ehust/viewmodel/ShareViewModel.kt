@@ -38,7 +38,7 @@ import javax.inject.Inject
 data class ProjectsScreenState(
     val projects: SnapshotStateList<ClassStudent> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
-    var maxSemester : Int = 0
+    var maxSemester: Int = 0
 ) {
     fun addProjectListFromState(state: State<List<ClassStudent>>) {
         when (val _state = state) {
@@ -74,6 +74,9 @@ class ShareViewModel @Inject constructor(
 
     private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token
+
+    private var _meetings = SingleLiveEvent<State<List<Meeting>>>()
+    val meetings get() = _meetings
 
     /**
      * ui state cho projects screen
@@ -184,18 +187,39 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun postMeeting(meeting: Meeting){
+    fun postMeeting(meeting: Meeting) {
         viewModelScope.launch {
-            userRepository.postMeeting(meeting).collect{
-                when(it){
+            userRepository.postMeeting(meeting).collect {
+                when (it) {
                     is State.Success -> {
 
                     }
                     else -> {
-                        Log.d("TAG", "postMeeting: ")}
+                        Log.d("TAG", "postMeeting: ")
+                    }
                 }
             }
         }
 
+    }
+
+    fun findAllMeeting() {
+        var idUserTeacher: Int = 0
+        var idUserStudent: Int = 0
+        viewModelScope.launch {
+            when (user?.roleId) {
+                Role.ROLE_TEACHER -> {idUserTeacher = user?.id!!}
+                Role.ROLE_STUDENT -> {idUserStudent = user?.id!!}
+                else -> {}
+            }
+            userRepository.findAllMeeting(idUserTeacher, idUserStudent).collect {
+                when (val state = it) {
+                    is State.Success -> {
+                        _meetings.postValue(state)
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 }

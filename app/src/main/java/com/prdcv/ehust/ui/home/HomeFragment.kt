@@ -27,6 +27,7 @@ import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.extension.toLocalDate
 import com.prdcv.ehust.extension.toLocalTime
 import com.prdcv.ehust.model.Meeting
+import com.prdcv.ehust.ui.home.MeetingToDayAdapter
 import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
@@ -42,6 +43,7 @@ import java.util.*
 @AndroidEntryPoint
 class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
     private val scheduleTodayAdapter = ScheduleTodayAdapter()
+    private val meetingTodayAdapter = MeetingToDayAdapter()
     val taskViewModel: TaskViewModel by viewModels()
     private var mDateSetListener: DatePickerDialog.OnDateSetListener? = null
     private var meeting: Meeting? = null
@@ -83,7 +85,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
                 month = month + 1
                 Log.d(TAG, "onDateSet: mm/dd/yyy: $month/$day/$year")
                 val date = "$year-$month-$day"
-                val selectedDate = LocalDate.of(year, month +1, day)
+                val selectedDate = LocalDate.of(year, month + 1, day)
                 dateFrom.text = selectedDate.format(DateTimeFormatter.ISO_DATE)
             }
         timeFrom.setOnClickListener {
@@ -144,6 +146,7 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         HomeFragmentBinding.inflate(inflater).apply {
             user = shareViewModel.user
             rvScheduleToday.adapter = scheduleTodayAdapter
+            rvMeetingToday.adapter = meetingTodayAdapter
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,7 +156,14 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
 
     @OptIn(ExperimentalFoundationApi::class)
     override fun init() {
-
+        shareViewModel.meetings.observe(viewLifecycleOwner) {
+            when (it) {
+                is State.Success -> {
+                  //  meetingTodayAdapter.setItems(it.data)
+                }
+                else -> {}
+            }
+        }
         binding.viewStudent.composeTask.setContent {
             val taskViewModel: TaskViewModel = hiltViewModel()
             LaunchedEffect(key1 = Unit) {

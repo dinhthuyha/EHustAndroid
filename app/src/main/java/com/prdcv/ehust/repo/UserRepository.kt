@@ -11,6 +11,7 @@ import com.prdcv.ehust.network.EHustClient
 import kotlinx.coroutines.flow.Flow
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Path
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(val eHustClient: EHustClient) {
@@ -101,6 +102,14 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         return object : NetworkBoundRepository<ResponseBody>(){
             override suspend fun fetchFromRemote(): Response<ResponseBody> {
                 return eHustClient.postMeeting(meeting)
+            }
+        }.asFlow()
+    }
+
+    fun findAllMeeting(idUserTeacher: Int, idUserStudent: Int): Flow<State<List<Meeting>>> {
+        return object : NetworkBoundRepository<List<Meeting>>() {
+            override suspend fun fetchFromRemote(): Response<List<Meeting>> {
+                return eHustClient.findAllMeeting(idUserTeacher, idUserStudent)
             }
         }.asFlow()
     }

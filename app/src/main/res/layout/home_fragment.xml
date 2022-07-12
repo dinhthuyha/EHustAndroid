@@ -112,6 +112,14 @@
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintTop_toBottomOf="@id/lineTitle"
                         tools:listitem="@layout/schedule_today_item" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMeetingToday"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintTop_toBottomOf="@id/rvScheduleToday"
+                        tools:listitem="@layout/meeting_today_item" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.loopeer.shadow.ShadowView>
 

@@ -8,6 +8,7 @@ import io.minio.PutObjectArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import retrofit2.http.Path
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -117,4 +118,6 @@ class EHustClient @Inject constructor(
     suspend fun findAllTaskWillExpire() = ehustService.findAllTaskWillExpire()
 
     suspend fun postMeeting(meeting: Meeting) = ehustService.postMeeting(meeting)
+
+    suspend fun findAllMeeting(idUserteacher: Int, idUserStudent: Int) = ehustService.findAllMeeting(idUserteacher, idUserStudent)
 }

@@ -38,6 +38,7 @@ class MainFragment : BaseFragmentWithBinding<MainFragmentBinding>() {
 
         shareViewModel.getListStudentInClass()
         shareViewModel.findAllSchedules()
+        shareViewModel.findAllMeeting()
     }
 
     private fun setItemSelect() {
