@@ -47,7 +47,7 @@ object NetworkModule {
     }
 
     private val localTimeSerializer = JsonSerializer<LocalTime> { id, _, _ ->
-        JsonPrimitive(id.format(DateTimeFormatter.ISO_TIME))
+        JsonPrimitive(id.format(DateTimeFormatter.ofPattern("HH:mm")))
     }
 
     @Provides
