@@ -67,6 +67,7 @@ fun HomeScreen(
 ) {
     LaunchedEffect(key1 = Unit) {
         shareViewModel.getAllSchedule()
+        taskViewModel.findAllTaskWillExpire()
     }
     val uiState = taskViewModel.uiState
     val uiScheduleState = shareViewModel.uiState
