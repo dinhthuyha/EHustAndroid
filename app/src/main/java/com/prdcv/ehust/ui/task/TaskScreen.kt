@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.task
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -216,7 +217,7 @@ fun TaskRow(
                         highlight = PlaceholderHighlight.shimmer()
                     )
                 ) {
-                    Tag(data.status.text, selectTagColor(data.status))
+                    data.status?.let { Tag(it.text, selectTagColor(data.status)) }
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
                 }
@@ -248,6 +249,7 @@ fun TaskRow(
 
 @Composable
 fun Tag(status: String, backgroundColor: Color = Color.LightGray) {
+    Log.d("TAG", "Tag: ${status}")
     Text(
         text = status,
         fontSize = 10.sp,
