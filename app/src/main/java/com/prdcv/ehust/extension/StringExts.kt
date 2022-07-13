@@ -14,3 +14,8 @@ fun String.toLocalTime():LocalTime{
     val dtf = DateTimeFormatter.ofPattern("HH:mm");
     return LocalTime.parse(this, dtf)
 }
+
+fun LocalTime.toString(): String{
+    val dtf = DateTimeFormatter.ofPattern("HH:mm")
+    return dtf.format(this)
+}

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -21,6 +22,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +36,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.fade
+import com.google.accompanist.placeholder.placeholder
+import com.google.accompanist.placeholder.shimmer
+import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
@@ -47,6 +54,7 @@ import com.prdcv.ehust.viewmodel.HomeScreenState
 import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import org.bouncycastle.asn1.x500.style.RFC4519Style.title
+import java.time.LocalTime
 
 
 @Composable
@@ -57,15 +65,24 @@ fun HomeScreen(
     shareViewModel: ShareViewModel,
     callback: () -> Unit
 ) {
+    LaunchedEffect(key1 = Unit) {
+        shareViewModel.getAllSchedule()
+    }
     val uiState = taskViewModel.uiState
     val uiScheduleState = shareViewModel.uiState
     DefaultTheme() {
         Scaffold(topBar = { ToolBar(title = "Trang chủ", nav = navController) }) {
+
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                RowScheduleToday(role = role, callback = callback, shareViewModel.getScheduleToday(uiScheduleState.schedulesState),uiScheduleState.meetings)
+                RowScheduleToday(
+                    role = role,
+                    callback = callback,
+                    shareViewModel.getScheduleToday(uiScheduleState.schedulesState),
+                    uiScheduleState.meetings
+                )
                 Spacer(modifier = Modifier.height(12.dp))
                 uiState.filteredTaskList.forEach { item ->
-                    TaskRow(
+                    TaskRow(isLoading = uiState.refreshState.isRefreshing,
                         data = item,
                         modifier = Modifier
                             .padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
@@ -92,8 +109,11 @@ fun HomeScreen(
 
             }
         }
+
     }
+
 }
+
 
 @Composable
 fun ToolBar(title: String, nav: NavController) {
@@ -120,7 +140,12 @@ fun ToolBar(title: String, nav: NavController) {
 
 
 @Composable
-fun RowScheduleToday(role: Role = Role.ROLE_TEACHER, callback: () -> Unit, schedule: List<ScheduleEvent>, meetings: List<Meeting>) {
+fun RowScheduleToday(
+    role: Role = Role.ROLE_TEACHER,
+    callback: () -> Unit,
+    schedule: List<ScheduleEvent>,
+    meetings: List<Meeting>
+) {
     val alpha = if (role == Role.ROLE_TEACHER) 1f else 0f
     Card(
         elevation = 4.dp,
@@ -162,14 +187,29 @@ fun RowScheduleToday(role: Role = Role.ROLE_TEACHER, callback: () -> Unit, sched
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier
                         .weight(3f)
-                        .alpha(alpha)) {
-                Icon(painter = painterResource(id = R.drawable.ic_add), contentDescription = "", modifier = Modifier.clickable { callback.invoke() })
-            }
+                        .alpha(alpha)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "",
+                        modifier = Modifier.clickable { callback.invoke() })
+                }
 
             }
-            Divider(color = Color.Black, thickness = 1.dp, modifier = Modifier.padding(start = 5.dp))
-            schedule.forEach { RowItemSchedule() }
-            meetings.forEach { RowItemSchedule() }
+            Divider(
+                color = Color.Black,
+                thickness = 1.dp,
+                modifier = Modifier.padding(start = 5.dp)
+            )
+            schedule.forEach { t ->
+                RowItemSchedule(title = t.subjectClass.name, startTime = t.startTime, endTime = t.finishTime) }
+            meetings.forEach {
+                var title =""
+                when(role){
+                    Role.ROLE_TEACHER -> { title = "${it.title} với sinh viên ${it.nameStudent}"}
+                    Role.ROLE_STUDENT -> { title = it.title}
+                }
+                RowItemSchedule(title = title, startTime = it.startTime, endTime =it.endTime) }
         }
     }
 
@@ -193,19 +233,18 @@ fun RowTeacher(nav: NavController) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun RowItemSchedule() {
+fun RowItemSchedule(title: String="Quanr tri du an", startTime: LocalTime?, endTime: LocalTime?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 24.dp, end = 24.dp, top = 8.dp),
+            .padding(start = 2.dp, top = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "ROW", modifier = Modifier.weight(1f))
+        Text(text = title, modifier = Modifier.weight(2.5f))
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-            Text(text = "9:00")
-            Text(text = "9:00")
+            Text(text = startTime.toString())
+            Text(text = endTime.toString())
         }
     }
 }

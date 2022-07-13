@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.databinding.ObservableInt
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.SingleLiveEvent
@@ -25,9 +24,10 @@ import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -57,9 +57,47 @@ data class ProjectsScreenState(
 }
 
 data class HomeScreenState(
-    val schedulesState: List<ScheduleEvent> = emptyList(),
-    val meetings : List<Meeting> = emptyList()
-)
+    val schedulesState: SnapshotStateList<ScheduleEvent> = mutableStateListOf(),
+    val meetings: SnapshotStateList<Meeting> = mutableStateListOf(),
+    val refreshState: SwipeRefreshState = SwipeRefreshState(false),
+) {
+    suspend fun findAllSchedule(state: State<List<ScheduleEvent>>) {
+        when (val _state = state) {
+            is State.Success -> {
+                Log.d("TAG", "findAllSchedule: ")
+                schedulesState.clear()
+                schedulesState.addAll(_state.data)
+                refreshState.isRefreshing = false
+            }
+            is State.Loading -> {
+
+            }
+            is State.Error -> {
+                refreshState.isRefreshing = false
+            }
+        }
+    }
+
+    fun findAllMeeting(state: State<List<Meeting>>) {
+        when (val _state = state) {
+            is State.Success -> {
+                Log.d("TAG", "findAllMeeting: ")
+                meetings.clear()
+                meetings.addAll(_state.data)
+               
+            }
+            is State.Loading -> {
+                refreshState.isRefreshing = true
+
+            }
+
+            is State.Error -> {
+                refreshState.isRefreshing = false
+            }
+        }
+    }
+}
+
 @HiltViewModel
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
@@ -170,17 +208,9 @@ class ShareViewModel @Inject constructor(
 
     fun findAllSchedules() {
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
                 userRepository.findAllSchedules(user?.id!!).collect {
-                    when (val state = it) {
-                        is State.Success -> {
-                                uiState.copy(schedulesState = state.data)
-                            }
-                       else ->{}
-                    }
+                    uiState.findAllSchedule(it)
                 }
-            }
-
         }
     }
 
@@ -198,17 +228,22 @@ class ShareViewModel @Inject constructor(
     fun postMeeting(meeting: Meeting) {
         viewModelScope.launch {
             userRepository.postMeeting(meeting).collect {
-                when (it) {
-                    is State.Success -> {
-
-                    }
-                    else -> {
-                        Log.d("TAG", "postMeeting: ")
-                    }
-                }
+                findAllMeeting()
             }
         }
 
+    }
+
+    fun getAllSchedule() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                delay(2000)
+                async { findAllSchedules()  }
+                async { findAllMeeting() }
+            }
+
+
+        }
     }
 
     fun findAllMeeting() {
@@ -216,17 +251,16 @@ class ShareViewModel @Inject constructor(
         var idUserStudent: Int = 0
         viewModelScope.launch {
             when (user?.roleId) {
-                Role.ROLE_TEACHER -> {idUserTeacher = user?.id!!}
-                Role.ROLE_STUDENT -> {idUserStudent = user?.id!!}
+                Role.ROLE_TEACHER -> {
+                    idUserTeacher = user?.id!!
+                }
+                Role.ROLE_STUDENT -> {
+                    idUserStudent = user?.id!!
+                }
                 else -> {}
             }
             userRepository.findAllMeeting(idUserTeacher, idUserStudent).collect {
-                when (val state = it) {
-                    is State.Success -> {
-                        uiState.copy(meetings = state.data)
-                    }
-                    else ->{}
-                }
+                uiState.findAllMeeting(it)
             }
         }
     }

@@ -98,9 +98,9 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         }.asFlow()
     }
 
-    fun postMeeting(meeting: Meeting): Flow<State<ResponseBody>>{
-        return object : NetworkBoundRepository<ResponseBody>(){
-            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+    fun postMeeting(meeting: Meeting): Flow<State<List<Meeting>>>{
+        return object : NetworkBoundRepository<List<Meeting>>(){
+            override suspend fun fetchFromRemote(): Response<List<Meeting>> {
                 return eHustClient.postMeeting(meeting)
             }
         }.asFlow()
