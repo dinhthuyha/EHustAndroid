@@ -159,7 +159,7 @@ class HomeFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val taskViewModel: TaskViewModel = hiltViewModel()
-                HomeScreen(shareViewModel.user?.roleId!!, findNavController(),taskViewModel, callback = {showDialog()})
+                HomeScreen(shareViewModel.user?.roleId!!, findNavController(),taskViewModel,shareViewModel, callback = {showDialog()})
             }
         }
     }

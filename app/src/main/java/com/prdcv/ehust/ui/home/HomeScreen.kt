@@ -35,12 +35,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.prdcv.ehust.R
+import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.model.ScheduleEvent
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
+import com.prdcv.ehust.viewmodel.HomeScreenState
+import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
@@ -50,13 +54,15 @@ fun HomeScreen(
     role: Role = Role.ROLE_STUDENT,
     navController: NavController,
     taskViewModel: TaskViewModel,
+    shareViewModel: ShareViewModel,
     callback: () -> Unit
 ) {
     val uiState = taskViewModel.uiState
+    val uiScheduleState = shareViewModel.uiState
     DefaultTheme() {
         Scaffold(topBar = { ToolBar(title = "Trang chủ", nav = navController) }) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                RowScheduleToday(role = role, callback = callback)
+                RowScheduleToday(role = role, callback = callback, shareViewModel.getScheduleToday(uiScheduleState.schedulesState),uiScheduleState.meetings)
                 Spacer(modifier = Modifier.height(12.dp))
                 uiState.filteredTaskList.forEach { item ->
                     TaskRow(
@@ -114,7 +120,7 @@ fun ToolBar(title: String, nav: NavController) {
 
 
 @Composable
-fun RowScheduleToday(role: Role = Role.ROLE_TEACHER, callback: () -> Unit) {
+fun RowScheduleToday(role: Role = Role.ROLE_TEACHER, callback: () -> Unit, schedule: List<ScheduleEvent>, meetings: List<Meeting>) {
     val alpha = if (role == Role.ROLE_TEACHER) 1f else 0f
     Card(
         elevation = 4.dp,
@@ -162,9 +168,8 @@ fun RowScheduleToday(role: Role = Role.ROLE_TEACHER, callback: () -> Unit) {
 
             }
             Divider(color = Color.Black, thickness = 1.dp, modifier = Modifier.padding(start = 5.dp))
-            RowItemSchedule()
-            RowItemSchedule()
-            RowItemSchedule()
+            schedule.forEach { RowItemSchedule() }
+            meetings.forEach { RowItemSchedule() }
         }
     }
 

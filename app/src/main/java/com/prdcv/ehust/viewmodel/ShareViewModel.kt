@@ -56,6 +56,10 @@ data class ProjectsScreenState(
     }
 }
 
+data class HomeScreenState(
+    val schedulesState: List<ScheduleEvent> = emptyList(),
+    val meetings : List<Meeting> = emptyList()
+)
 @HiltViewModel
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
@@ -75,16 +79,15 @@ class ShareViewModel @Inject constructor(
     private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token
 
-    private var _meetings = SingleLiveEvent<State<List<Meeting>>>()
-    val meetings get() = _meetings
-
     /**
      * ui state cho projects screen
      */
     val projectsScreenState = ProjectsScreenState()
 
-    private var _schedulesState = SingleLiveEvent<State<List<ScheduleEvent>>>()
-    val schedulesState get() = _schedulesState
+
+    var uiState by mutableStateOf(HomeScreenState())
+        private set
+
     var schedules = listOf<ScheduleEvent>()
     fun login(id: Int, password: String) {
         viewModelScope.launch {
@@ -169,7 +172,12 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 userRepository.findAllSchedules(user?.id!!).collect {
-                    _schedulesState.postValue(it)
+                    when (val state = it) {
+                        is State.Success -> {
+                                uiState.copy(schedulesState = state.data)
+                            }
+                       else ->{}
+                    }
                 }
             }
 
@@ -215,9 +223,9 @@ class ShareViewModel @Inject constructor(
             userRepository.findAllMeeting(idUserTeacher, idUserStudent).collect {
                 when (val state = it) {
                     is State.Success -> {
-                        _meetings.postValue(state)
+                        uiState.copy(meetings = state.data)
                     }
-                    else -> {}
+                    else ->{}
                 }
             }
         }
