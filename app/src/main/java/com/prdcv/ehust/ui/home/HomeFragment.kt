@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -17,20 +18,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.akexorcist.snaptimepicker.SnapTimePickerDialog
+import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.extension.toLocalDate
 import com.prdcv.ehust.extension.toLocalTime
 import com.prdcv.ehust.model.Meeting
+import com.prdcv.ehust.ui.home.HomeScreen
 import com.prdcv.ehust.ui.home.MeetingToDayAdapter
 import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
+import com.prdcv.ehust.ui.task.TaskScreenPreview
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +48,7 @@ import java.util.*
 
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
+class HomeFragment : BaseFragment() {
     private val scheduleTodayAdapter = ScheduleTodayAdapter()
     private val meetingTodayAdapter = MeetingToDayAdapter()
     val taskViewModel: TaskViewModel by viewModels()
@@ -142,100 +149,102 @@ class HomeFragment : BaseFragmentWithBinding<HomeFragmentBinding>() {
         textView.text = String.format(getString(R.string.selected_time_format, hour, minute))
     }
 
-    override fun getViewBinding(inflater: LayoutInflater): HomeFragmentBinding =
-        HomeFragmentBinding.inflate(inflater).apply {
-            user = shareViewModel.user
-            rvScheduleToday.adapter = scheduleTodayAdapter
-            rvMeetingToday.adapter = meetingTodayAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val taskViewModel: TaskViewModel = hiltViewModel()
+                HomeScreen(shareViewModel.user?.roleId!!, findNavController(),taskViewModel, callback = {showDialog()})
+            }
         }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         taskViewModel.findAllTaskWillExpire()
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
-    override fun init() {
-        shareViewModel.meetings.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Success -> {
-                  //  meetingTodayAdapter.setItems(it.data)
-                }
-                else -> {}
-            }
-        }
-        binding.viewStudent.composeTask.setContent {
-            val taskViewModel: TaskViewModel = hiltViewModel()
-            LaunchedEffect(key1 = Unit) {
 
-            }
-            val uiState = taskViewModel.uiState
-            Column(modifier = Modifier.wrapContentHeight()) {
-                uiState.filteredTaskList.forEach { item ->
-                    TaskRow(
-                        data = item,
-                        modifier = Modifier
-                            .clickable {
-                                findNavController().navigate(
-                                    MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
-                                        TaskDetailArgs(idTask = item.id)
-                                    )
-                                )
-                            }
-                    )
-                }
-            }
-        }
-        binding.rvScheduleToday.setOnClickListener {
-
-        }
-        binding.viewStudent.cdClassStudent.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_studentsFragment)
-        }
-        binding.viewStudent.cdProject.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
-        }
-        binding.tbHome.iconRightId.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
-        }
-        binding.viewStudent.cdSchedule.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_scheduleFragment)
-        }
-        shareViewModel.schedulesState.observe(viewLifecycleOwner) {
-            when (it) {
-                is State.Loading -> {
-                }
-                is State.Success -> {
-                    shareViewModel.schedules = it.data
-                    if (shareViewModel.getScheduleToday(it.data).isEmpty()) {
-                        binding.txtNoScheduler.apply {
-                            visibility = View.VISIBLE
-                            text = "Hôm nay bạn không có lịch học trên trường"
-                        }
-                    }
-                    scheduleTodayAdapter.setItems(shareViewModel.getScheduleToday(it.data))
-                    Log.d(TAG, "success: ${it.data.size}")
-
-                }
-                is State.Error -> {
-                    Log.d(TAG, "error: ${it.exception} ")
-                }
-            }
-        }
-
-        /**
-         * teacher event
-         */
+//    override fun init() {
+//        shareViewModel.meetings.observe(viewLifecycleOwner) {
+//            when (it) {
+//                is State.Success -> {
+//                  //  meetingTodayAdapter.setItems(it.data)
+//                }
+//                else -> {}
+//            }
+//        }
+//        binding.viewStudent.composeTask.setContent {
+//            val taskViewModel: TaskViewModel = hiltViewModel()
+//            LaunchedEffect(key1 = Unit) {
+//
+//            }
+//            val uiState = taskViewModel.uiState
+//            Column(modifier = Modifier.wrapContentHeight()) {
+//                uiState.filteredTaskList.forEach { item ->
+//                    TaskRow(
+//                        data = item,
+//                        modifier = Modifier
+//                            .clickable {
+//                                findNavController().navigate(
+//                                    MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
+//                                        TaskDetailArgs(idTask = item.id)
+//                                    )
+//                                )
+//                            }
+//                    )
+//                }
+//            }
+//        }
+//        binding.rvScheduleToday.setOnClickListener {
+//
+//        }
 
 
-        binding.viewTeacher.cdNews.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
-        }
-        binding.viewTeacher.cdProject.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
-        }
-        binding.imgAdd.setOnClickListener { showDialog() }
-    }
+//        binding.tbHome.iconRightId.setOnClickListener {
+//            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
+//        }
+
+//        shareViewModel.schedulesState.observe(viewLifecycleOwner) {
+//            when (it) {
+//                is State.Loading -> {
+//                }
+//                is State.Success -> {
+//                    shareViewModel.schedules = it.data
+//                    if (shareViewModel.getScheduleToday(it.data).isEmpty()) {
+//                        binding.txtNoScheduler.apply {
+//                            visibility = View.VISIBLE
+//                            text = "Hôm nay bạn không có lịch học trên trường"
+//                        }
+//                    }
+//                    scheduleTodayAdapter.setItems(shareViewModel.getScheduleToday(it.data))
+//                    Log.d(TAG, "success: ${it.data.size}")
+//
+//                }
+//                is State.Error -> {
+//                    Log.d(TAG, "error: ${it.exception} ")
+//                }
+//            }
+//        }
+//
+//        /**
+//         * teacher event
+//         */
+//
+//
+//        binding.viewTeacher.cdNews.setOnClickListener {
+//            findNavController().navigate(R.id.action_mainFragment_to_newsFragment)
+//        }
+//        binding.viewTeacher.cdProject.setOnClickListener {
+//            findNavController().navigate(R.id.action_mainFragment_to_projectGraduateFragment)
+//        }
+//        binding.imgAdd.setOnClickListener { showDialog() }
+//    }
 
 
 }
