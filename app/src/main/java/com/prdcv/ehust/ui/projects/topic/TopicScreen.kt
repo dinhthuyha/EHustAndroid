@@ -184,7 +184,7 @@ fun TopicStudentRow(
             .fillMaxWidth()
             .clickable {
                 if (topic.status == TopicStatus.ACCEPT) {
-                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
+                    //navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
                 }
             }
     ) {
@@ -221,7 +221,7 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
+                //navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
             }
     ) {
         Column(

@@ -1,6 +1,5 @@
 package com.prdcv.ehust.ui.task
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,19 +12,16 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
@@ -37,9 +33,7 @@ import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
-import com.prdcv.ehust.ui.projects.topic.FilterItemStudent
 import com.prdcv.ehust.ui.projects.topic.TitleTopic
-import com.prdcv.ehust.ui.projects.topic.TopicsFragmentDirections
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
@@ -50,12 +44,12 @@ import java.time.Period
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun TaskScreenPreview(navController: NavController, idTopic: Int) {
+fun TaskScreenPreview(navController: NavController, topic: Topic) {
     val viewModel: TaskViewModel = hiltViewModel()
     val uiState = viewModel.uiState
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.findAllTaskByIdTopic(idTopic)
+        topic.id?.let { viewModel.findAllTaskByIdTopic(it) }
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -65,7 +59,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
             floatingActionButton = { FloatButton {
                 if (uiState.refreshState.isRefreshing) return@FloatButton
                 navController.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToDetailTaskFragment(
-                    TaskDetailArgs(idTopic = idTopic, isNewTask = true)
+                    TaskDetailArgs(idTopic = topic.id!!, isNewTask = true)
                 ))
             } },
             topBar = { ToolBar("Các công việc") },
@@ -74,7 +68,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                 ChipGroup(uiState.selectedTaskStatus, onClick = uiState::filterTaskByStatus)
                 SwipeRefresh(
                     state = uiState.refreshState,
-                    onRefresh = { viewModel.findAllTaskByIdTopic(idTopic) }
+                    onRefresh = { topic.id?.let { it1 -> viewModel.findAllTaskByIdTopic(it1) } }
                 ) {
                     LazyColumn(
                         Modifier
@@ -86,7 +80,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
                                 TaskRow(isLoading = true)
                             }
                         } else {
-                            item { TopicRow(navController =  navController, idTopic = idTopic) }
+                            item { TopicRow(navController =  navController, topic = topic) }
                             items(items = uiState.filteredTaskList, key = { it.id }) { item ->
 
                                 TaskRow(
@@ -113,7 +107,7 @@ fun TaskScreenPreview(navController: NavController, idTopic: Int) {
 
 @Preview(showBackground = true)
 @Composable
-fun TopicRow(idTopic: Int=0,
+fun TopicRow(
     topic: Topic = fakeTopicPreview,
     viewModel: TopicsViewModel? = null,
     navController: NavController? = null
@@ -135,7 +129,7 @@ fun TopicRow(idTopic: Int=0,
         ) {
             TitleTopic(topic = topic)
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Sinh viên: Đinh Thuý Hà ${idTopic}")
+            Text(text = "Sinh viên: Đinh Thuý Hà ")
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { }) {
                     Text(text = "Chi tiết",

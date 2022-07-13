@@ -124,7 +124,7 @@ class TopicsViewModel @Inject constructor(
         idProject: String,
         idTeacher: Int = 0,
         currentUserId: Int?
-    ): Int? {
+    ): Topic? {
         return withContext(Dispatchers.IO) {
             topicRepository.findTopicByIdTeacherAndIdProject(
                 nameTeacher = nameTeacher,
@@ -132,7 +132,7 @@ class TopicsViewModel @Inject constructor(
                 idTeacher = idTeacher
             )
                 .filterIsInstance<State.Success<List<Topic>>>()
-                .last().data.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == currentUserId }?.id
+                .last().data.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == currentUserId }
         }
     }
 

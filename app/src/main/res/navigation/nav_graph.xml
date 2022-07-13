@@ -53,8 +53,9 @@
             android:id="@+id/action_newTaskFragment_to_detailTaskFragment"
             app:destination="@id/detailTaskFragment" />
         <argument
-            android:name="idTopic"
-            app:argType="integer" />
+            android:name="topic"
+            app:argType="com.prdcv.ehust.model.Topic"
+            app:nullable="true" />
         <action
             android:id="@+id/action_newTaskFragment_to_informationTopicFragment"
             app:destination="@id/informationTopicFragment" />

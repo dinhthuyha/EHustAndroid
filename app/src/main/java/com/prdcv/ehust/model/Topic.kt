@@ -1,8 +1,11 @@
 package com.prdcv.ehust.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.hadt.ehust.model.TopicStatus
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Topic(
     val id: Int? = null,
     val name: String,
@@ -22,4 +25,4 @@ data class Topic(
 
     @SerializedName("name_teacher")
     val nameTeacher: String? = null
-)
+) : Parcelable

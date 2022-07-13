@@ -98,7 +98,7 @@ fun ProjectStudent(
             .fillMaxWidth()
             .clickable {
                 coroutineScope.launch {
-                    val id = topicsViewModel
+                    val topic = topicsViewModel
                         .findAcceptedTopic(
                             nameTeacher = data.nameTeacher ?: "",
                             idProject = data.codeCourse,
@@ -108,7 +108,7 @@ fun ProjectStudent(
                     data.nameTeacher?.let {
                         navController?.navigate(
                             ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
-                                id ?: 0
+                                topic
                             )
                         )
                     }
