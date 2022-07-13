@@ -49,9 +49,6 @@ import java.util.*
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
-    private val scheduleTodayAdapter = ScheduleTodayAdapter()
-    private val meetingTodayAdapter = MeetingToDayAdapter()
-    val taskViewModel: TaskViewModel by viewModels()
     private var mDateSetListener: DatePickerDialog.OnDateSetListener? = null
     private var meeting: Meeting? = null
 
@@ -158,8 +155,7 @@ class HomeFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val taskViewModel: TaskViewModel = hiltViewModel()
-                HomeScreen(shareViewModel.user?.roleId!!, findNavController(),taskViewModel,shareViewModel, callback = {showDialog()})
+                HomeScreen(shareViewModel.user?.roleId!!, findNavController(),shareViewModel, callback = {showDialog()})
             }
         }
     }

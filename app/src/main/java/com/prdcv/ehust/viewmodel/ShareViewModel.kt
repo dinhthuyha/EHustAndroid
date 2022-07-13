@@ -3,6 +3,7 @@ package com.prdcv.ehust.viewmodel
 import android.content.SharedPreferences
 import android.util.Log
 import android.view.View
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +19,10 @@ import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
+import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,20 +60,22 @@ data class ProjectsScreenState(
 }
 
 data class HomeScreenState(
+    private var taskList: List<TaskData> = emptyList(),
+    val filteredTaskList: SnapshotStateList<TaskData> = mutableStateListOf(),
+    val selectedTaskStatus: MutableState<TaskStatus> = mutableStateOf(TaskStatus.ALL),
     val schedulesState: SnapshotStateList<ScheduleEvent> = mutableStateListOf(),
     val meetings: SnapshotStateList<Meeting> = mutableStateListOf(),
-    val refreshState: SwipeRefreshState = SwipeRefreshState(false),
+    val refreshState: SwipeRefreshState = SwipeRefreshState(true),
 ) {
-    suspend fun findAllSchedule(state: State<List<ScheduleEvent>>) {
+    fun findAllSchedule(state: State<List<ScheduleEvent>>) {
         when (val _state = state) {
             is State.Success -> {
                 Log.d("TAG", "findAllSchedule: ")
                 schedulesState.clear()
                 schedulesState.addAll(_state.data)
-                refreshState.isRefreshing = false
             }
             is State.Loading -> {
-
+                refreshState.isRefreshing = true
             }
             is State.Error -> {
                 refreshState.isRefreshing = false
@@ -78,12 +83,41 @@ data class HomeScreenState(
         }
     }
 
+    fun addTasksFromState(state: State<List<TaskData>>) {
+        when (val _state = state) {
+            is State.Error -> {}
+            State.Loading -> {
+                refreshState.isRefreshing = true
+            }
+            is State.Success -> {
+                taskList = _state.data
+                filterTaskByStatus()
+            }
+        }
+    }
+    private fun filterTaskByStatus(status: TaskStatus? = null) {
+        selectedTaskStatus.value = status?.let {
+            if (selectedTaskStatus.value == it) TaskStatus.ALL else it
+        } ?: TaskStatus.ALL
+
+        filteredTaskList.clear()
+
+        if (selectedTaskStatus.value == TaskStatus.ALL) {
+            filteredTaskList.addAll(taskList)
+            return
+        }
+
+        taskList
+            .filter { selectedTaskStatus.value == it.status }
+            .forEach { filteredTaskList.add(it) }
+    }
     fun findAllMeeting(state: State<List<Meeting>>) {
         when (val _state = state) {
             is State.Success -> {
                 Log.d("TAG", "findAllMeeting: ")
                 meetings.clear()
                 meetings.addAll(_state.data)
+                refreshState.isRefreshing = false
                
             }
             is State.Loading -> {
@@ -102,7 +136,8 @@ data class HomeScreenState(
 class ShareViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val sharedPreferences: SharedPreferences,
-    private val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository,
+    private val taskRepository: TaskRepository
 ) : BaseViewModel() {
     private var _profileState = SingleLiveEvent<State<User>>()
     val profileState get() = _profileState
@@ -233,11 +268,11 @@ class ShareViewModel @Inject constructor(
 
     }
 
-    fun getAllSchedule() {
+    fun fetchDataHomeScreen() {
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                delay(2000)
                 async { findAllSchedules()  }
+                async { findAllTaskWillExpire() }
                 async { findAllMeeting() }
             }
 
@@ -259,8 +294,16 @@ class ShareViewModel @Inject constructor(
                 else -> {}
             }
             userRepository.findAllMeeting(idUserTeacher, idUserStudent).collect {
+                if (it is State.Success)
+                    delay(2000)
                 uiState.findAllMeeting(it)
             }
+        }
+    }
+
+    fun findAllTaskWillExpire() {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskRepository.findAllTaskWillExpire().collect { uiState.addTasksFromState(it) }
         }
     }
 }

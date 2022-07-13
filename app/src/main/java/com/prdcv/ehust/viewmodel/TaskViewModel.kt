@@ -37,13 +37,6 @@ data class TaskScreenState(
         }
     }
 
-    fun refreshTaskList(coroutineScope: CoroutineScope) {
-        refreshState.isRefreshing = true
-        coroutineScope.launch {
-            delay(3000)
-            refreshState.isRefreshing = false
-        }
-    }
 
     fun filterTaskByStatus(status: TaskStatus? = null) {
         selectedTaskStatus.value = status?.let {
@@ -87,12 +80,6 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             delay(2000)
             taskRepository.findAllTaskByIdTopic(idTopic).collect { uiState.addTasksFromState(it) }
-        }
-    }
-
-    fun findAllTaskWillExpire() {
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.findAllTaskWillExpire().collect { uiState.addTasksFromState(it) }
         }
     }
 }

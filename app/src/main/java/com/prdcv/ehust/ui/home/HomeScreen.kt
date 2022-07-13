@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -32,15 +31,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.fade
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
-import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
@@ -50,10 +46,8 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
-import com.prdcv.ehust.viewmodel.HomeScreenState
 import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TaskViewModel
-import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 import java.time.LocalTime
 
 
@@ -61,32 +55,33 @@ import java.time.LocalTime
 fun HomeScreen(
     role: Role = Role.ROLE_STUDENT,
     navController: NavController,
-    taskViewModel: TaskViewModel,
     shareViewModel: ShareViewModel,
     callback: () -> Unit
 ) {
     LaunchedEffect(key1 = Unit) {
-        shareViewModel.getAllSchedule()
-        taskViewModel.findAllTaskWillExpire()
+        shareViewModel.fetchDataHomeScreen()
     }
-    val uiState = taskViewModel.uiState
     val uiScheduleState = shareViewModel.uiState
     DefaultTheme() {
         Scaffold(topBar = { ToolBar(title = "Trang chủ", nav = navController) }) {
-
+            Log.d("TAG", "HomeScreen: ${uiScheduleState.refreshState.isRefreshing}")
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Spacer(modifier = Modifier.height(10.dp))
                 RowScheduleToday(
                     role = role,
                     callback = callback,
                     shareViewModel.getScheduleToday(uiScheduleState.schedulesState),
-                    uiScheduleState.meetings
+                    uiScheduleState.meetings,
+                    isLoading = uiScheduleState.refreshState.isRefreshing
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                uiState.filteredTaskList.forEach { item ->
-                    TaskRow(isLoading = uiState.refreshState.isRefreshing,
+                val alpha = if (role == Role.ROLE_STUDENT) 1f else 0f
+                uiScheduleState.filteredTaskList.forEach { item ->
+                    TaskRow(isLoading = uiScheduleState.refreshState.isRefreshing,
                         data = item,
                         modifier = Modifier
                             .padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
+                            .alpha(alpha)
                             .clickable {
                                 navController.navigate(
                                     MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
@@ -99,10 +94,16 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 when (role) {
                     Role.ROLE_STUDENT -> {
-                        RowStudent(nav = navController)
+                        RowStudent(
+                            nav = navController,
+                            isLoading = uiScheduleState.refreshState.isRefreshing
+                        )
                     }
                     Role.ROLE_TEACHER -> {
-                        RowTeacher(nav = navController)
+                        RowTeacher(
+                            nav = navController,
+                            isLoading = uiScheduleState.refreshState.isRefreshing
+                        )
                     }
                     else -> {}
                 }
@@ -145,20 +146,22 @@ fun RowScheduleToday(
     role: Role = Role.ROLE_TEACHER,
     callback: () -> Unit,
     schedule: List<ScheduleEvent>,
-    meetings: List<Meeting>
+    meetings: List<Meeting>,
+    isLoading: Boolean = false
 ) {
     val alpha = if (role == Role.ROLE_TEACHER) 1f else 0f
     Card(
         elevation = 4.dp,
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
-            .padding(bottom = 12.dp, start = 12.dp, end = 12.dp, top = 20.dp)
+            .padding(bottom = 12.dp, start = 13.dp, end = 13.dp, top = 20.dp)
             .fillMaxWidth()
             .shadow(
                 elevation = 4.dp,
                 spotColor = Button,
                 shape = RectangleShape
             )
+
 
     ) {
         Column(
@@ -170,6 +173,10 @@ fun RowScheduleToday(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(4.dp)
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Start,
@@ -200,17 +207,38 @@ fun RowScheduleToday(
             Divider(
                 color = Color.Black,
                 thickness = 1.dp,
-                modifier = Modifier.padding(start = 5.dp)
+                modifier = Modifier
+                    .padding(start = 5.dp)
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
             )
             schedule.forEach { t ->
-                RowItemSchedule(title = t.subjectClass.name, startTime = t.startTime, endTime = t.finishTime) }
+                RowItemSchedule(
+                    title = t.subjectClass.name,
+                    startTime = t.startTime,
+                    endTime = t.finishTime,
+                    isLoading = isLoading
+                )
+            }
             meetings.forEach {
-                var title =""
-                when(role){
-                    Role.ROLE_TEACHER -> { title = "${it.title} với sinh viên ${it.nameStudent}"}
-                    Role.ROLE_STUDENT -> { title = it.title}
+                var title = ""
+                when (role) {
+                    Role.ROLE_TEACHER -> {
+                        title = "${it.title} với sinh viên ${it.nameStudent}"
+                    }
+                    Role.ROLE_STUDENT -> {
+                        title = it.title
+                    }
                 }
-                RowItemSchedule(title = title, startTime = it.startTime, endTime =it.endTime) }
+                RowItemSchedule(
+                    title = title,
+                    startTime = it.startTime,
+                    endTime = it.endTime,
+                    isLoading = isLoading
+                )
+            }
         }
     }
 
@@ -219,27 +247,40 @@ fun RowScheduleToday(
 
 
 @Composable
-fun RowTeacher(nav: NavController) {
+fun RowTeacher(nav: NavController, isLoading: Boolean = false) {
     Column() {
-        Row(title = "Đồ Án",
+        Row(
+            title = "Đồ Án",
             sub = "Thông tin chi tiết đồ án",
             idIcon = R.drawable.ic_project,
-            callback = { nav.navigate(R.id.action_mainFragment_to_projectGraduateFragment) })
+            callback = { nav.navigate(R.id.action_mainFragment_to_projectGraduateFragment) },
+            isLoading = isLoading
+        )
         Row(
             title = "Thông báo đồ án",
             sub = "Thông báo chi tiết đồ án",
             idIcon = R.drawable.ic_class,
-            callback = { nav.navigate(R.id.action_mainFragment_to_newsFragment) }
+            callback = { nav.navigate(R.id.action_mainFragment_to_newsFragment) },
+            isLoading = isLoading
         )
     }
 }
 
 @Composable
-fun RowItemSchedule(title: String="Quanr tri du an", startTime: LocalTime?, endTime: LocalTime?) {
+fun RowItemSchedule(
+    title: String = "Quanr tri du an",
+    startTime: LocalTime?,
+    endTime: LocalTime?,
+    isLoading: Boolean = false
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 2.dp, top = 8.dp),
+            .padding(start = 2.dp, top = 8.dp)
+            .placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer()
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = title, modifier = Modifier.weight(2.5f))
@@ -252,26 +293,28 @@ fun RowItemSchedule(title: String="Quanr tri du an", startTime: LocalTime?, endT
 
 
 @Composable
-fun RowStudent(nav: NavController) {
+fun RowStudent(nav: NavController, isLoading: Boolean = false) {
     Column() {
         Row(
             title = "Thời khoá biểu",
             sub = "Tra cứu thời khoá biểu",
             idIcon = R.drawable.ic_calendar2,
-            callback = { nav.navigate(R.id.action_mainFragment_to_scheduleFragment) }
-
+            callback = { nav.navigate(R.id.action_mainFragment_to_scheduleFragment) },
+            isLoading = isLoading
         )
         Row(
             title = "Đồ Án",
             sub = "Thông tin chi tiết đồ án",
             idIcon = R.drawable.ic_project,
-            callback = { nav.navigate(R.id.action_mainFragment_to_projectGraduateFragment) }
+            callback = { nav.navigate(R.id.action_mainFragment_to_projectGraduateFragment) },
+            isLoading = isLoading
         )
         Row(
             title = "Lớp sinh viên",
             sub = "Thông tin lớp sinh viên",
             idIcon = R.drawable.ic_class,
-            callback = { nav.navigate(R.id.action_mainFragment_to_studentsFragment) }
+            callback = { nav.navigate(R.id.action_mainFragment_to_studentsFragment) },
+            isLoading = isLoading
         )
     }
 
@@ -284,7 +327,8 @@ fun Row(
     title: String = "Đồ án",
     sub: String = "Thông tin chi tiết đo án",
     idIcon: Int = R.drawable.ic_project,
-    callback: () -> Unit
+    callback: () -> Unit,
+    isLoading: Boolean = false
 ) {
     Card(
         elevation = 4.dp,
@@ -304,13 +348,37 @@ fun Row(
             Icon(
                 painter = painterResource(id = idIcon),
                 contentDescription = "",
-                modifier = Modifier.size(width = 30.dp, height = 30.dp),
+                modifier = Modifier
+                    .size(width = 40.dp, height = 40.dp)
+                    .placeholder(
+                        visible = isLoading,
+                        highlight = PlaceholderHighlight.shimmer()
+                    ),
                 tint = Button
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column() {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                Text(text = sub)
+                Text(
+                    text = title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
+                        .padding(bottom = 8.dp)
+                )
+                Text(
+                    text = sub,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
+                )
             }
         }
     }
