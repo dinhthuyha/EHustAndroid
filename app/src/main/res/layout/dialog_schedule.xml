@@ -20,38 +20,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <EditText
         android:id="@+id/edtId"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-
+        android:background="@drawable/boder_edit_text"
         android:layout_marginBottom="10dp"
         app:boxCornerRadiusBottomEnd="10dp"
         app:boxCornerRadiusBottomStart="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:inputType="text"
+        android:maxLines="2"
         app:boxCornerRadiusTopEnd="10dp"
+        android:hint="Hẹn gặp sinh viên trao đổi project 1"
         app:boxCornerRadiusTopStart="10dp"
-        app:hintEnabled="true"
-        app:layout_constraintTop_toBottomOf="@id/title">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/event"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Hẹn gặp sinh viên trao đổi project 1"
-            android:inputType="text"
-            android:maxLines="2"
-            android:nextFocusDown="@id/edtPassword"
-            tools:ignore="SpeakableTextPresentCheck" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@id/title"/>
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edtSv"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <EditText
+        android:id="@+id/txtSv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Nguyễn Văn A"
+        android:background="@drawable/boder_edit_text"
+        android:inputType="text"
+        android:maxLines="2"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:nextFocusDown="@id/edtPassword"
+        tools:ignore="SpeakableTextPresentCheck"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
         app:boxCornerRadiusBottomEnd="10dp"
@@ -59,19 +58,7 @@
         app:boxCornerRadiusTopEnd="10dp"
         app:boxCornerRadiusTopStart="10dp"
         app:hintEnabled="true"
-        app:layout_constraintTop_toBottomOf="@id/edtId">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/txtSv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nguyễn Văn A"
-            android:inputType="text"
-            android:maxLines="2"
-            android:nextFocusDown="@id/edtPassword"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@id/edtId"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/txt"
@@ -80,8 +67,8 @@
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         android:text="Thời gian trao đổi:"
-        app:layout_constraintStart_toStartOf="@+id/edtSv"
-        app:layout_constraintTop_toBottomOf="@id/edtSv" />
+        app:layout_constraintStart_toStartOf="@+id/txtSv"
+        app:layout_constraintTop_toBottomOf="@id/txtSv" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/date"

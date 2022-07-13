@@ -12,36 +12,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.akexorcist.snaptimepicker.SnapTimePickerDialog
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.base.BaseFragmentWithBinding
-import com.prdcv.ehust.common.State
-import com.prdcv.ehust.databinding.HomeFragmentBinding
 import com.prdcv.ehust.extension.toLocalDate
 import com.prdcv.ehust.extension.toLocalTime
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.ui.home.HomeScreen
-import com.prdcv.ehust.ui.home.MeetingToDayAdapter
-import com.prdcv.ehust.ui.home.ScheduleTodayAdapter
-import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.ui.task.TaskRow
-import com.prdcv.ehust.ui.task.TaskScreenPreview
-import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
-import com.prdcv.ehust.viewmodel.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -67,7 +47,7 @@ class HomeFragment : BaseFragment() {
         val timeTo = dialog.findViewById(R.id.timeTo) as TextView
         val dateFrom = dialog.findViewById(R.id.txtDate) as TextView
         val txtSV = dialog.findViewById(R.id.txtSv) as EditText
-        val title = dialog.findViewById(R.id.event) as EditText
+        val title = dialog.findViewById(R.id.edtId) as EditText
         dateFrom.setOnClickListener {
             val cal: Calendar = Calendar.getInstance()
             val year: Int = cal.get(Calendar.YEAR)
