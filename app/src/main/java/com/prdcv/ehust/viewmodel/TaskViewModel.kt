@@ -70,7 +70,7 @@ enum class TaskStatus(val text: String) {
     IN_PROGRESS("Đang thực hiện"),
     @SerializedName("Finished")
     FINISHED("Hoàn thành"),
-    @SerializedName("Canceled")
+    @SerializedName("Cancelled")
     CANCELED("Huỷ"),
     ALL("all")
 }

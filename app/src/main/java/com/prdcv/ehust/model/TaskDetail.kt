@@ -1,20 +1,15 @@
 package com.prdcv.ehust.model
 
-import android.os.Parcelable
-import androidx.navigation.NavType
 import com.google.gson.annotations.SerializedName
-import com.hadt.ehust.model.StatusTask
-import com.prdcv.ehust.calendar.model.CalendarUiState
-import kotlinx.parcelize.Parcelize
+import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 
 data class TaskDetail(
     val id: Int? = null,
     val title: String? = null,
 
-    val status: StatusTask? = null,
+    val status: TaskStatus? = null,
     val description: String? = null,
     @SerializedName("estimate_time")
     val estimateTime: Int? = null,

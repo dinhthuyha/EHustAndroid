@@ -3,11 +3,9 @@ package com.prdcv.ehust.ui.task.detail.state
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.Pair
-import com.hadt.ehust.model.StatusTask
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
-import com.prdcv.ehust.model.User
 import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.Instant
 import java.time.LocalDate
@@ -31,12 +29,13 @@ data class TaskDetailScreenState(
     val uiDateRange: MutableState<String> = mutableStateOf(""),
     val progressBarVisible: MutableState<Boolean> = mutableStateOf(false),
     val uploadProgress: MutableState<Float> = mutableStateOf(0f),
-    val listStatusTask: List<String> = listOf(TaskStatus.NEW.text,TaskStatus.IN_PROGRESS.text, TaskStatus.FINISHED.text, TaskStatus.CANCELED.text),
-    val selectedStatusTask: MutableState<String> = mutableStateOf(""),
+    val taskStatus: MutableState<TaskStatus?> = mutableStateOf(null),
+    val listStatusTask: List<TaskStatus> = listOf(TaskStatus.NEW,TaskStatus.IN_PROGRESS, TaskStatus.FINISHED, TaskStatus.CANCELED),
 ) {
     fun updateStates(taskDetail: TaskDetail) {
         _taskDetail = taskDetail
         taskTitle.value = taskDetail.title ?: ""
+        taskStatus.value = taskDetail.status
         taskDescription.value = taskDetail.description ?: ""
         taskStartDate.value = taskDetail.startDate
         taskDueDate.value = taskDetail.dueDate
@@ -78,6 +77,7 @@ data class TaskDetailScreenState(
         get() {
             val id = _taskDetail.id
             val title = taskTitle.value.takeIf { it.isNotBlank() }
+            val status = taskStatus.value
             val des = taskDescription.value.takeIf { it.isNotBlank() }
             val startDate = taskStartDate.value
             val dueDate = taskDueDate.value
@@ -89,6 +89,7 @@ data class TaskDetailScreenState(
             return TaskDetail(
                 id = id,
                 title = title,
+                status = status,
                 description = des,
                 spendTime = spendTime,
                 estimateTime = estimateTime,

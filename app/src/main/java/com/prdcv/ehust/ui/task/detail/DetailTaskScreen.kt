@@ -45,10 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
-import com.prdcv.ehust.extension.findActivity
-import com.prdcv.ehust.extension.getFileName
-import com.prdcv.ehust.extension.getType
-import com.prdcv.ehust.extension.openInputStream
+import com.prdcv.ehust.extension.*
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.ui.compose.BGBottomBar
@@ -56,6 +53,7 @@ import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
+import com.prdcv.ehust.viewmodel.TaskStatus
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.sql.Timestamp
@@ -322,8 +320,8 @@ fun RowTaskSetup(
                     )
                     Row(modifier = Modifier
                         .fillMaxSize()
-                        .clickable {
-                            if (uiState.readOnly.value) return@clickable
+                        .noRippleClickable {
+                            if (uiState.readOnly.value) return@noRippleClickable
                             val picker = MaterialDatePicker.Builder
                                 .dateRangePicker()
                                 .setTitleText("Chọn thời gian")
@@ -389,7 +387,7 @@ fun RowTaskSetup(
                         )
                     }
                 }
-                Row {
+                Box(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
                     Column(
                         horizontalAlignment = Alignment.Start, modifier = Modifier
                             .fillMaxSize(),
@@ -397,10 +395,12 @@ fun RowTaskSetup(
                         SpinnerStatusTask(
                             label = "Trạng thái công việc: ",
                             options = uiState.listStatusTask,
-                            selectedOption = uiState.selectedStatusTask,
+                            selectedOption = uiState.taskStatus,
                             onItemClick = viewModel::onStatusTaskSelected
                         )
-
+                    }
+                    if (uiState.readOnly.value) {
+                        Column(modifier = Modifier.fillMaxSize().noRippleClickable {}) {}
                     }
                 }
 
@@ -416,9 +416,9 @@ fun RowTaskSetup(
 @Composable
 fun SpinnerStatusTask(
     label: String,
-    options: List<String>,
-    selectedOption: MutableState<String>,
-    onItemClick: (String) -> Unit
+    options: List<TaskStatus>,
+    selectedOption: MutableState<TaskStatus?>,
+    onItemClick: (TaskStatus) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -428,10 +428,10 @@ fun SpinnerStatusTask(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedOption.value,
+            value = selectedOption.value?.text ?: "",
             onValueChange = {},
             label = { Text(label) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Purple500,
                 unfocusedBorderColor = LightGray
             ),
@@ -453,7 +453,7 @@ fun SpinnerStatusTask(
                         expanded = false
                     }
                 ) {
-                    Text(text = selectionOption)
+                    Text(text = selectionOption.text)
                 }
             }
         }
