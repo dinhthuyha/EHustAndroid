@@ -126,7 +126,6 @@ class ShareViewModel @Inject constructor(
     var uiState by mutableStateOf(HomeScreenState())
         private set
 
-    var schedules = listOf<ScheduleEvent>()
     fun login(id: Int, password: String) {
         viewModelScope.launch {
             userRepository.login(id, password).collect {

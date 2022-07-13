@@ -100,17 +100,6 @@
 
         </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:id="@+id/exThreeAddButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="20dp"
-            app:backgroundTint="@color/text_color"
-            app:srcCompat="@drawable/ic_add"
-            app:tint="@color/white" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

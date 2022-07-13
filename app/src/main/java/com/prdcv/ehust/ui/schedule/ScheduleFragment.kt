@@ -63,7 +63,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     override fun init() {}
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        schedule = generateColorSChedules(shareViewModel.schedules).groupBy { it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+        schedule = generateColorSChedules(shareViewModel.uiState.schedulesState).groupBy { it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
             .toString() }
         binding.exFiveRv.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
