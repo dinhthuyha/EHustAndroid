@@ -7,14 +7,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,7 +37,9 @@ import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.ui.profile.ToolBar
+import com.prdcv.ehust.viewmodel.ProjectViewModel
 import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TopicsViewModel
 import kotlinx.coroutines.launch
@@ -35,7 +48,7 @@ import kotlinx.parcelize.Parcelize
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProjectScreen(
-    viewModel: ShareViewModel = viewModel(),
+    viewModel: ProjectViewModel = viewModel(),
     topicsViewModel: TopicsViewModel = viewModel(),
     navController: NavController,
 ) {
@@ -59,19 +72,37 @@ fun ProjectScreen(
                             .padding(10.dp)
                     ) {
 
-                        items(uiState.projects) { t ->
                             when (viewModel.user?.roleId) {
                                 Role.ROLE_STUDENT -> {
-                                    if (t.semester == uiState.maxSemester)
-                                    ProjectStudent(t, navController, viewModel.user?.id, topicsViewModel)
+                                    items(uiState.projects) { t ->
+                                        if (t.semester == uiState.maxSemester)
+                                            ProjectStudent(
+                                                t,
+                                                navController,
+                                                viewModel.user?.id,
+                                                topicsViewModel
+                                            )
+                                    }
                                 }
                                 Role.ROLE_TEACHER -> {
-                                    ProjectTeacher(t, navController, viewModel.user)
+                                    item { Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(text = "Học kì: ")
+                                        SpinnerSemester(
+                                            options = uiState.listSemester,
+                                            selectedOption = uiState.semesterStatus,
+                                            onItemClick = viewModel::onSemesterSelected
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    } }
+                                    items(uiState.projects) { t ->
+                                        ProjectTeacher(t, navController, viewModel.user)
+                                    }
+
                                 }
                                 else -> {}
                             }
 
-                        }
+
 
                     }
                 }
@@ -139,6 +170,53 @@ fun ProjectStudent(
                     fontWeight = FontWeight.Light
                 )
 
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SpinnerSemester(
+    options: List<Int>,
+    selectedOption: MutableState<Int?>,
+    onItemClick: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedOption.value?.toString() ?: "",
+            onValueChange = {},
+            label = {  },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Purple500,
+                unfocusedBorderColor = Color.LightGray
+            ),
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            }
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemClick(selectionOption)
+                        expanded = false
+                    }
+                ) {
+                    Text(text = selectionOption.toString())
+                }
             }
         }
     }

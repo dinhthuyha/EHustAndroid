@@ -140,4 +140,10 @@ interface EHustService {
 
     @GET("detail/topic/{id}")
     suspend fun findByDetailTopic(@Path("id") id: Int): Response<MoreInformationTopic>
+
+    @GET("all/semester")
+    suspend fun getAllSemester(): Response< List<Int>>
+
+    @GET("project/teacher/{id_teacher}/{semester}")
+   suspend fun getAllProjectByIdTeacherAndSemester(@Path("id_teacher") idTeacher: Int, @Path("semester") semester: Int): Response<List<Subject>>
 }

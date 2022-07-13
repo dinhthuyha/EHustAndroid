@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragment
+import com.prdcv.ehust.viewmodel.ProjectViewModel
 import com.prdcv.ehust.viewmodel.TopicsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +27,9 @@ class ProjectsFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { ProjectScreen(shareViewModel,topicsViewModel, findNavController()) }
+            setContent {
+                val projectViewModel = hiltViewModel<ProjectViewModel>().apply { user = shareViewModel.user }
+                ProjectScreen(projectViewModel,topicsViewModel, findNavController()) }
         }
     }
 }

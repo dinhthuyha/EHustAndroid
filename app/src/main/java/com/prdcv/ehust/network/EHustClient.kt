@@ -129,4 +129,8 @@ class EHustClient @Inject constructor(
         ehustService.findAllMeeting(idUserteacher, idUserStudent)
 
     suspend fun findByDetailTopic(id: Int) = ehustService.findByDetailTopic(id)
+
+    suspend fun getAllSemester() = ehustService.getAllSemester()
+
+    suspend fun getAllProjectByIdTeacherAndSemester(idTeacher: Int,  semester: Int) = ehustService.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
 }

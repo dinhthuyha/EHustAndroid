@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.login
 
+import android.content.SharedPreferences
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,28 +14,43 @@ import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentLoginBinding
 import com.prdcv.ehust.extension.hideKeyboard
 import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.prdcv.ehust.viewmodel.AssignViewModel
 import com.royrodriguez.transitionbutton.TransitionButton
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
-    private val viewModel: AssignViewModel by activityViewModels()
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
     override fun getViewBinding(inflater: LayoutInflater) = FragmentLoginBinding.inflate(inflater)
     override fun init() {
+//        if (checkToken()){
+//            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+//        }
         binding.login.setOnClickListener {
-            if (binding.contentId.text?.isNotEmpty() == true  && binding.contentPassword.text?.isNotEmpty() == true ){
+            if (binding.contentId.text?.isNotEmpty() == true && binding.contentPassword.text?.isNotEmpty() == true) {
                 hideKeyboard()
                 binding.login.startAnimation()
-                shareViewModel.login(binding.contentId.text.toString().toInt(),binding.contentPassword.text.toString())
-                Log.d("TAG", "init: ${binding.contentId.text.toString().toInt()}, ${binding.contentPassword.text.toString()}")
-                shareViewModel.token.observe(viewLifecycleOwner){
-                    when(it){
-                        is State.Success->{
+                shareViewModel.login(
+                    binding.contentId.text.toString().toInt(),
+                    binding.contentPassword.text.toString()
+                )
+                Log.d(
+                    "TAG",
+                    "init: ${
+                        binding.contentId.text.toString().toInt()
+                    }, ${binding.contentPassword.text.toString()}"
+                )
+                shareViewModel.token.observe(viewLifecycleOwner) {
+                    when (it) {
+                        is State.Success -> {
                             val handler = Handler()
                             handler.postDelayed({
-                                binding.login.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND
+                                binding.login.stopAnimation(
+                                    TransitionButton.StopAnimationStyle.EXPAND
                                 ) {
                                     shareViewModel.decodeResponseLogin(it.data)
                                     if (shareViewModel.user?.roleId == Role.ROLE_ADMIN) {
@@ -44,18 +60,33 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
                                 }
                             }, 800)
                         }
-                        is State.Error->{
-                            binding.login.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
-                            Toast.makeText(context,"Đăng nhập không thành công!",Toast.LENGTH_LONG ).show()
+                        is State.Error -> {
+                            binding.login.stopAnimation(
+                                TransitionButton.StopAnimationStyle.SHAKE,
+                                null
+                            );
+                            Toast.makeText(
+                                context,
+                                "Đăng nhập không thành công!",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
-                        else ->{}
+                        else -> {}
                     }
                 }
-            }else{
-                Toast.makeText(context, " Vui lòng nhập mã số sinh viên và mật khẩu", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    " Vui lòng nhập mã số sinh viên và mật khẩu",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
 
+    private fun checkToken(): Boolean {
+        val token = sharedPreferences.getString(SharedPreferencesKey.TOKEN, "")
+       return token!=null
+    }
 
 }

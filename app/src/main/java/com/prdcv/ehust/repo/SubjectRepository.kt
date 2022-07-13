@@ -20,4 +20,20 @@ class SubjectRepository @Inject constructor(
             }
         }.asFlow()
    }
+
+    fun getAllSemester(): Flow<State<List<Int>>>{
+        return object : NetworkBoundRepository<List<Int>>(){
+            override suspend fun fetchFromRemote(): Response<List<Int>> {
+                return eHustClient.getAllSemester()
+            }
+        }.asFlow()
+    }
+
+    fun getAllProjectByIdTeacherAndSemester(idTeacher: Int, semester: Int): Flow<State< List<Subject>>>{
+        return object : NetworkBoundRepository< List<Subject>>(){
+            override suspend fun fetchFromRemote(): Response<List<Subject>> {
+                return eHustClient.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
+            }
+        }.asFlow()
+    }
 }
