@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.model.MoreInformationTopic
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.Topic
@@ -20,6 +21,8 @@ import com.prdcv.ehust.ui.projects.ProjectArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
@@ -30,6 +33,7 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
     var coroutineScope: CoroutineScope? = null,
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
+    var moreInformationTopic: MutableState<MoreInformationTopic> = mutableStateOf(MoreInformationTopic()),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val bottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
@@ -90,6 +94,22 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
         }
     }
 
+    fun findDetailInformationTopic(it: State<MoreInformationTopic>) {
+        when (it) {
+            is State.Error -> {
+                refreshState.isRefreshing = true
+            }
+            is State.Success -> {
+
+                refreshState.isRefreshing = false
+                moreInformationTopic.value = it.data
+            }
+            is State.Loading -> {
+                refreshState.isRefreshing = true
+            }
+        }
+    }
+
 }
 
 @HiltViewModel
@@ -101,6 +121,16 @@ class TopicsViewModel @Inject constructor(
     var mUserId: Int = 0
     var mProject: ProjectArg? = null
     var mRole: Role = Role.ROLE_UNKNOWN
+
+    fun findDetailInformationTopic(id: Int) {
+        viewModelScope.launch {
+            topicRepository.findByDetailTopic(id).collect {
+                if (it is State.Success)
+                    delay(2000)
+                uiState.findDetailInformationTopic(it)
+            }
+        }
+    }
 
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",

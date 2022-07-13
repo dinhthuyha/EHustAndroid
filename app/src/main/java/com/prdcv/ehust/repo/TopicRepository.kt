@@ -3,6 +3,7 @@ package com.prdcv.ehust.repo
 import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
+import com.prdcv.ehust.model.MoreInformationTopic
 import com.prdcv.ehust.model.Topic
 import com.prdcv.ehust.network.EHustClient
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,14 @@ class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
         return object: NetworkBoundRepository<ResponseBody>() {
             override suspend fun fetchFromRemote(): Response<ResponseBody> {
                 return eHustClient.submitTopicSuggestion(topic)
+            }
+        }.asFlow()
+    }
+
+    fun findByDetailTopic(idStudent: Int): Flow<State<MoreInformationTopic>> {
+        return object: NetworkBoundRepository<MoreInformationTopic>() {
+            override suspend fun fetchFromRemote(): Response<MoreInformationTopic> {
+                return eHustClient.findByDetailTopic(idStudent)
             }
         }.asFlow()
     }

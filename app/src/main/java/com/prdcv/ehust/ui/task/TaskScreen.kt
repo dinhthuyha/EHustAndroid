@@ -135,7 +135,7 @@ fun TopicRow(
                     Text(text = "Chi tiết",
                         color = Color.White,
                         modifier = Modifier.clickable {
-                            navController?.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToInformationTopicFragment())
+                            navController?.navigate(NewTaskFragmentDirections.actionNewTaskFragmentToInformationTopicFragment(topic.id?:0))
                         })
                 }
             }
