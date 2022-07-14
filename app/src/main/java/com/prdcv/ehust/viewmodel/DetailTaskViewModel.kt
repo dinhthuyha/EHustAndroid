@@ -55,8 +55,8 @@ class DetailTaskViewModel @Inject constructor(
                 uploadAttachment(commentId, it)
                 uiState.fileToUpload.value = null
                 uiState.progressBarVisible.value = false
-                getComments()
             }
+            getComments()
         }
     }
 
