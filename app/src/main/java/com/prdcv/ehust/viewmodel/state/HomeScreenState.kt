@@ -43,7 +43,7 @@ data class HomeScreenState(
                 refreshState.isRefreshing = true
             }
             is State.Success -> {
-                taskList = _state.data
+                taskList = _state.data.sortedByDescending(TaskData::id)
                 filterTaskByStatus()
             }
         }

@@ -31,7 +31,7 @@ data class TaskScreenState(
             }
             is State.Success -> {
                 refreshState.isRefreshing = false
-                taskList = _state.data
+                taskList = _state.data.sortedByDescending(TaskData::id)
                 filterTaskByStatus()
             }
         }
