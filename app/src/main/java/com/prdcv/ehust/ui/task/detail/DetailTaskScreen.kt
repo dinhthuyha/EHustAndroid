@@ -19,7 +19,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -160,34 +163,36 @@ private fun CommentSection(
     numberCommentShow: MutableState<Int>
 ) {
     val uiState = viewModel.uiState
+    val taskComments by uiState.taskComments
+
     Column(modifier = Modifier.fillMaxWidth()) {
         LaunchedEffect(key1 = Unit) {
             viewModel.getComments()
         }
         Text(
-            text = "Bình luận",
+            text = uiState.commentSectionTitle,
             Modifier.padding(start = 25.dp, bottom = 12.dp),
             color = Black,
             fontWeight = FontWeight.Bold
         )
-        if (uiState.taskComments.value.size > 4) {
+        if (taskComments.size > 4) {
             Text(
-                text = "See Previous replies",
+                text = "Xem bình luận cũ hơn",
                 Modifier
                     .padding(start = 25.dp, bottom = 12.dp)
                     .clickable {
                         if (numberCommentShow.value == 0) {
                             numberCommentShow.value = 4
                         } else {
-                            when (uiState.taskComments.value.size / numberCommentShow.value > 1) {
+                            when (taskComments.size / numberCommentShow.value > 1) {
                                 true -> {
                                     val n =
-                                        uiState.taskComments.value.size / numberCommentShow.value
+                                        taskComments.size / numberCommentShow.value
                                     numberCommentShow.value = 4 * n
                                 }
                                 false -> {
                                     numberCommentShow.value =
-                                        uiState.taskComments.value.size
+                                        taskComments.size
                                 }
                             }
                         }
@@ -196,7 +201,7 @@ private fun CommentSection(
                 style = MaterialTheme.typography.caption,
             )
             Text(
-                text = "Collapse all",
+                text = "Thu gọn",
                 Modifier
                     .padding(start = 25.dp, bottom = 12.dp)
                     .clickable {
@@ -206,38 +211,16 @@ private fun CommentSection(
                 style = MaterialTheme.typography.caption,
             )
         }
-    }
-}
-
-@Composable
-fun ButtonAddFile(onAttachmentSelected: (inputStream: InputStream?, filename: String?, contentType: String?) -> Unit) {
-    val context = LocalContext.current
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            if (uri != null) {
-                val file = context.openInputStream(uri)
-                val type = context.getType(uri)
-                val filename = context.getFileName(uri)
-                onAttachmentSelected(file, filename, type)
-            }
-        }
-
-    Button(
-        onClick = {
-            launcher.launch("*/*")
-        },
-        content = {
+        if (!uiState.isLoading.value && taskComments.isEmpty()) {
             Text(
-                text = "Add file",
-                style = MaterialTheme.typography.button,
-                color = White
+                text = "Chưa có bình luận",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = LightGray,
+                style = MaterialTheme.typography.caption
             )
-        },
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Button
-        )
-    )
-
+        }
+    }
 }
 
 @Composable
@@ -322,10 +305,11 @@ fun RowTaskSetup(
                             }
                         }) {}
                 }
-
+                Divider(thickness = .5f.dp)
                 Row {
                     Column(
-                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskEstimateTime,
@@ -338,9 +322,11 @@ fun RowTaskSetup(
                     }
 
                 }
+                Divider(thickness = .5f.dp)
                 Row {
                     Column(
-                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskProgress,
@@ -354,9 +340,11 @@ fun RowTaskSetup(
 
 
                 }
+                Divider(thickness = .5f.dp)
                 Row {
                     Column(
-                        horizontalAlignment = Alignment.Start, modifier = Modifier.heightIn(20.dp, 50.dp)
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier.heightIn(20.dp, 50.dp)
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskAssignee,
@@ -368,11 +356,15 @@ fun RowTaskSetup(
                         )
                     }
                 }
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)) {
+                Divider(thickness = .5f.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                ) {
                     Column(
-                        horizontalAlignment = Alignment.Start, modifier = Modifier
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
                             .fillMaxSize(),
                     ) {
                         SpinnerStatusTask(
@@ -389,7 +381,7 @@ fun RowTaskSetup(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
         }
@@ -445,6 +437,7 @@ fun SpinnerStatusTask(
         }
     }
 }
+
 @Composable
 fun RowElementSetupTask(
     value: MutableState<String>,
@@ -572,7 +565,7 @@ fun RowTaskDescription(
 }
 
 @Composable
-fun RowComment(comment: Comment, onAttachmentClick: (String?, String?) -> Unit = {_, _ ->}) {
+fun RowComment(comment: Comment, onAttachmentClick: (String?, String?) -> Unit = { _, _ -> }) {
     Column {
         Row(
             modifier = Modifier
@@ -611,7 +604,7 @@ fun RowComment(comment: Comment, onAttachmentClick: (String?, String?) -> Unit =
             }
         }
         comment.attachments?.firstOrNull()?.let {
-            AttachmentRow(it) {onAttachmentClick(it.filename, it.filePath)}
+            AttachmentRow(it) { onAttachmentClick(it.filename, it.filePath) }
         }
     }
 }
@@ -711,7 +704,10 @@ fun BottomBarComment(
                 },
                 trailingIcon = {
                     IconButton(onClick = { launcher.launch("*/*") }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_attach_file), contentDescription = null)
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_attach_file),
+                            contentDescription = null
+                        )
                     }
                 }
             )
@@ -780,5 +776,5 @@ private fun AttachmentRowPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun BottomBarPreview() {
-    BottomBarComment(onAttachmentSelected = {_, _, _, ->})
+    BottomBarComment(onAttachmentSelected = { _, _, _ -> })
 }

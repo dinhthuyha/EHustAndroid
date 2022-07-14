@@ -48,6 +48,9 @@ data class TaskDetailScreenState(
         uiDateRange.value = selectedDatesFormatted
     }
 
+    val commentSectionTitle: String
+        get() = "Bình luận" + if (taskComments.value.isNotEmpty()) " (${taskComments.value.size})" else ""
+
     private val selectedDatesFormatted: String
         get() = "${taskStartDate.value?.format(SHORT_DATE_FORMAT)} - ${
             taskDueDate.value?.format(
@@ -103,7 +106,7 @@ data class TaskDetailScreenState(
         }
 
     companion object {
-        private val SHORT_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM dd")
+        private val SHORT_DATE_FORMAT = DateTimeFormatter.ofPattern("dd MMM")
     }
 }
 
