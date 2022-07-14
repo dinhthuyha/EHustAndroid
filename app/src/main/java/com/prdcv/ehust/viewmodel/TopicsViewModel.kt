@@ -156,7 +156,7 @@ class TopicsViewModel @Inject constructor(
         idProject: String,
         idTeacher: Int = 0,
         currentUserId: Int?,
-        semester: Int
+        semester: Int = 0
     ): Topic? {
         return withContext(Dispatchers.IO) {
             topicRepository.findTopicByIdTeacherAndIdProject(

@@ -72,12 +72,14 @@ fun TopicScreen(
                     fun checkTopic(topics: List<Topic>): List<Topic> {
                         try {
                             //chi sho cac de tai chua co sinh vien nao request
-                            topics.firstOrNull { it.idStudent == viewModel.mUserId && it.status == TopicStatus.ACCEPT }?.let {
-                                return listOf(it)
-                            }
-                            topics.filter { it.status == TopicStatus.REQUEST ||( it.idStudent == viewModel.mUserId && it.status == TopicStatus.REQUESTING) }.let {
-                                return it
-                            }
+                            topics.firstOrNull { it.idStudent == viewModel.mUserId && it.status == TopicStatus.ACCEPT }
+                                ?.let {
+                                    return listOf(it)
+                                }
+                            topics.filter { it.status == TopicStatus.REQUEST || (it.idStudent == viewModel.mUserId && it.status == TopicStatus.REQUESTING) }
+                                .let {
+                                    return it
+                                }
                         } catch (e: Exception) {
                             return listOf<Topic>()
                         }
@@ -91,7 +93,7 @@ fun TopicScreen(
                         ) {
                             when (viewModel.mRole) {
                                 Role.ROLE_TEACHER -> {
-                                    items(items = uiState.topics) {
+                                    items(items = uiState.topics.filter { it.status == TopicStatus.ACCEPT }) {
                                         TopicTeacherRow(it, navController, viewModel)
                                     }
                                 }
@@ -184,7 +186,7 @@ fun TopicStudentRow(
             .fillMaxWidth()
             .clickable {
                 if (topic.status == TopicStatus.ACCEPT) {
-                    //navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
+                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic))
                 }
             }
     ) {
@@ -194,14 +196,14 @@ fun TopicStudentRow(
                 .padding(10.dp)
         ) {
             TitleTopic(topic = topic)
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                FilterItemStudent(
-                    status = topic.status
-                ) {
-                    if (topic.status == TopicStatus.REQUEST)
-                        viewModel?.updateTopicStatus(topic.id!!, TopicStatus.REQUESTING)
-                }
-            }
+//            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+//                FilterItemStudent(
+//                    status = topic.status
+//                ) {
+//                    if (topic.status == TopicStatus.REQUEST)
+//                        viewModel?.updateTopicStatus(topic.id!!, TopicStatus.REQUESTING)
+//                }
+//            }
         }
 
     }
@@ -212,7 +214,7 @@ fun TopicStudentRow(
 fun TopicTeacherRow(
     topic: Topic = fakeTopicPreview,
     navController: NavController? = null,
-    viewModel: TopicsViewModel? = null
+    viewModel: TopicsViewModel? = null,
 ) {
     Card(
         elevation = 2.dp,
@@ -221,7 +223,7 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                //navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic.id!!))
+                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic))
             }
     ) {
         Column(
@@ -273,20 +275,22 @@ fun TopicSuggestionRow(onClick: () -> Unit = {}) {
 
 @Composable
 fun TitleTopic(topic: Topic) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        ) {
         Text(
             text = "Đề tài: ",
             fontSize = 15.sp,
             color = Color.Gray
         )
-        Spacer(modifier = Modifier.size(5.dp))
+        Spacer(modifier = Modifier.size(10.dp))
         Text(
             text = "${topic.name} ",
             fontSize = 17.sp,
             modifier = Modifier
                 .padding(2.dp)
         )
-        Spacer(modifier = Modifier.size(3.dp))
+        Spacer(modifier = Modifier.size(8.dp))
     }
 }
 

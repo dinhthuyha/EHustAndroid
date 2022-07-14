@@ -78,15 +78,15 @@ fun ProjectScreen(
 
                             when (viewModel.user?.roleId) {
                                 Role.ROLE_STUDENT -> {
-//                                    items(uiState.projects) { t ->
-//                                    if (t.semester == viewModel.semester)
-//                                            ProjectStudent(
-//                                                t,
-//                                                navController,
-//                                                viewModel.user?.id,
-//                                                topicsViewModel
-//                                            )
-//                                    }
+                                    items(uiState.projects) { t ->
+                                    if (t.semester == viewModel.semester)
+                                            ProjectStudent(
+                                                t,
+                                                navController,
+                                                viewModel.user!!,
+                                                topicsViewModel
+                                            )
+                                    }
                                 }
                                 Role.ROLE_TEACHER -> {
                                     item { Row(verticalAlignment = Alignment.CenterVertically) {
@@ -119,68 +119,69 @@ fun ProjectScreen(
     }
 }
 
-//@Composable
-//fun ProjectStudent(
-//    data: ClassStudent = classStudentPreview,
-//    navController: NavController? = null,
-//    userId: Int?,
-//    topicsViewModel: TopicsViewModel
-//) {
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    Card(
-//        elevation = 2.dp,
-//        shape = MaterialTheme.shapes.medium,
-//        modifier = Modifier
-//            .padding(5.dp)
-//            .fillMaxWidth()
-//            .clickable {
-//                coroutineScope.launch {
-//                    val topic = topicsViewModel
-//                        .findAcceptedTopic(
-//                            nameTeacher = data.nameTeacher ?: "",
-//                            idProject = data.codeCourse,
-//                            currentUserId = userId
-//                        )
-//
-//                    data.nameTeacher?.let {
-//                        navController?.navigate(
-//                            ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
-//                                topic
-//                            )
-//                        )
-//                    }
-//                }
-//            }
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .width(IntrinsicSize.Max)
-//                .padding(8.dp)
-//        ) {
-//            Row(modifier = Modifier.padding(8.dp)) {
-//                Text(
-//                    text = data.toString(),
-//                    fontSize = 17.sp,
-//                    modifier = Modifier
-//                        .padding(1.dp),
-//                    fontWeight = FontWeight.Medium
-//                )
-//
-//            }
-//            Row(modifier = Modifier.padding(8.dp)) {
-//                Text(
-//                    text = data.line2(),
-//                    fontSize = 16.sp,
-//                    modifier = Modifier
-//                        .padding(1.dp),
-//                    fontWeight = FontWeight.Light
-//                )
-//
-//            }
-//        }
-//    }
-//}
+@Composable
+fun ProjectStudent(
+    data: ClassStudent = classStudentPreview,
+    navController: NavController? = null,
+    user: User,
+    topicsViewModel: TopicsViewModel
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Card(
+        elevation = 2.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth()
+            .clickable {
+                coroutineScope.launch {
+                    val topic = topicsViewModel
+                        .findAcceptedTopic(
+                            nameTeacher = data.nameTeacher ?: "",
+                            idProject = data.codeCourse,
+                            currentUserId = user.id,
+                            semester = data.semester
+                        )
+                    topic?.nameStudent =user.fullName
+                    data.nameTeacher?.let {
+                        navController?.navigate(
+                            ProjectsFragmentDirections.actionProjectGraduateFragmentToNewTaskFragment(
+                                topic
+                            )
+                        )
+                    }
+                }
+            }
+    ) {
+        Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .padding(8.dp)
+        ) {
+            Row(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = data.toString(),
+                    fontSize = 17.sp,
+                    modifier = Modifier
+                        .padding(1.dp),
+                    fontWeight = FontWeight.Medium
+                )
+
+            }
+            Row(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = data.line2(),
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .padding(1.dp),
+                    fontWeight = FontWeight.Light
+                )
+
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

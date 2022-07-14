@@ -130,7 +130,7 @@ fun TopicRow(
         ) {
             TitleTopic(topic = topic)
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Sinh viên: Đinh Thuý Hà ")
+            Text(text = "Sinh viên: ${topic.nameStudent} ")
             Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { }) {
                     Text(text = "Chi tiết",
