@@ -61,17 +61,12 @@ class ShareViewModel @Inject constructor(
     val token get() = _token
     var maxSemester: Int? = 0
 
-    /**
-     * ui state cho projects screen
-     */
-    val projectsScreenState = ProjectsScreenState()
-
-
     var uiState by mutableStateOf(HomeScreenState())
         private set
 
     fun login(id: Int, password: String) {
         viewModelScope.launch {
+            uiState = HomeScreenState()
             userRepository.login(id, password).collect {
                 _token.postValue(it)
             }

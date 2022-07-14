@@ -47,7 +47,7 @@ import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.ShareViewModel
-import com.prdcv.ehust.viewmodel.TaskViewModel
+import com.prdcv.ehust.viewmodel.state.HomeScreenState
 import java.time.LocalTime
 
 
@@ -75,21 +75,8 @@ fun HomeScreen(
                     isLoading = uiScheduleState.refreshState.isRefreshing
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-                val alpha = if (role == Role.ROLE_STUDENT) 1f else 0f
-                uiScheduleState.filteredTaskList.forEach { item ->
-                    TaskRow(isLoading = uiScheduleState.refreshState.isRefreshing,
-                        data = item,
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
-                            .alpha(alpha)
-                            .clickable {
-                                navController.navigate(
-                                    MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
-                                        TaskDetailArgs(idTask = item.id)
-                                    )
-                                )
-                            }
-                    )
+                if (role == Role.ROLE_STUDENT) {
+                    TasksWillExpiresSoon(uiScheduleState, navController)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 when (role) {
@@ -114,6 +101,24 @@ fun HomeScreen(
 
     }
 
+}
+
+@Composable
+fun TasksWillExpiresSoon(uiScheduleState: HomeScreenState, navController: NavController) {
+    uiScheduleState.filteredTaskList.forEach { item ->
+        TaskRow(isLoading = uiScheduleState.refreshState.isRefreshing,
+            data = item,
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp, bottom = 5.dp)
+                .clickable {
+                    navController.navigate(
+                        MainFragmentDirections.actionMainFragmentToDetailTaskFragment(
+                            TaskDetailArgs(idTask = item.id)
+                        )
+                    )
+                }
+        )
+    }
 }
 
 
