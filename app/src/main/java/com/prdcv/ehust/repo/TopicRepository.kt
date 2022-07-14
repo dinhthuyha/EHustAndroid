@@ -15,11 +15,12 @@ class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String,
         idProject: String,
-        idTeacher: Int
+        idTeacher: Int,
+        semester : Int
     ): Flow<State<List<Topic>>>{
         return object: NetworkBoundRepository<List<Topic>>(){
             override suspend fun fetchFromRemote(): Response<List<Topic>> {
-                return eHustClient.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher)
+                return eHustClient.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher, semester)
             }
         }.asFlow()
     }

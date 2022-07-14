@@ -53,9 +53,10 @@ class EHustClient @Inject constructor(
     suspend fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String,
         idProject: String,
-        idTeacher: Int
+        idTeacher: Int,
+        semester: Int
     ): Response<List<Topic>> {
-        return ehustService.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher)
+        return ehustService.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher, semester)
     }
 
     suspend fun getAllUserInClass(nameCourse: String, role: Role): Response<List<User>> {

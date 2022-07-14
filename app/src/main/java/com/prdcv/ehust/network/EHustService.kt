@@ -46,11 +46,12 @@ interface EHustService {
     @GET("user/{id}/schedule")
     suspend fun findAllSchedule(@Path("id") id: Int): Response<List<ScheduleEvent>>
 
-    @GET("topic/teacher/{id_teacher}/{name_teacher}/{id_project}")
+    @GET("topic/teacher/{id_teacher}/{name_teacher}/{id_project}/{semester}")
     suspend fun findTopicByIdTeacherAndIdProject(
         @Path("name_teacher") nameTeacher: String,
         @Path("id_project") idProject: String,
-        @Path("id_teacher") idTeacher: Int
+        @Path("id_teacher") idTeacher: Int,
+        @Path("semester") semester: Int
     ): Response<List<Topic>>
 
 

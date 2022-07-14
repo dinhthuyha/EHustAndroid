@@ -135,13 +135,15 @@ class TopicsViewModel @Inject constructor(
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",
         idProject: String,
-        idTeacher: Int = 0
+        idTeacher: Int = 0,
+        semester: Int = 20212
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             topicRepository.findTopicByIdTeacherAndIdProject(
                 nameTeacher = nameTeacher,
                 idProject = idProject,
-                idTeacher = idTeacher
+                idTeacher = idTeacher,
+                semester = semester
             ).collect {
                 uiState.addTopicsFromState(it)
                 uiState.filterUnassignedTopic(mUserId, mRole)
@@ -153,13 +155,15 @@ class TopicsViewModel @Inject constructor(
         nameTeacher: String = "a",
         idProject: String,
         idTeacher: Int = 0,
-        currentUserId: Int?
+        currentUserId: Int?,
+        semester: Int
     ): Topic? {
         return withContext(Dispatchers.IO) {
             topicRepository.findTopicByIdTeacherAndIdProject(
                 nameTeacher = nameTeacher,
                 idProject = idProject,
-                idTeacher = idTeacher
+                idTeacher = idTeacher,
+                semester = semester
             )
                 .filterIsInstance<State.Success<List<Topic>>>()
                 .last().data.firstOrNull { it.status == TopicStatus.ACCEPT && it.idStudent == currentUserId }
@@ -178,7 +182,8 @@ class TopicsViewModel @Inject constructor(
                 Role.ROLE_TEACHER -> {
                     findTopicByIdTeacherAndIdProject(
                         idTeacher = it.idTeacher!!,
-                        idProject = it.idProject!!
+                        idProject = it.idProject!!,
+                        semester = it.semester?:20212
                     )
                 }
                 else -> {}
