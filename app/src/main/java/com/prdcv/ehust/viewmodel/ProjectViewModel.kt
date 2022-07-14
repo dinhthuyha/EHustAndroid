@@ -67,5 +67,8 @@ class ProjectViewModel @Inject constructor(
 
     fun onSemesterSelected(semester: Int) {
         projectsScreenState.semesterStatus.value = semester
+        getAllProjectByIdTeacherAndSemester(
+            user?.id?:0, semester
+        )
     }
 }

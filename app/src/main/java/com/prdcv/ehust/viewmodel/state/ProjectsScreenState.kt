@@ -8,14 +8,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.Subject
+import com.prdcv.ehust.model.ProjectTeacher
 
 data class ProjectsScreenState(
     val projects: SnapshotStateList<ClassStudent> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val listSemester: SnapshotStateList<Int> = mutableStateListOf(),
     val semesterStatus: MutableState<Int?> = mutableStateOf(0),
-    val listProject: SnapshotStateList<Subject> = mutableStateListOf()
+    val listProject: SnapshotStateList<ProjectTeacher> = mutableStateListOf()
 ) {
     fun addProjectListFromState(state: State<List<ClassStudent>>) {
         when (val _state = state) {
@@ -30,12 +30,19 @@ data class ProjectsScreenState(
         }
     }
 
-    fun getAllProjectByIdTeacherAndSemester(state: State<List<Subject>>) {
+    fun getAllProjectByIdTeacherAndSemester(state: State<List<ProjectTeacher>>) {
         when (val _state = state) {
             is State.Success -> {
-                Log.d("TAG", "findAllSchedule: ")
-                listProject.clear()
-                listProject.addAll(_state.data)
+                val list = mutableListOf<ProjectTeacher>()
+                list.addAll(_state.data)
+                list.forEach { t ->
+                   val numberStudentInProject = list.filter { it.codeProject ==t.codeProject }.size
+                    t.numberOfStudentsGuiding = numberStudentInProject
+                }
+                listProject.apply {
+                    clear()
+                    addAll(list.distinctBy { it.codeProject })
+                }
             }
             is State.Loading -> {
                 refreshState.isRefreshing = false

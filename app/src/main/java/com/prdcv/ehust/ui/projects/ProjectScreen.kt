@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.ProjectTeacher
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
@@ -97,7 +98,10 @@ fun ProjectScreen(
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
                                     } }
-                                    items(uiState.projects) { t ->
+                                    item { Spacer(modifier = Modifier.height(25.dp)) }
+                                    item { Text(text = "Các đồ án hướng dẫn:") }
+                                    item { Spacer(modifier = Modifier.height(12.dp)) }
+                                    items(uiState.listProject) { t ->
                                         ProjectTeacher(t, navController, viewModel.user)
                                     }
 
@@ -225,10 +229,9 @@ fun SpinnerSemester(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun ProjectTeacher(
-    data: ClassStudent = classStudentPreview,
+    data: ProjectTeacher ,
     navController: NavController? = null,
     teacher: User? = User(id = 123, roleId = Role.ROLE_TEACHER)
 ) {
@@ -243,20 +246,22 @@ fun ProjectTeacher(
                     ProjectsFragmentDirections.actionProjectGraduateFragmentToTopicsFragment(
                         ProjectArg(
                             idTeacher = teacher?.id,
-                            idProject = data.codeCourse
+                            idProject = data.codeProject
                         )
                     )
                 )
             }
     ) {
-        Row(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "${data.name} - ${data.codeCourse} ",
+                text = "${data.codeProject}: ${data.nameProject}",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
                     .padding(2.dp)
             )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(text = "Hướng dẫn ${data.numberOfStudentsGuiding} sinh viên")
 
         }
     }
