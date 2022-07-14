@@ -12,7 +12,10 @@ import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.utils.ProgressStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.time.LocalDate
 import java.util.*
@@ -42,16 +45,17 @@ class DetailTaskViewModel @Inject constructor(
         uiState.taskStatus.value = status
     }
 
-    fun postComment(content: String) {
-        viewModelScope.launch {
+    suspend fun postComment(content: String) {
+        withContext(Dispatchers.IO) {
             val comment = Comment(content = content)
-            commentRepository.postComment(idTask, comment).collect {
-                when (val state = it) {
-                    is State.Success -> {
-                        uiState.taskComments.value = state.data
-                    }
-                    else -> {}
-                }
+            val commentId = commentRepository.postComment(idTask, comment)
+                .filterIsInstance<State.Success<Int>>().last().data
+
+            uiState.fileToUpload.value?.let {
+                uploadAttachment(commentId, it)
+                uiState.fileToUpload.value = null
+                uiState.progressBarVisible.value = false
+                getComments()
             }
         }
     }
@@ -72,16 +76,14 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    fun getComments() {
+    suspend fun getComments() {
         if (isNewTask) return
-        viewModelScope.launch(Dispatchers.IO) {
-            commentRepository.findAllCommentByIdTask(idTask).collect {
-                when (val state = it) {
-                    is State.Success -> {
-                        uiState.taskComments.value = state.data
-                    }
-                    else -> {}
+        commentRepository.findAllCommentByIdTask(idTask).collect {
+            when (val state = it) {
+                is State.Success -> {
+                    uiState.taskComments.value = state.data
                 }
+                else -> {}
             }
         }
     }
@@ -139,41 +141,22 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    private fun addAttachment(attachment: Attachment) {
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.addAttachment(idTask, attachment).collect {
-                when (val state = it) {
-                    is State.Error -> {}
-                    State.Loading -> {}
-                    is State.Success -> uiState.taskAttachments.value = state.data
-                }
-            }
-        }
-    }
-
     fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?) {
         if (inputStream == null) return
-//        filename?.let(uiState.taskAttachments::add)
         val filePath = UUID.randomUUID().toString()
         val attachmentInfo = AttachmentInfo(
             ProgressStream(inputStream, uiState::updateUploadProgress),
-            filePath,
+            filename ?: filePath,
             contentType
         )
-        uiState.progressBarVisible.value = true
+        uiState.fileToUpload.value = attachmentInfo
+    }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.uploadAttachment(attachmentInfo).collect {
-                // TOOD: update status
-                when (it) {
-                    is State.Error -> {}
-                    State.Loading -> {}
-                    is State.Success -> {
-                        uiState.progressBarVisible.value = false
-                        addAttachment(Attachment(filename, filePath))
-                    }
-                }
-            }
-        }
+    private suspend fun uploadAttachment(commentId: Int, attachmentInfo: AttachmentInfo) {
+        uiState.progressBarVisible.value = true
+        val filePath = UUID.randomUUID().toString()
+        // TODO: xử lý các trường hợp lỗi
+        taskRepository.uploadAttachment(attachmentInfo.copy(filename = filePath)).filterIsInstance<State.Success<Any>>().last()
+        taskRepository.addAttachment(commentId, Attachment(attachmentInfo.filename, filePath)).filterIsInstance<State.Success<Any>>().last()
     }
 }

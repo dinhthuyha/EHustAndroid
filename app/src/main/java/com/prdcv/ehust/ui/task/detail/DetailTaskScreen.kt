@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,19 +13,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.LightGray
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,10 +46,8 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.extension.*
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.ui.compose.BGBottomBar
-import com.prdcv.ehust.ui.compose.Button
-import com.prdcv.ehust.ui.compose.DefaultTheme
-import com.prdcv.ehust.ui.compose.Purple500
+import com.prdcv.ehust.ui.compose.*
+import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import com.prdcv.ehust.viewmodel.TaskStatus
 import kotlinx.coroutines.launch
@@ -83,16 +79,19 @@ fun DetailTask(
             )
         }, bottomBar = {
             if (!viewModel.isNewTask) {
-                BottomBarComment(onSendClick = {
-                    viewModel.postComment(it)
-                    coroutineScope.launch {
-                        lazyListState.layoutInfo.run {
-                            while (visibleItemsInfo.last().index < totalItemsCount) {
-                                lazyListState.animateScrollToItem(totalItemsCount)
+                Column {
+                    BottomBarAttachment(uiState)
+                    BottomBarComment(onSendClick = {
+                        coroutineScope.launch {
+                            viewModel.postComment(it)
+                            lazyListState.layoutInfo.run {
+                                while (visibleItemsInfo.last().index < totalItemsCount) {
+                                    lazyListState.animateScrollToItem(totalItemsCount)
+                                }
                             }
                         }
-                    }
-                })
+                    }, onAttachmentSelected = viewModel::onAttachmentSelected)
+                }
             }
         }) {
             if (uiState.isLoading.value) {
@@ -116,47 +115,6 @@ fun DetailTask(
                         RowTaskSetup(viewModel = viewModel)
                     }
 
-                    item {
-                        LaunchedEffect(key1 = Unit) {
-                            viewModel.getAttachments()
-                        }
-                        Spacer(modifier = Modifier.height(15.dp))
-                        Row(Modifier.padding(start = 15.dp)) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_attach_file),
-                                contentDescription = ""
-                            )
-                            Text(
-                                text = "Attachments",
-                                Modifier.padding(start = 15.dp, bottom = 12.dp),
-                                color = Black,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    items(items = uiState.taskAttachments.value) { t ->
-                        AttachmentRow(t) {
-                            navController.navigate(
-                                DetailTaskFragmentDirections.actionDetailTaskFragmentToAttachmentViewerFragment(
-                                    t.filePath,
-                                    t.filename
-                                )
-                            )
-                        }
-                    }
-                    item {
-                        if (!uiState.readOnly.value) {
-                            Column(modifier = Modifier.padding(start = 25.dp)) {
-                                if (uiState.progressBarVisible.value) {
-                                    LinearProgressIndicator(
-                                        progress = uiState.uploadProgress.value,
-                                        color = Button
-                                    )
-                                }
-                                ButtonAddFile(viewModel::onAttachmentSelected)
-                            }
-                        }
-                    }
                     if (!uiState.readOnly.value) {
                         return@LazyColumn
                     }
@@ -166,11 +124,33 @@ fun DetailTask(
                     }
 
                     items(items = uiState.taskComments.value.takeLast(numberCommentShow.value)) { cmt ->
-                        RowComment(comment = cmt)
+                        RowComment(comment = cmt) { filename, filePath ->
+                            navController.navigate(
+                                DetailTaskFragmentDirections.actionDetailTaskFragmentToAttachmentViewerFragment(
+                                    filePath,
+                                    filename
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BottomBarAttachment(uiState: TaskDetailScreenState) {
+    uiState.fileToUpload.value?.let {
+        Divider(thickness = .8.dp)
+        AttachmentRow(Attachment(it.filename)) {}
+    }
+    if (uiState.progressBarVisible.value) {
+        LinearProgressIndicator(
+            progress = uiState.uploadProgress.value,
+            color = Button,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -185,7 +165,7 @@ private fun CommentSection(
             viewModel.getComments()
         }
         Text(
-            text = "Comments",
+            text = "Bình luận",
             Modifier.padding(start = 25.dp, bottom = 12.dp),
             color = Black,
             fontWeight = FontWeight.Bold
@@ -267,19 +247,20 @@ fun AttachmentRow(attachment: Attachment, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .padding(
-                start = 30.dp, end = 10.dp, bottom = 8.dp,
+                start = 60.dp, end = 10.dp, bottom = 8.dp,
             )
             .clickable { onClick() }
+            .background(
+                color = VeryLighGray,
+                shape = RoundedCornerShape(3.dp)
+            )
     ) {
         Icon(painter = painterResource(id = R.drawable.ic_file), contentDescription = "")
         Spacer(modifier = Modifier.width(5.dp))
         Text(
             text = attachment.filename ?: "",
             style = MaterialTheme.typography.caption,
-            color = Blue,
-            textDecoration = TextDecoration.Underline
         )
-
     }
 }
 
@@ -387,7 +368,9 @@ fun RowTaskSetup(
                         )
                     }
                 }
-                Box(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)) {
                     Column(
                         horizontalAlignment = Alignment.Start, modifier = Modifier
                             .fillMaxSize(),
@@ -400,7 +383,9 @@ fun RowTaskSetup(
                         )
                     }
                     if (uiState.readOnly.value) {
-                        Column(modifier = Modifier.fillMaxSize().noRippleClickable {}) {}
+                        Column(modifier = Modifier
+                            .fillMaxSize()
+                            .noRippleClickable {}) {}
                     }
                 }
 
@@ -424,7 +409,8 @@ fun SpinnerStatusTask(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.padding(10.dp)
     ) {
         OutlinedTextField(
             readOnly = true,
@@ -586,44 +572,47 @@ fun RowTaskDescription(
 }
 
 @Composable
-fun RowComment(comment: Comment) {
-    val scope = rememberCoroutineScope()
-    Row(
-        modifier = Modifier
-            .padding(top = 5.dp, bottom = 5.dp, start = 15.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_ava),
-            contentDescription = "",
+fun RowComment(comment: Comment, onAttachmentClick: (String?, String?) -> Unit = {_, _ ->}) {
+    Column {
+        Row(
             modifier = Modifier
-                .size(width = 35.dp, height = 35.dp),
-            tint = DarkGray
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Column(
-            modifier = Modifier
-                .padding(end = 20.dp, bottom = 5.dp)
+                .padding(top = 5.dp, start = 15.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = comment.nameUserPost ?: "",
-                    fontWeight = FontWeight.W400,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = Button
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = comment.timestampFormatted,
-                    fontWeight = FontWeight.W400,
-                    style = MaterialTheme.typography.subtitle1.copy(fontSize = 12.sp),
-                    color = LightGray
-                )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_ava),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(width = 35.dp, height = 35.dp),
+                tint = DarkGray
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                modifier = Modifier
+                    .padding(end = 20.dp, bottom = 5.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = comment.nameUserPost ?: "",
+                        fontWeight = FontWeight.W400,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = Button
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = comment.timestampFormatted,
+                        fontWeight = FontWeight.W400,
+                        style = MaterialTheme.typography.subtitle1.copy(fontSize = 12.sp),
+                        color = LightGray
+                    )
+                }
+                Text(text = comment.content, style = MaterialTheme.typography.caption)
             }
-            Text(text = comment.content, style = MaterialTheme.typography.caption)
         }
-
+        comment.attachments?.firstOrNull()?.let {
+            AttachmentRow(it) {onAttachmentClick(it.filename, it.filePath)}
+        }
     }
 }
 
@@ -671,11 +660,24 @@ fun ToolBar(
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
+fun BottomBarComment(
+    onSendClick: (String) -> Unit = {},
+    onAttachmentSelected: (inputStream: InputStream?, filename: String?, contentType: String?) -> Unit
+) {
     BottomAppBar(elevation = 4.dp, backgroundColor = BGBottomBar) {
         var txt by remember { mutableStateOf("") }
+
+        val context = LocalContext.current
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+                if (uri != null) {
+                    val file = context.openInputStream(uri)
+                    val type = context.getType(uri)
+                    val filename = context.getFileName(uri)
+                    onAttachmentSelected(file, filename, type)
+                }
+            }
 
         Row(
             modifier = Modifier.padding(top = 3.dp, bottom = 3.dp),
@@ -701,17 +703,22 @@ fun BottomBarComment(onSendClick: ((String) -> Unit)? = null) {
                 textStyle = TextStyle(fontWeight = FontWeight.W400),
                 placeholder = {
                     Text(
-                        text = "Comment ...",
+                        text = "Viết bình luận ...",
                         color = Gray,
                         fontWeight = FontWeight.W400,
-                        style = MaterialTheme.typography.h3
+                        fontSize = 15.sp
                     )
                 },
+                trailingIcon = {
+                    IconButton(onClick = { launcher.launch("*/*") }) {
+                        Icon(painter = painterResource(id = R.drawable.ic_attach_file), contentDescription = null)
+                    }
+                }
             )
 
             IconButton(
                 onClick = {
-                    onSendClick?.invoke(txt)
+                    onSendClick(txt)
                     txt = ""
                 }, enabled = txt.isNotBlank()
             ) {
@@ -762,4 +769,16 @@ private fun CommentRowPreview() {
             timestamp = Timestamp.valueOf("2022-07-10 04:12:10")
         )
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AttachmentRowPreview() {
+    AttachmentRow(attachment = Attachment("file_name.pdf")) {}
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun BottomBarPreview() {
+    BottomBarComment(onAttachmentSelected = {_, _, _, ->})
 }

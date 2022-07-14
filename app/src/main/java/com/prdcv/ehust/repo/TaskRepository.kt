@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
+import org.checkerframework.checker.units.qual.A
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -59,10 +60,10 @@ class TaskRepository @Inject constructor(
         }.asFlow()
     }
 
-    fun addAttachment(idTask: Int, attachment: Attachment): Flow<State<List<Attachment>>> {
-        return object : NetworkBoundRepository<List<Attachment>>() {
-            override suspend fun fetchFromRemote(): Response<List<Attachment>> {
-                return eHustClient.addAttachment(idTask, attachment)
+    fun addAttachment(idComment: Int, attachment: Attachment): Flow<State<Any>> {
+        return object : NetworkBoundRepository<Any>() {
+            override suspend fun fetchFromRemote(): Response<Any> {
+                return eHustClient.addAttachment(idComment, attachment)
             }
         }.asFlow()
     }

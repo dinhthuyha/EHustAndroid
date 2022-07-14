@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.Pair
 import com.prdcv.ehust.model.Attachment
+import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.viewmodel.TaskStatus
@@ -29,6 +30,7 @@ data class TaskDetailScreenState(
     val uiDateRange: MutableState<String> = mutableStateOf(""),
     val progressBarVisible: MutableState<Boolean> = mutableStateOf(false),
     val uploadProgress: MutableState<Float> = mutableStateOf(0f),
+    val fileToUpload: MutableState<AttachmentInfo?> = mutableStateOf(null),
     val taskStatus: MutableState<TaskStatus?> = mutableStateOf(null),
     val listStatusTask: List<TaskStatus> = listOf(TaskStatus.NEW,TaskStatus.IN_PROGRESS, TaskStatus.FINISHED, TaskStatus.CANCELED),
 ) {

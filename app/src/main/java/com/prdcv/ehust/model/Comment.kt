@@ -11,5 +11,6 @@ data class Comment(
     val idUserPost: Int? = null,
     @SerializedName(value = "name_user_post")
     val nameUserPost: String? = null,
-    val timestamp: Timestamp? = null
+    val timestamp: Timestamp? = null,
+    val attachments: Set<Attachment>? = null
 )

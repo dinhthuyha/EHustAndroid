@@ -115,7 +115,7 @@ interface EHustService {
      * post comment
      */
     @POST("comments/{id_task}")
-    suspend fun postComment(@Path("id_task") idTask: Int, @Body comment: Comment): Response<List<Comment>>
+    suspend fun postComment(@Path("id_task") idTask: Int, @Body comment: Comment): Response<Int>
 
     /**
      * delete comment
@@ -125,6 +125,9 @@ interface EHustService {
 
     @POST("task/{id_task}/attachment")
     suspend fun addAttachment(@Path("id_task") idTask: Int, @Body attachment: Attachment): Response<List<Attachment>>
+
+    @POST("comments/{id_cmt}/attachment")
+    suspend fun addAttachmentComment(@Path("id_cmt") idTask: Int, @Body attachment: Attachment): Response<Any>
 
     @GET("task/{id_task}/attachment")
     suspend fun getAttachments(@Path("id_task") idTask: Int): Response<List<Attachment>>

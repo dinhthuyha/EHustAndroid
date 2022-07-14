@@ -8,7 +8,6 @@ import io.minio.PutObjectArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import retrofit2.http.Path
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -94,13 +93,12 @@ class EHustClient @Inject constructor(
 
     suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)
 
-    suspend fun postComment(idTask: Int, comment: Comment) =
-        ehustService.postComment(idTask, comment)
+    suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
 
-    suspend fun addAttachment(idTask: Int, attachment: Attachment) =
-        ehustService.addAttachment(idTask, attachment)
+    suspend fun addAttachment(idComment: Int, attachment: Attachment) =
+        ehustService.addAttachmentComment(idComment, attachment)
 
     suspend fun uploadAttachment(attachmentInfo: AttachmentInfo): ObjectWriteResponse =
         withContext(Dispatchers.IO) {
