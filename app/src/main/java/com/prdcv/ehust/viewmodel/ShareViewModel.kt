@@ -59,6 +59,7 @@ class ShareViewModel @Inject constructor(
 
     private var _token = SingleLiveEvent<State<Map<String, Any>>>()
     val token get() = _token
+    var maxSemester: Int? = 0
 
     /**
      * ui state cho projects screen
@@ -148,6 +149,17 @@ class ShareViewModel @Inject constructor(
         }
     }
 
+    fun findMaxSemester() {
+        viewModelScope.launch {
+            userRepository.findMaxSemester().collect{
+                if (it is State.Success){
+                    Log.d("TAG", "findMaxSemester: ${maxSemester}")
+                    maxSemester = it.data
+                }
+            }
+        }
+    }
+
     fun getScheduleToday(schedules: List<ScheduleEvent>): List<ScheduleEvent> {
         val today = LocalDate.now()
         val dateOfWeek = today?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
@@ -173,6 +185,7 @@ class ShareViewModel @Inject constructor(
             withContext(Dispatchers.IO){
                 async { findAllSchedules()  }
                 async { findAllTaskWillExpire() }
+                async { findMaxSemester() }
                 async { findAllMeeting() }
             }
 
@@ -207,7 +220,4 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun onSemesterSelected(semester: Int) {
-        projectsScreenState.semesterStatus.value = semester
-    }
 }

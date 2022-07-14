@@ -113,4 +113,12 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun findMaxSemester(): Flow<State<Int>> {
+        return object : NetworkBoundRepository<Int>() {
+            override suspend fun fetchFromRemote(): Response<Int> {
+                return eHustClient.findMaxSemester()
+            }
+        }.asFlow()
+    }
 }

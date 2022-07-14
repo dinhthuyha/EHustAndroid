@@ -2,6 +2,7 @@ package com.prdcv.ehust.ui.projects
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,17 +54,19 @@ fun ProjectScreen(
     navController: NavController,
 ) {
     val uiState = viewModel.projectsScreenState
+    uiState.semesterStatus.value = viewModel.semester!!
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.findAllProjectsById()
+        viewModel.fetchDataProjectScreen()
 
     }
 
     DefaultTheme {
         Scaffold(topBar = { ToolBar("Projects ") }) {
+            Log.d("TAG", "ProjectScreen: ${viewModel.semester}")
             SwipeRefresh(
                 state = uiState.refreshState,
-                onRefresh = { viewModel.findAllProjectsById() }
+                onRefresh = { viewModel.fetchDataProjectScreen() }
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     LazyColumn(
@@ -75,7 +78,7 @@ fun ProjectScreen(
                             when (viewModel.user?.roleId) {
                                 Role.ROLE_STUDENT -> {
                                     items(uiState.projects) { t ->
-                                        if (t.semester == uiState.maxSemester)
+                                    if (t.semester == viewModel.semester)
                                             ProjectStudent(
                                                 t,
                                                 navController,

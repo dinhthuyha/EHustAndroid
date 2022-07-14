@@ -28,7 +28,10 @@ class ProjectsFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val projectViewModel = hiltViewModel<ProjectViewModel>().apply { user = shareViewModel.user }
+                val projectViewModel = hiltViewModel<ProjectViewModel>().apply {
+                    user = shareViewModel.user
+                    semester = shareViewModel.maxSemester
+                }
                 ProjectScreen(projectViewModel,topicsViewModel, findNavController()) }
         }
     }

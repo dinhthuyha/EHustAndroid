@@ -131,4 +131,6 @@ class EHustClient @Inject constructor(
     suspend fun getAllSemester() = ehustService.getAllSemester()
 
     suspend fun getAllProjectByIdTeacherAndSemester(idTeacher: Int,  semester: Int) = ehustService.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
+
+    suspend fun findMaxSemester() = ehustService.findMaxSemester()
 }
