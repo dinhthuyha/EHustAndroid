@@ -136,7 +136,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>() {
                     //check neu ngay co lich hoc
 
                     val flights = schedule[nameDayOfWeek]
-                    val meetingToday = meetings[nameDayOfWeek]
+                    val meetingToday = meetings[nameDayOfWeek]?.filter { it.date == day.date }
 
                     if (flights != null && day.date < flights.first().dueDateStudy) {
 
@@ -224,7 +224,7 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>() {
         meetings[nameDayOfWeek]?.forEach { }
         val list = mutableListOf<SChedule>()
         schedule[nameDayOfWeek]?.let { list.addAll(it) }
-        meetings[nameDayOfWeek]?.let { list.addAll(it) }
+        meetings[nameDayOfWeek]?.filter { it.date == date }?.let { list.addAll(it) }
         scheduleAdapter.setItems(list.orEmpty())
         scheduleAdapter.notifyDataSetChanged()
     }

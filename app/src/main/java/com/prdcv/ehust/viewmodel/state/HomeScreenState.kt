@@ -47,7 +47,7 @@ data class HomeScreenState(
         return schedules.filter {
             val dateStudy =
                 it.date?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            dateStudy == dateOfWeek
+            it.date == today
         }
     }
     fun addTasksFromState(state: State<List<TaskData>>) {
