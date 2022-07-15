@@ -162,4 +162,7 @@ interface EHustService {
 
     @PUT("notification/update/task")
     suspend fun notificationUpdateTask(@Body taskDetail: TaskDetail): Response<ResponseBody>
+
+    @POST("clear/notification/read")
+    suspend fun clearNotificationRead(@Body newsReads: List<News>): Response<ResponseBody>
 }

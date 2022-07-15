@@ -28,6 +28,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -58,6 +59,21 @@ class ShareViewModel @Inject constructor(
 
     var uiState by mutableStateOf(HomeScreenState())
         private set
+
+    fun clearNotificationRead() {
+        val newsReads =
+            (newsState.value as State.Success).data.filter {
+                it.status == StatusNotification.STATUS_READ && it.type == TypeNotification.TYPE_PROJECT
+            }
+        viewModelScope.launch {
+            newsRepository.clearNotificationRead(newsReads).collect {
+                if (it is State.Success){
+                    getNews(TypeNotification.TYPE_PROJECT)
+                }
+            }
+        }
+
+    }
 
     fun login(id: Int, password: String) {
         viewModelScope.launch {
@@ -135,23 +151,26 @@ class ShareViewModel @Inject constructor(
         id: Int,
         type: TypeNotification,
         status: StatusNotification
-    ){
-        viewModelScope.launch { newsRepository.updateStatusNew(id, type, status).collect{
-            _newsState.emit(it)
-        } }
+    ) {
+        viewModelScope.launch {
+            newsRepository.updateStatusNew(id, type, status).collect {
+                _newsState.emit(it)
+            }
+        }
     }
+
     fun findAllSchedules() {
         viewModelScope.launch {
-                userRepository.findAllSchedules(user?.id!!).collect {
-                    uiState.findAllSchedule(it)
-                }
+            userRepository.findAllSchedules(user?.id!!).collect {
+                uiState.findAllSchedule(it)
+            }
         }
     }
 
     fun findMaxSemester() {
         viewModelScope.launch {
-            userRepository.findMaxSemester().collect{
-                if (it is State.Success){
+            userRepository.findMaxSemester().collect {
+                if (it is State.Success) {
                     Log.d("TAG", "findMaxSemester: ${maxSemester}")
                     maxSemester = it.data
                 }
@@ -181,8 +200,8 @@ class ShareViewModel @Inject constructor(
 
     fun fetchDataHomeScreen() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                async { findAllSchedules()  }
+            withContext(Dispatchers.IO) {
+                async { findAllSchedules() }
                 async { findAllTaskWillExpire() }
                 async { findMaxSemester() }
                 async { findAllMeeting() }

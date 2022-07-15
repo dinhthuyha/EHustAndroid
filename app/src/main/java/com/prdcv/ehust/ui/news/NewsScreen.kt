@@ -85,7 +85,7 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotificati
 
     DefaultTheme {
         Scaffold(
-            topBar = { ToolBar(title = stringResource(id = R.string.new_title),isNotificationProject = isNotificationProject) }
+            topBar = { ToolBar(title = stringResource(id = R.string.new_title),isNotificationProject = isNotificationProject, onClearNotification = viewModel::clearNotificationRead) }
         ) {
             NavHost(navController = navController, "newsList") {
                 composable("newsList") {
