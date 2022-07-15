@@ -265,8 +265,8 @@ fun RowTeacher(nav: NavController, isLoading: Boolean = false) {
         Row(
             title = "Thông báo đồ án",
             sub = "Thông báo chi tiết đồ án",
-            idIcon = R.drawable.ic_class,
-            callback = { nav.navigate(R.id.action_mainFragment_to_newsFragment) },
+            idIcon = R.drawable.ic_news,
+            callback = { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment( TypeNotification.PROJECT)) },
             isLoading = isLoading
         )
     }

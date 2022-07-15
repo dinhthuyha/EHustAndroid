@@ -7,13 +7,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,18 +51,46 @@ import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.ui.task.Tag
 
 @Composable
+fun ToolBar(
+    title: String?,
+    isNotificationProject: Boolean = false,
+    onClearNotification: () -> Unit ={}
+) {
+ val alpha = if (isNotificationProject) 1f else 0f
+    TopAppBar(
+        title = {
+            Text(text = title ?: "Detail task")
+        },
+        backgroundColor = colorResource(id = R.color.text_color),
+        contentColor = Color.White,
+        elevation = 2.dp,
+        actions = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(imageVector = Icons.Filled.Delete ,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        when (isNotificationProject) {
+                            true -> onClearNotification()
+                        }
+                    }.alpha(alpha)
+                )
+            }
+        }
+    )
+}
+@Composable
 fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotification) {
 
     val navController = rememberNavController()
     val state by viewModel.newsState.collectAsState()
-
+    val isNotificationProject = typeNoti == TypeNotification.PROJECT
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getNews(typeNoti)
     })
 
     DefaultTheme {
         Scaffold(
-            topBar = { ToolBar(title = stringResource(id = R.string.new_title)) }
+            topBar = { ToolBar(title = stringResource(id = R.string.new_title),isNotificationProject = isNotificationProject) }
         ) {
             NavHost(navController = navController, "newsList") {
                 composable("newsList") {
