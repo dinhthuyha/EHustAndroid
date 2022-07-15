@@ -19,4 +19,4 @@ data class ScheduleEvent(
     var startDateStudy: LocalDate? = null,
     @SerializedName("subject_class")
     val subjectClass: Subject
-)
+): SChedule

@@ -102,27 +102,9 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:text="hadinh"
-                    android:nextFocusDown="@id/description"
+                    android:nextFocusDown="@id/login"
                     tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
-
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:id="@+id/login"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="45dp"-->
-<!--                android:layout_marginStart="60dp"-->
-<!--                android:layout_marginTop="90dp"-->
-<!--                android:layout_marginEnd="60dp"-->
-<!--                android:background="@drawable/backgorund_button"-->
-<!--                android:text="Login"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="16sp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="@+id/edtPassword"-->
-<!--                app:layout_constraintStart_toStartOf="@+id/edtPassword"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/edtPassword"-->
-<!--                app:layout_constraintVertical_bias="0.0" />-->
 
             <com.royrodriguez.transitionbutton.TransitionButton
                 app:loaderColor="@android:color/white"

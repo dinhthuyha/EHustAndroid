@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.ui.graphics.Color
 import androidx.core.view.children
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,8 +35,11 @@ import com.prdcv.ehust.extension.convertDateEnglishToVN
 import com.prdcv.ehust.extension.convertMonthToVN
 import com.prdcv.ehust.extension.daysOfWeekFromLocale
 import com.prdcv.ehust.extension.setTextColorRes
+import com.prdcv.ehust.model.Meeting
+import com.prdcv.ehust.model.SChedule
 import com.prdcv.ehust.model.ScheduleEvent
 import dagger.hilt.android.AndroidEntryPoint
+import generateColorMeetings
 import generateColorSChedules
 import java.time.LocalDate
 import java.time.YearMonth
@@ -44,18 +48,21 @@ import java.time.format.TextStyle
 import java.util.*
 
 @AndroidEntryPoint
-class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
+class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>() {
 
 
     private var selectedDate: LocalDate? = null
     private val monthTitleFormatter = DateTimeFormatter.ofPattern("MMMM")
 
-    private val scheduleAdapter = ScheduleEventAdapter( clickListener = ::navigateToDetailNews)
-    private var schedule= mapOf<String, List<ScheduleEvent>>()
-    override fun getViewBinding(inflater: LayoutInflater)= FragmentScheduleBinding.inflate(inflater).apply {
+    private val scheduleAdapter = ScheduleEventAdapter(clickListener = ::navigateToDetailNews)
+    private var schedule = mapOf<String, List<ScheduleEvent>>()
+    private var meetings = mapOf<String, List<Meeting>>()
+    override fun getViewBinding(inflater: LayoutInflater) =
+        FragmentScheduleBinding.inflate(inflater).apply {
 
-    }
-    private fun navigateToDetailNews(newsItem: ScheduleEvent) {
+        }
+
+    private fun navigateToDetailNews(newsItem: SChedule) {
 
 
     }
@@ -63,8 +70,14 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     override fun init() {}
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        schedule = generateColorSChedules(shareViewModel.uiState.schedulesState).groupBy { it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-            .toString() }
+        schedule = generateColorSChedules(shareViewModel.uiState.schedulesState).groupBy {
+            it.startDateStudy?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                .toString()
+        }
+        meetings = generateColorMeetings(shareViewModel.uiState.meetings).groupBy {
+            it.date?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                .toString()
+        }
         binding.exFiveRv.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = scheduleAdapter
@@ -75,12 +88,17 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         val daysOfWeek = daysOfWeekFromLocale()
 
         val currentMonth = YearMonth.now()
-        binding.exFiveCalendar.setup(currentMonth.minusMonths(10), currentMonth.plusMonths(10), daysOfWeek.first())
+        binding.exFiveCalendar.setup(
+            currentMonth.minusMonths(10),
+            currentMonth.plusMonths(10),
+            daysOfWeek.first()
+        )
         binding.exFiveCalendar.scrollToMonth(currentMonth)
 
         class DayViewContainer(view: View) : ViewContainer(view) {
             lateinit var day: CalendarDay // Will be set when this container is bound.
             val binding = CalendarDayBinding.bind(view)
+
             init {
                 view.setOnClickListener {
                     if (day.owner == DayOwner.THIS_MONTH) {
@@ -113,17 +131,29 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
                 if (day.owner == DayOwner.THIS_MONTH) {
                     textView.setTextColorRes(R.color.black)
                     layout.setBackgroundResource(if (selectedDate == day.date) R.drawable.example_5_selected_bg else 0)
-                    val nameDayOfWeek= day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+                    val nameDayOfWeek =
+                        day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
                     //check neu ngay co lich hoc
 
                     val flights = schedule[nameDayOfWeek]
+                    val meetingToday = meetings[nameDayOfWeek]
 
-                    if (flights != null && day.date< flights.first().dueDateStudy) {
+                    if (flights != null && day.date < flights.first().dueDateStudy) {
 
                         if (flights.isNotEmpty()) {
                             flightBottomView.setBackgroundColor(flights[0].color)
                         }
                     }
+
+                    if (meetingToday != null) {
+
+                        if (meetingToday.isNotEmpty()) {
+                            flightBottomView.setBackgroundColor(
+                                meetingToday[0].color ?: android.graphics.Color.BLUE
+                            )
+                        }
+                    }
+
                 } else {
                     textView.setTextColorRes(R.color.example_5_text_grey)
                     layout.background = null
@@ -134,26 +164,33 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
         class MonthViewContainer(view: View) : ViewContainer(view) {
             val legendLayout = CalendarHeaderBinding.bind(view).legendLayout.root
         }
-        binding.exFiveCalendar.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
-            override fun create(view: View) = MonthViewContainer(view)
-            override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                // Setup each header day text if we have not done that already.
-                if (container.legendLayout.tag == null) {
-                    container.legendLayout.tag = month.yearMonth
-                    container.legendLayout.children.map { it as TextView }.forEachIndexed { index, tv ->
-                        val date = daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-                            .toUpperCase(Locale.ENGLISH).toString()
-                        tv.text = date.convertDateEnglishToVN()
-                        tv.setTextColorRes(R.color.black)
-                        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+        binding.exFiveCalendar.monthHeaderBinder =
+            object : MonthHeaderFooterBinder<MonthViewContainer> {
+                override fun create(view: View) = MonthViewContainer(view)
+                override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                    // Setup each header day text if we have not done that already.
+                    if (container.legendLayout.tag == null) {
+                        container.legendLayout.tag = month.yearMonth
+                        container.legendLayout.children.map { it as TextView }
+                            .forEachIndexed { index, tv ->
+                                val date = daysOfWeek[index].getDisplayName(
+                                    TextStyle.SHORT,
+                                    Locale.ENGLISH
+                                )
+                                    .toUpperCase(Locale.ENGLISH).toString()
+                                tv.text = date.convertDateEnglishToVN()
+                                tv.setTextColorRes(R.color.black)
+                                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+                            }
+                        month.yearMonth
                     }
-                    month.yearMonth
                 }
             }
-        }
 
         binding.exFiveCalendar.monthScrollListener = { month ->
-            val title = "${monthTitleFormatter.format(month.yearMonth).convertMonthToVN()} ${month.yearMonth.year}"
+            val title = "${
+                monthTitleFormatter.format(month.yearMonth).convertMonthToVN()
+            } ${month.yearMonth.year}"
             binding.exFiveMonthYearText.text = title
 
             selectedDate?.let {
@@ -182,9 +219,13 @@ class ScheduleFragment : BaseFragmentWithBinding<FragmentScheduleBinding>()  {
     }
 
     private fun updateAdapterForDate(date: LocalDate?) {
-        val nameDayOfWeek= date?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+        val nameDayOfWeek = date?.dayOfWeek?.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
         schedule[nameDayOfWeek]?.forEach { it.date = date!! }
-        scheduleAdapter.setItems(schedule[nameDayOfWeek].orEmpty())
+        meetings[nameDayOfWeek]?.forEach { }
+        val list = mutableListOf<SChedule>()
+        schedule[nameDayOfWeek]?.let { list.addAll(it) }
+        meetings[nameDayOfWeek]?.let { list.addAll(it) }
+        scheduleAdapter.setItems(list.orEmpty())
         scheduleAdapter.notifyDataSetChanged()
     }
 }

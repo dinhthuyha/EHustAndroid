@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
 import com.prdcv.ehust.base.recyclerview.BindAbleAdapter
+import com.prdcv.ehust.model.Meeting
+import com.prdcv.ehust.model.SChedule
 import com.prdcv.ehust.model.ScheduleEvent
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Suppress("UNCHECKED_CAST")
@@ -25,17 +26,51 @@ fun <T : Any> RecyclerView.setAdapterData(
 }
 
 @BindingAdapter("bindTime")
-fun bindTime(textVew: TextView, flight: ScheduleEvent) {
+fun bindTime(textVew: TextView, flight: SChedule) {
     val formatter = DateTimeFormatter.ofPattern("EEE'\n'dd MMM")
-    textVew.text = formatter.format(flight.date)
+    if (flight is ScheduleEvent){
+        textVew.text = formatter.format(flight.date)
+    }
+    if(flight is Meeting){
+        textVew.text = formatter.format(flight.date)
+    }
+
 }
+
+@BindingAdapter("titleEvent")
+fun setEventTitle(textVew: TextView, flight: SChedule) {
+    if (flight is ScheduleEvent){
+        textVew.text = flight.subjectClass.name
+    }
+    if(flight is Meeting){
+        textVew.text = flight.title
+    }
+
+}
+
 @BindingAdapter("visible")
 fun setVisibility(target: View, visible: Boolean) {
     target.visibility = if (visible) View.VISIBLE else View.GONE
 }
 
-@BindingAdapter("bindHour")
-fun bindHour(textVew: TextView, time: LocalTime){
+@BindingAdapter("bindStartHour")
+fun bindStartHour(textVew: TextView, flight: SChedule){
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
-    textVew.text = formatter.format(time)
+        if (flight is ScheduleEvent){
+            textVew.text = formatter.format(flight.startTime)
+        }
+        if(flight is Meeting){
+            textVew.text = formatter.format(flight.startTime)
+        }
+}
+
+@BindingAdapter("bindFinishHour")
+fun bindFinishedHour(textVew: TextView, flight: SChedule){
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+    if (flight is ScheduleEvent){
+        textVew.text = formatter.format(flight.finishTime)
+    }
+    if(flight is Meeting){
+        textVew.text = formatter.format(flight.endTime)
+    }
 }

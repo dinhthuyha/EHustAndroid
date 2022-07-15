@@ -17,5 +17,6 @@ data class Meeting (
     @SerializedName( "start_time")
     val startTime: LocalTime,
     @SerializedName( "end_time")
-    val endTime: LocalTime
-)
+    val endTime: LocalTime,
+    var color: Int? = null,
+): SChedule
