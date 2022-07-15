@@ -141,7 +141,7 @@ fun ToolBar(title: String, nav: NavController) {
                 tint = Color.White,
                 modifier = Modifier
                     .padding(end = 10.dp)
-                    .clickable { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment(TypeNotification.NORMAL)) }
+                    .clickable { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment(TypeNotification.TYPE_NORMAL)) }
             )
         })
 }
@@ -266,7 +266,7 @@ fun RowTeacher(nav: NavController, isLoading: Boolean = false) {
             title = "Thông báo đồ án",
             sub = "Thông báo chi tiết đồ án",
             idIcon = R.drawable.ic_news,
-            callback = { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment( TypeNotification.PROJECT)) },
+            callback = { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment( TypeNotification.TYPE_PROJECT)) },
             isLoading = isLoading
         )
     }

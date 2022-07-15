@@ -32,7 +32,7 @@ class DetailTaskFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val viewModel = hiltViewModel<DetailTaskViewModel>()
+                val viewModel = hiltViewModel<DetailTaskViewModel>().apply { user = shareViewModel.user }
                 viewModel.idTopic = args.arg.idTopic
                 viewModel.idTask = args.arg.idTask
                 viewModel.isNewTask = args.arg.isNewTask

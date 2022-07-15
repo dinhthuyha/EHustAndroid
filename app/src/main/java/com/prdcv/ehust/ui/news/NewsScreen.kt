@@ -83,7 +83,7 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotificati
 
     val navController = rememberNavController()
     val state by viewModel.newsState.collectAsState()
-    val isNotificationProject = typeNoti == TypeNotification.PROJECT
+    val isNotificationProject = typeNoti == TypeNotification.TYPE_PROJECT
     LaunchedEffect(key1 = Unit, block = {
         viewModel.getNews(typeNoti)
     })
@@ -126,8 +126,8 @@ private fun NewsDetails(
         stringResource(id = R.string.item_news_content),
         stringResource(id = R.string.item_news_content),
         "16-06-2022",
-        TypeNotification.NORMAL,
-        StatusNotification.UNREAD
+        TypeNotification.TYPE_NORMAL,
+        StatusNotification.UNREAD,"",0
     )
 ) {
     Column(
@@ -180,8 +180,8 @@ fun NewsRow(
         stringResource(id = R.string.item_news_content),
         stringResource(id = R.string.item_news_content),
         "16-06-2022",
-        TypeNotification.NORMAL,
-        StatusNotification.UNREAD
+        TypeNotification.TYPE_NORMAL,
+        StatusNotification.UNREAD,"",0
     ),
     navController: NavController,
     viewModel: ShareViewModel,
@@ -203,7 +203,7 @@ fun NewsRow(
                     putParcelable("itemNews", news)
                 }
                 navController.navigate("newsDetails/${news.id}")
-                viewModel.updateStatusNew(news.id, typeNoti, StatusNotification.READ)
+                viewModel.updateStatusNew(news.id?:0, typeNoti, StatusNotification.READ)
             },
         backgroundColor = bgColor
     ) {

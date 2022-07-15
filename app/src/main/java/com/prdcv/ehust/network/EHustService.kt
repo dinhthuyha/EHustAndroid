@@ -156,4 +156,7 @@ interface EHustService {
 
     @GET("max/semester")
     suspend fun findMaxSemester(): Response<Int>
+
+    @POST("notification/new/task")
+    suspend fun updateNotificationNewTask(@Body notification: News): Response<ResponseBody>
 }

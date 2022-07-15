@@ -7,11 +7,15 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class News(
-    val id: Int,
+    val id: Int? = 0,
     val title:String,
     val content: String,
     @SerializedName("date_post")
     val datePost: String,
     val type: TypeNotification,
-    val status: StatusNotification
+    val status: StatusNotification,
+    @SerializedName("name_user_post")
+    val nameUserPost: String,
+    @SerializedName("id_user_post")
+    val idUserPost: Int
 ) : Parcelable

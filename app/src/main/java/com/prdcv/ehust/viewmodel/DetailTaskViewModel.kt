@@ -1,11 +1,17 @@
 package com.prdcv.ehust.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
+import com.prdcv.ehust.extension.toString
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.model.News
+import com.prdcv.ehust.model.StatusNotification
+import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.repo.CommentRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
@@ -18,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -26,6 +33,7 @@ class DetailTaskViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val commentRepository: CommentRepository
 ) : BaseViewModel() {
+
     var idTopic: Int = 0
     var idTask: Int = 0
     var isNewTask = false
@@ -117,6 +125,7 @@ class DetailTaskViewModel @Inject constructor(
                     is State.Success -> {
                         idTask = it.data
                         uiState.readOnly.value = true
+                        updateNotificationNewTask(task)
                         getDetailTask()
                     }
                     else -> {}
@@ -125,6 +134,23 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
+    private fun updateNotificationNewTask(taskDetail: TaskDetail){
+        val dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val datePost = dtf.format(LocalDate.now())
+        val notification = News(title = "${taskDetail.assignee} vừa tạo task ${taskDetail.title},",
+        content = taskDetail.description?:"",
+        datePost = datePost,
+        type = TypeNotification.TYPE_PROJECT,
+        status = StatusNotification.UNREAD,
+        nameUserPost = user?.fullName?:"",
+        idUserPost = user?.id?:0)
+        viewModelScope.launch {
+            taskRepository.updateNotificationNewTask(notification).collect{
+                Log.d("TAG", "updateNotificationNewTask: ")
+            }
+        }
+
+    }
     private fun updateTaskDetails() {
         val task = uiState.newTaskDetail
 

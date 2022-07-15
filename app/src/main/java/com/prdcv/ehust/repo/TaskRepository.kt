@@ -4,6 +4,7 @@ import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
+import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.TaskDetail
 import com.prdcv.ehust.network.EHustClient
 import com.prdcv.ehust.model.TaskData
@@ -80,6 +81,14 @@ class TaskRepository @Inject constructor(
         return object : NetworkBoundRepository<List<TaskData>>() {
             override suspend fun fetchFromRemote(): Response<List<TaskData>> {
                 return eHustClient.findAllTaskWillExpire()
+            }
+        }.asFlow()
+    }
+
+    fun updateNotificationNewTask(notification: News): Flow<State<ResponseBody>> {
+        return object : NetworkBoundRepository<ResponseBody>() {
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.updateNotificationNewTask(notification)
             }
         }.asFlow()
     }

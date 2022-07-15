@@ -9,6 +9,7 @@ import io.minio.ObjectWriteResponse
 import io.minio.PutObjectArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -143,4 +144,6 @@ class EHustClient @Inject constructor(
     suspend fun getAllProjectByIdTeacherAndSemester(idTeacher: Int,  semester: Int) = ehustService.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
 
     suspend fun findMaxSemester() = ehustService.findMaxSemester()
+
+    suspend fun updateNotificationNewTask(notification: News) = ehustService.updateNotificationNewTask(notification)
 }

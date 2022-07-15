@@ -1,5 +1,5 @@
 package com.hadt.ehust.model
 
 enum class TypeNotification {
-    NORMAL, PROJECT;
+    TYPE_NORMAL, TYPE_PROJECT;
 }
