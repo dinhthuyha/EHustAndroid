@@ -71,7 +71,7 @@ fun HomeScreen(
                     role = role,
                     callback = callback,
                     shareViewModel.getScheduleToday(uiScheduleState.schedulesState),
-                    uiScheduleState.meetings,
+                    uiScheduleState.meetingsToday,
                     isLoading = uiScheduleState.refreshState.isRefreshing
                 )
                 Spacer(modifier = Modifier.height(12.dp))
