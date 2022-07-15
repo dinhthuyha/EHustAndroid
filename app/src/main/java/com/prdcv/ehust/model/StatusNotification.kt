@@ -2,7 +2,7 @@ package com.prdcv.ehust.model
 
 enum class StatusNotification {
 
-    UNREAD, READ;
+    STATUS_UNREAD, STATUS_READ;
 
 
 }

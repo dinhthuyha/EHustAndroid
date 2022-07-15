@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.calendar.model.CalendarState
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.extension.toString
 import com.prdcv.ehust.model.Attachment
 import com.prdcv.ehust.model.AttachmentInfo
 import com.prdcv.ehust.model.Comment
@@ -18,6 +17,7 @@ import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
 import com.prdcv.ehust.utils.ProgressStream
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
@@ -141,9 +141,10 @@ class DetailTaskViewModel @Inject constructor(
         content = taskDetail.description?:"",
         datePost = datePost,
         type = TypeNotification.TYPE_PROJECT,
-        status = StatusNotification.UNREAD,
+        status = StatusNotification.STATUS_UNREAD,
         nameUserPost = user?.fullName?:"",
-        idUserPost = user?.id?:0)
+        idUserPost = user?.id?:0,
+        idTask = taskDetail.id)
         viewModelScope.launch {
             taskRepository.updateNotificationNewTask(notification).collect{
                 Log.d("TAG", "updateNotificationNewTask: ")
@@ -155,18 +156,29 @@ class DetailTaskViewModel @Inject constructor(
         val task = uiState.newTaskDetail
 
         viewModelScope.launch {
-            taskRepository.updateTask(task).collect {
+            async { taskRepository.updateTask(task).collect {
                 when (it) {
                     is State.Success -> {
                         uiState.readOnly.value = true
                         getDetailTask()
+
                     }
                     else -> {}
                 }
-            }
+            } }
+            async { notificationUpdateTask(task) }
+
         }
     }
 
+    private fun notificationUpdateTask(taskDetail: TaskDetail){
+        viewModelScope.launch {
+            taskRepository.notificationUpdateTask(taskDetail).collect{
+                Log.d("TAG", "updateNotificationNewTask: ")
+            }
+        }
+
+    }
     fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?) {
         if (inputStream == null) return
         val filePath = UUID.randomUUID().toString()

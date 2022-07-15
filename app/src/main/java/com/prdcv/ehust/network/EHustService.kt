@@ -159,4 +159,7 @@ interface EHustService {
 
     @POST("notification/new/task")
     suspend fun updateNotificationNewTask(@Body notification: News): Response<ResponseBody>
+
+    @PUT("notification/update/task")
+    suspend fun notificationUpdateTask(@Body taskDetail: TaskDetail): Response<ResponseBody>
 }

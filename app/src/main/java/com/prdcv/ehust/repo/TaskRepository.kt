@@ -93,4 +93,12 @@ class TaskRepository @Inject constructor(
         }.asFlow()
     }
 
+    fun notificationUpdateTask(taskDetail: TaskDetail): Flow<State<ResponseBody>> {
+        return object : NetworkBoundRepository<ResponseBody>() {
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.notificationUpdateTask(taskDetail)
+            }
+        }.asFlow()
+    }
+
 }

@@ -17,5 +17,7 @@ data class News(
     @SerializedName("name_user_post")
     val nameUserPost: String,
     @SerializedName("id_user_post")
-    val idUserPost: Int
+    val idUserPost: Int,
+    @SerializedName("id_task")
+    val idTask: Int? = null
 ) : Parcelable

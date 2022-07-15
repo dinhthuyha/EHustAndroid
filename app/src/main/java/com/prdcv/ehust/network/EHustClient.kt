@@ -146,4 +146,6 @@ class EHustClient @Inject constructor(
     suspend fun findMaxSemester() = ehustService.findMaxSemester()
 
     suspend fun updateNotificationNewTask(notification: News) = ehustService.updateNotificationNewTask(notification)
+
+   suspend fun notificationUpdateTask(taskDetail: TaskDetail) = ehustService.notificationUpdateTask(taskDetail)
 }

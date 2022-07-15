@@ -8,11 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,7 +43,6 @@ import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.UNREAD
-import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.ui.task.Tag
 
 @Composable
@@ -127,7 +122,7 @@ private fun NewsDetails(
         stringResource(id = R.string.item_news_content),
         "16-06-2022",
         TypeNotification.TYPE_NORMAL,
-        StatusNotification.UNREAD,"",0
+        StatusNotification.STATUS_UNREAD,"",0
     )
 ) {
     Column(
@@ -181,13 +176,13 @@ fun NewsRow(
         stringResource(id = R.string.item_news_content),
         "16-06-2022",
         TypeNotification.TYPE_NORMAL,
-        StatusNotification.UNREAD,"",0
+        StatusNotification.STATUS_UNREAD,"",0
     ),
     navController: NavController,
     viewModel: ShareViewModel,
     typeNoti: TypeNotification
 ) {
-    val bgColor = if (news.status == StatusNotification.UNREAD) {
+    val bgColor = if (news.status == StatusNotification.STATUS_UNREAD) {
         UNREAD
     } else {
         Color.White
@@ -203,7 +198,7 @@ fun NewsRow(
                     putParcelable("itemNews", news)
                 }
                 navController.navigate("newsDetails/${news.id}")
-                viewModel.updateStatusNew(news.id?:0, typeNoti, StatusNotification.READ)
+                viewModel.updateStatusNew(news.id?:0, typeNoti, StatusNotification.STATUS_READ)
             },
         backgroundColor = bgColor
     ) {
