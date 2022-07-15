@@ -1,5 +1,6 @@
 package com.prdcv.ehust.network
 
+import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
@@ -23,6 +24,13 @@ class EHustClient @Inject constructor(
         return ehustService.getAllNews(type)
     }
 
+    suspend fun updateStatusNew(
+        id: Int,
+        type: TypeNotification,
+        status: StatusNotification
+    ): Response<List<News>> {
+       return ehustService.updateStatusNew(id, type, status)
+    }
     suspend fun getProfileById(id: Int): Response<User> {
         return ehustService.getProfileById(id)
     }

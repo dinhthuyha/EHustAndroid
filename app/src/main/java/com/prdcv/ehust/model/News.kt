@@ -2,7 +2,6 @@ package com.prdcv.ehust.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import com.hadt.ehust.model.StatusNotification
 import com.hadt.ehust.model.TypeNotification
 import kotlinx.android.parcel.Parcelize
 

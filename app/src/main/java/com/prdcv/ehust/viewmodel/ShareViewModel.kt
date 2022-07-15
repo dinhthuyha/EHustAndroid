@@ -3,31 +3,25 @@ package com.prdcv.ehust.viewmodel
 import android.content.SharedPreferences
 import android.util.Log
 import android.view.View
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.prdcv.ehust.viewmodel.state.HomeScreenState
-import com.prdcv.ehust.viewmodel.state.ProjectsScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -137,6 +131,15 @@ class ShareViewModel @Inject constructor(
         }
     }
 
+    fun updateStatusNew(
+        id: Int,
+        type: TypeNotification,
+        status: StatusNotification
+    ){
+        viewModelScope.launch { newsRepository.updateStatusNew(id, type, status).collect{
+            _newsState.emit(it)
+        } }
+    }
     fun findAllSchedules() {
         viewModelScope.launch {
                 userRepository.findAllSchedules(user?.id!!).collect {

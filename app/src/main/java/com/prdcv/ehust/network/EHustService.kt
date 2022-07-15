@@ -1,9 +1,9 @@
 package com.prdcv.ehust.network
 
+import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
-import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -11,10 +11,8 @@ import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface EHustService {
@@ -25,6 +23,10 @@ interface EHustService {
 
     @GET("news/{type}")
     suspend fun getAllNews(@Path("type") type: TypeNotification): Response<List<News>>
+
+    @FormUrlEncoded
+    @PUT("new/update/status/{id}/{type}")
+    suspend fun updateStatusNew(@Path("id") id: Int, @Path("type") type: TypeNotification, @Field(value = "status") status: StatusNotification):Response<List<News>>
 
     @GET("user/profile/{id}")
     suspend fun getProfileById(@Path("id") id: Int): Response<User>

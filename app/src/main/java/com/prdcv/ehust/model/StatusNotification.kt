@@ -1,4 +1,4 @@
-package com.hadt.ehust.model
+package com.prdcv.ehust.model
 
 enum class StatusNotification {
 

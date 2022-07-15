@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +30,7 @@ import androidx.navigation.navArgument
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.hadt.ehust.model.StatusNotification
+import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
@@ -59,7 +58,12 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotificati
         ) {
             NavHost(navController = navController, "newsList") {
                 composable("newsList") {
-                    NewsList(state, navController, onRefresh = { viewModel.getNews(typeNoti) })
+                    NewsList(state,
+                        navController,
+                        onRefresh = { viewModel.getNews(typeNoti) },
+                        viewModel = viewModel,
+                        typeNoti = typeNoti
+                        )
                 }
                 composable(
                     "newsDetails/{id}",
@@ -68,7 +72,9 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotificati
                     it.arguments?.getInt("id")?.let {
                         (state as? State.Success)?.data?.firstOrNull { n -> n.id == it }
                     }?.let { news ->
-                        NewsDetails(news)
+                        NewsDetails(
+                            news = news
+                        )
                     }
                 }
             }
@@ -107,6 +113,8 @@ private fun NewsList(
     state: State<List<News>>,
     navController: NavController,
     onRefresh: () -> Unit = {},
+    viewModel: ShareViewModel,
+    typeNoti: TypeNotification
 ) {
     val refreshState = rememberSwipeRefreshState(isRefreshing = false)
 
@@ -119,7 +127,7 @@ private fun NewsList(
                 refreshState.isRefreshing = false
                 LazyColumn {
                     items(items = newsList.data) {
-                        NewsRow(it, navController)
+                        NewsRow(it, navController, viewModel, typeNoti)
                     }
                 }
             }
@@ -139,7 +147,9 @@ fun NewsRow(
         TypeNotification.NORMAL,
         StatusNotification.UNREAD
     ),
-    navController: NavController
+    navController: NavController,
+    viewModel: ShareViewModel,
+    typeNoti: TypeNotification
 ) {
     val bgColor = if (news.status == StatusNotification.UNREAD) {
         UNREAD
@@ -157,6 +167,7 @@ fun NewsRow(
                     putParcelable("itemNews", news)
                 }
                 navController.navigate("newsDetails/${news.id}")
+                viewModel.updateStatusNew(news.id, typeNoti, StatusNotification.READ)
             },
         backgroundColor = bgColor
     ) {
