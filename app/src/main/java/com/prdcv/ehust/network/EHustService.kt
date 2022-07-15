@@ -1,6 +1,7 @@
 package com.prdcv.ehust.network
 
 import com.hadt.ehust.model.TopicStatus
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -22,8 +23,8 @@ interface EHustService {
     suspend fun login(@Field("id") id: Int,
                       @Field("password") password: String): Response<Map<String,Any>>
 
-    @GET("news")
-    suspend fun getAllNews(): Response<List<News>>
+    @GET("news/{type}")
+    suspend fun getAllNews(@Path("type") type: TypeNotification): Response<List<News>>
 
     @GET("user/profile/{id}")
     suspend fun getProfileById(@Path("id") id: Int): Response<User>

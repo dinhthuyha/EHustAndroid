@@ -31,23 +31,26 @@ import androidx.navigation.navArgument
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.hadt.ehust.model.StatusNotification
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.News
 import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
+import com.prdcv.ehust.ui.compose.UNREAD
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.ui.task.Tag
 
 @Composable
-fun NewsScreen(viewModel: ShareViewModel = viewModel()) {
+fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotification) {
 
     val navController = rememberNavController()
     val state by viewModel.newsState.collectAsState()
 
     LaunchedEffect(key1 = Unit, block = {
-        viewModel.getNews()
+        viewModel.getNews(typeNoti)
     })
 
     DefaultTheme {
@@ -56,7 +59,7 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel()) {
         ) {
             NavHost(navController = navController, "newsList") {
                 composable("newsList") {
-                    NewsList(state, navController, onRefresh = { viewModel.getNews() })
+                    NewsList(state, navController, onRefresh = { viewModel.getNews(typeNoti) })
                 }
                 composable(
                     "newsDetails/{id}",
@@ -80,7 +83,9 @@ private fun NewsDetails(
         1,
         stringResource(id = R.string.item_news_content),
         stringResource(id = R.string.item_news_content),
-        "16-06-2022"
+        "16-06-2022",
+        TypeNotification.NORMAL,
+        StatusNotification.UNREAD
     )
 ) {
     Column(
@@ -130,10 +135,17 @@ fun NewsRow(
         1,
         stringResource(id = R.string.item_news_content),
         stringResource(id = R.string.item_news_content),
-        "16-06-2022"
+        "16-06-2022",
+        TypeNotification.NORMAL,
+        StatusNotification.UNREAD
     ),
     navController: NavController
 ) {
+    val bgColor = if (news.status == StatusNotification.UNREAD) {
+        UNREAD
+    } else {
+        Color.White
+    }
     Card(
         elevation = 4.dp,
         shape = Shapes.small,
@@ -145,7 +157,8 @@ fun NewsRow(
                     putParcelable("itemNews", news)
                 }
                 navController.navigate("newsDetails/${news.id}")
-            }
+            },
+        backgroundColor = bgColor
     ) {
         Column(modifier = Modifier.padding(15.dp)) {
             Row(

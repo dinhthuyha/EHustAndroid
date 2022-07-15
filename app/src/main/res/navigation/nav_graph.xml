@@ -76,6 +76,9 @@
         android:id="@+id/newsFragment"
         android:name="com.prdcv.ehust.ui.news.NewsFragment"
         android:label="NewsFragment" >
+        <argument
+            android:name="type"
+            app:argType="com.hadt.ehust.model.TypeNotification" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

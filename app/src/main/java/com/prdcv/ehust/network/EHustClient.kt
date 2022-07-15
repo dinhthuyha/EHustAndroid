@@ -1,6 +1,7 @@
 package com.prdcv.ehust.network
 
 import com.hadt.ehust.model.TopicStatus
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
 import io.minio.MinioClient
 import io.minio.ObjectWriteResponse
@@ -18,8 +19,8 @@ class EHustClient @Inject constructor(
         return ehustService.login(id, password)
     }
 
-    suspend fun getAllNews(): Response<List<News>> {
-        return ehustService.getAllNews()
+    suspend fun getAllNews(type: TypeNotification): Response<List<News>> {
+        return ehustService.getAllNews(type)
     }
 
     suspend fun getProfileById(id: Int): Response<User> {

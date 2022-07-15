@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
@@ -140,7 +141,7 @@ fun ToolBar(title: String, nav: NavController) {
                 tint = Color.White,
                 modifier = Modifier
                     .padding(end = 10.dp)
-                    .clickable { nav.navigate(R.id.action_mainFragment_to_newsFragment) }
+                    .clickable { nav.navigate(MainFragmentDirections.actionMainFragmentToNewsFragment(TypeNotification.NORMAL)) }
             )
         })
 }

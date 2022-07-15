@@ -1,5 +1,6 @@
 package com.prdcv.ehust.repo
 
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.News
@@ -10,10 +11,10 @@ import javax.inject.Inject
 
 class NewsRepository @Inject constructor(val eHustClient: EHustClient) {
 
-    fun getNews(): Flow<State<List<News>>> {
+    fun getNews(type:TypeNotification): Flow<State<List<News>>> {
         return object : NetworkBoundRepository<List<News>>() {
             override suspend fun fetchFromRemote(): Response<List<News>> {
-                return eHustClient.getAllNews()
+                return eHustClient.getAllNews(type)
             }
         }.asFlow()
     }

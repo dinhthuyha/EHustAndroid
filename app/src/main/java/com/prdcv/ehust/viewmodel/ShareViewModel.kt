@@ -12,6 +12,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
@@ -128,9 +129,9 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun getNews() {
+    fun getNews(type: TypeNotification) {
         viewModelScope.launch(Dispatchers.IO) {
-            newsRepository.getNews().collect {
+            newsRepository.getNews(type).collect {
                 _newsState.emit(it)
             }
         }
