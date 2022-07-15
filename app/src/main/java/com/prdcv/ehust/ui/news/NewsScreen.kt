@@ -44,6 +44,7 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.UNREAD
 import com.prdcv.ehust.ui.task.Tag
+import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 
 @Composable
 fun ToolBar(
@@ -74,7 +75,7 @@ fun ToolBar(
     )
 }
 @Composable
-fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotification) {
+fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotification, nav: NavController) {
 
     val navController = rememberNavController()
     val state by viewModel.newsState.collectAsState()
@@ -93,7 +94,8 @@ fun NewsScreen(viewModel: ShareViewModel = viewModel(), typeNoti: TypeNotificati
                         navController,
                         onRefresh = { viewModel.getNews(typeNoti) },
                         viewModel = viewModel,
-                        typeNoti = typeNoti
+                        typeNoti = typeNoti,
+                        nav = nav
                         )
                 }
                 composable(
@@ -145,7 +147,8 @@ private fun NewsList(
     navController: NavController,
     onRefresh: () -> Unit = {},
     viewModel: ShareViewModel,
-    typeNoti: TypeNotification
+    typeNoti: TypeNotification,
+    nav: NavController
 ) {
     val refreshState = rememberSwipeRefreshState(isRefreshing = false)
 
@@ -158,7 +161,7 @@ private fun NewsList(
                 refreshState.isRefreshing = false
                 LazyColumn {
                     items(items = newsList.data) {
-                        NewsRow(it, navController, viewModel, typeNoti)
+                        NewsRow(it, navController, viewModel, typeNoti, nav)
                     }
                 }
             }
@@ -180,7 +183,8 @@ fun NewsRow(
     ),
     navController: NavController,
     viewModel: ShareViewModel,
-    typeNoti: TypeNotification
+    typeNoti: TypeNotification,
+    nav: NavController
 ) {
     val bgColor = if (news.status == StatusNotification.STATUS_UNREAD) {
         UNREAD
@@ -197,7 +201,14 @@ fun NewsRow(
                 navController.currentBackStackEntry?.arguments?.apply {
                     putParcelable("itemNews", news)
                 }
-                navController.navigate("newsDetails/${news.id}")
+                if (typeNoti == TypeNotification.TYPE_PROJECT){
+                    nav.navigate(NewsFragmentDirections.actionNewsFragmentToDetailTaskFragment(
+                        TaskDetailArgs( idTask = news.idTask?:1)
+                    ))
+                }else {
+                    navController.navigate("newsDetails/${news.id}")
+                }
+
                 viewModel.updateStatusNew(news.id?:0, typeNoti, StatusNotification.STATUS_READ)
             },
         backgroundColor = bgColor

@@ -79,6 +79,9 @@
         <argument
             android:name="type"
             app:argType="com.hadt.ehust.model.TypeNotification" />
+        <action
+            android:id="@+id/action_newsFragment_to_detailTaskFragment"
+            app:destination="@id/detailTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
