@@ -8,29 +8,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.viewModelScope
-import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.common.SingleLiveEvent
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.Meeting
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.model.*
 import com.prdcv.ehust.repo.NewsRepository
 import com.prdcv.ehust.repo.TaskRepository
 import com.prdcv.ehust.repo.UserRepository
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.prdcv.ehust.viewmodel.state.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
@@ -67,7 +57,7 @@ class ShareViewModel @Inject constructor(
             }
         viewModelScope.launch {
             newsRepository.clearNotificationRead(newsReads).collect {
-                if (it is State.Success){
+                if (it is State.Success) {
                     getNews(TypeNotification.TYPE_PROJECT)
                 }
             }
@@ -79,29 +69,32 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             uiState = HomeScreenState()
             userRepository.login(id, password).collect {
+                if (it is State.Success) delay(800)
                 _token.postValue(it)
             }
         }
     }
 
     fun decodeResponseLogin(hashMap: Map<String, Any>) {
-        val token = hashMap["token"] as String
+        val token = hashMap["token"] as String?
         //save to share preferences
-        sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN, token).commit()
+        token?.let {
+            sharedPreferences.edit().putString(SharedPreferencesKey.TOKEN, it).commit()
+        }
 
         val profile = hashMap["profile"] as? Map<String, String>
         val id = (profile?.get("id") as String).toInt()
-        val roleId = convertRole(profile?.get("role_id") as String)
-        val fullName = profile?.get("full_name") as? String
-        val grade = profile?.get("grade") as? String ?: ""
-        val ins = profile?.get("institute_of_management") as? String
-        val gender = profile?.get("gender") as? String
-        val course = profile?.get("course") as? String ?: ""
-        val email = profile?.get("email") as? String ?: ""
-        val cardeStatus = profile?.get("cadre_status") as? String ?: ""
-        val unit = profile?.get("unit") as? String ?: ""
-        val imageBg = profile?.get("image_background") as? String
-        val imageAva = profile?.get("image_avatar") as? String
+        val roleId = convertRole(profile["role_id"] as String)
+        val fullName = profile.get("full_name")
+        val grade = profile["grade"] ?: ""
+        val ins = profile["institute_of_management"]
+        val gender = profile["gender"]
+        val course = profile["course"] ?: ""
+        val email = profile["email"] ?: ""
+        val cardeStatus = profile["cadre_status"] ?: ""
+        val unit = profile["unit"] ?: ""
+        val imageBg = profile["image_background"]
+        val imageAva = profile["image_avatar"]
 
         user = User(
             id,
@@ -235,6 +228,18 @@ class ShareViewModel @Inject constructor(
     private fun findAllTaskWillExpire() {
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.findAllTaskWillExpire().collect { uiState.addTasksFromState(it) }
+        }
+    }
+
+    fun checkToken() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.checkToken().collect {
+                when (it) {
+                    is State.Error -> _token.postValue(State.Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."))
+                    State.Loading -> _token.postValue(State.Loading)
+                    is State.Success -> _token.postValue(it as State<Map<String, Any>>)
+                }
+            }
         }
     }
 

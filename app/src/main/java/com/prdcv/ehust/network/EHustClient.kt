@@ -1,6 +1,5 @@
 package com.prdcv.ehust.network
 
-import com.prdcv.ehust.model.StatusNotification
 import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
@@ -30,8 +29,9 @@ class EHustClient @Inject constructor(
         type: TypeNotification,
         status: StatusNotification
     ): Response<List<News>> {
-       return ehustService.updateStatusNew(id, type, status)
+        return ehustService.updateStatusNew(id, type, status)
     }
+
     suspend fun getProfileById(id: Int): Response<User> {
         return ehustService.getProfileById(id)
     }
@@ -66,7 +66,12 @@ class EHustClient @Inject constructor(
         idTeacher: Int,
         semester: Int
     ): Response<List<Topic>> {
-        return ehustService.findTopicByIdTeacherAndIdProject(nameTeacher, idProject, idTeacher, semester)
+        return ehustService.findTopicByIdTeacherAndIdProject(
+            nameTeacher,
+            idProject,
+            idTeacher,
+            semester
+        )
     }
 
     suspend fun getAllUserInClass(nameCourse: String, role: Role): Response<List<User>> {
@@ -104,7 +109,8 @@ class EHustClient @Inject constructor(
 
     suspend fun findAllCommentByIdTask(idTask: Int) = ehustService.findAllCommentByIdTask(idTask)
 
-    suspend fun postComment(idTask: Int, comment: Comment) = ehustService.postComment(idTask, comment)
+    suspend fun postComment(idTask: Int, comment: Comment) =
+        ehustService.postComment(idTask, comment)
 
     suspend fun deleteComment(id: Int) = ehustService.deleteComment(id)
 
@@ -141,14 +147,22 @@ class EHustClient @Inject constructor(
 
     suspend fun getAllSemester() = ehustService.getAllSemester()
 
-    suspend fun getAllProjectByIdTeacherAndSemester(idTeacher: Int,  semester: Int) = ehustService.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
+    suspend fun getAllProjectByIdTeacherAndSemester(idTeacher: Int, semester: Int) =
+        ehustService.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
 
     suspend fun findMaxSemester() = ehustService.findMaxSemester()
 
-    suspend fun updateNotificationNewTask(notification: News) = ehustService.updateNotificationNewTask(notification)
+    suspend fun updateNotificationNewTask(notification: News) =
+        ehustService.updateNotificationNewTask(notification)
 
-   suspend fun notificationUpdateTask(taskDetail: TaskDetail) = ehustService.notificationUpdateTask(taskDetail)
+    suspend fun notificationUpdateTask(taskDetail: TaskDetail) =
+        ehustService.notificationUpdateTask(taskDetail)
 
-    suspend fun clearNotificationRead(newsReads: List<News>): Response<ResponseBody> = ehustService.clearNotificationRead(newsReads)
+    suspend fun clearNotificationRead(newsReads: List<News>): Response<ResponseBody> =
+        ehustService.clearNotificationRead(newsReads)
+
     suspend fun getInformationDashBoard() = ehustService.getInformationDashBoard()
+
+    suspend fun checkToken() = ehustService.checkToken()
+
 }
