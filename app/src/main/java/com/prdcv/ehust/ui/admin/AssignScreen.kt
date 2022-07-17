@@ -24,6 +24,7 @@ fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compo
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getAllProjectCurrentSemester()
+        viewModel.getInformationDashBoard()
     }
 
     val uiState = viewModel.uiState

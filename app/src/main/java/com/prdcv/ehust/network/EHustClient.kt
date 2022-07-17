@@ -148,5 +148,7 @@ class EHustClient @Inject constructor(
     suspend fun updateNotificationNewTask(notification: News) = ehustService.updateNotificationNewTask(notification)
 
    suspend fun notificationUpdateTask(taskDetail: TaskDetail) = ehustService.notificationUpdateTask(taskDetail)
+
     suspend fun clearNotificationRead(newsReads: List<News>): Response<ResponseBody> = ehustService.clearNotificationRead(newsReads)
+    suspend fun getInformationDashBoard() = ehustService.getInformationDashBoard()
 }

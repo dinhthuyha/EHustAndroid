@@ -3,6 +3,7 @@ package com.prdcv.ehust.repo
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
 import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.model.DashBoard
 import com.prdcv.ehust.model.Meeting
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.ScheduleEvent
@@ -118,6 +119,14 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
         return object : NetworkBoundRepository<Int>() {
             override suspend fun fetchFromRemote(): Response<Int> {
                 return eHustClient.findMaxSemester()
+            }
+        }.asFlow()
+    }
+
+    fun getInformationDashBoard():Flow<State<DashBoard>>{
+        return object : NetworkBoundRepository<DashBoard>(){
+            override suspend fun fetchFromRemote(): Response<DashBoard> {
+                return eHustClient.getInformationDashBoard()
             }
         }.asFlow()
     }

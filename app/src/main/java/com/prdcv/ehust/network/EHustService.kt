@@ -165,4 +165,7 @@ interface EHustService {
 
     @POST("clear/notification/read")
     suspend fun clearNotificationRead(@Body newsReads: List<News>): Response<ResponseBody>
+
+    @GET("information/dashboard")
+    suspend fun getInformationDashBoard(): Response<DashBoard>
 }

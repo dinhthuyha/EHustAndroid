@@ -159,7 +159,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findAllSchedules() {
+    private fun findAllSchedules() {
         viewModelScope.launch {
             userRepository.findAllSchedules(user?.id!!).collect {
                 uiState.findAllSchedule(it)
@@ -167,7 +167,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findMaxSemester() {
+    private fun findMaxSemester() {
         viewModelScope.launch {
             userRepository.findMaxSemester().collect {
                 if (it is State.Success) {
@@ -211,7 +211,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findAllMeeting() {
+    private fun findAllMeeting() {
         var idUserTeacher: Int = 0
         var idUserStudent: Int = 0
         viewModelScope.launch {
@@ -232,7 +232,7 @@ class ShareViewModel @Inject constructor(
         }
     }
 
-    fun findAllTaskWillExpire() {
+    private fun findAllTaskWillExpire() {
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.findAllTaskWillExpire().collect { uiState.addTasksFromState(it) }
         }
