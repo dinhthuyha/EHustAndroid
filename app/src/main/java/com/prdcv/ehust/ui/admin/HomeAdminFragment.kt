@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import com.prdcv.ehust.base.BaseFragment
+import com.prdcv.ehust.extension.hideKeyboard
 import com.prdcv.ehust.viewmodel.AssignViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +29,7 @@ class HomeAdminFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { AdminMainScreen(viewModel) }
+            setContent { AdminMainScreen(viewModel, hideKeyboard = { hideKeyboard() }) }
         }
     }
 

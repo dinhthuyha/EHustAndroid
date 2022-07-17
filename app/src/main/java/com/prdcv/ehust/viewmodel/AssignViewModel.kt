@@ -1,13 +1,17 @@
 package com.prdcv.ehust.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.DashBoard
 import com.prdcv.ehust.model.Role
@@ -16,8 +20,8 @@ import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.SubjectRepository
 import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,21 +30,43 @@ data class AssignScreenState(
     val students: List<User> = emptyList(),
     val teachers: List<User> = emptyList(),
     val selectedSubject: Subject? = null,
-    val selectedStudent: User? = null,
-    val selectedTeacher: User? = null,
     val submitButtonEnabled: Boolean = true,
-    val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard())
+    val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
+    var teacherSelect: MutableState<String> = mutableStateOf(""),
+    var studentSelect: MutableState<String> = mutableStateOf(""),
+    var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
+        "hà nội",
+        "thành phố hồ chí minh",
+        "nha trang",
+        " vũng tàu",
+        "thanh ho",
+        "ha thanh",
+        "ha giang"
+    ),
+    var listFullNameStudent: SnapshotStateList<String> = mutableStateListOf<String>(
+        "hà nội",
+        "thành phố hồ chí minh",
+        "nha trang",
+        " vũng tàu",
+        "thanh ho",
+        "ha thanh",
+        "ha giang"
+    ),
+    var predictionsTeacher: SnapshotStateList<String> = mutableStateListOf<String>(),
+    var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>()
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
-            ?.let { selectedStudent }
-            ?.let { selectedTeacher }
+            ?.let { studentSelect.value !="" }
+            ?.let { teacherSelect.value !=""}
             ?.let { true } ?: false
     }
 
     fun getInformationDashBoard(state: State<DashBoard>) {
-        when(val _state = state){
-            is State.Success -> { informationDashBoard.value = _state.data }
+        when (val _state = state) {
+            is State.Success -> {
+                informationDashBoard.value = _state.data
+            }
             else -> {}
         }
 
@@ -79,8 +105,16 @@ class AssignViewModel @Inject constructor(
                 when (val state = it) {
                     is State.Success -> {
                         uiState = when (role) {
-                            Role.ROLE_TEACHER -> uiState.copy(teachers = state.data)
-                            Role.ROLE_STUDENT -> uiState.copy(students = state.data)
+                            Role.ROLE_TEACHER -> {
+                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                list.addAll(state.data.map { it.fullName!! })
+                                uiState.copy(teachers = state.data, listFullNameTeacher = list)
+                            }
+                            Role.ROLE_STUDENT -> {
+                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                list.addAll(state.data.map { it.fullName!! })
+                                uiState.copy(students = state.data, listFullNameStudent = list)
+                            }
                             else -> uiState
                         }
                     }
@@ -92,26 +126,20 @@ class AssignViewModel @Inject constructor(
 
     fun onProjectSelected(project: Subject) {
         uiState =
-            uiState.copy(selectedSubject = project, selectedStudent = null, selectedTeacher = null)
+            uiState.copy(selectedSubject = project)
         getAllUserInClass(project.name, Role.ROLE_TEACHER)
         getAllUserInClass(project.name, Role.ROLE_STUDENT)
-    }
-
-    fun onTeacherSelected(user: User) {
-        uiState = uiState.copy(selectedTeacher = user)
-    }
-
-    fun onStudentSelected(user: User) {
-        uiState = uiState.copy(selectedStudent = user)
     }
 
     fun onSubmit() {
         Log.d("AssignVM", "onSubmit: clicked")
         if (uiState.isAllSelected()) {
             uiState = uiState.copy(submitButtonEnabled = false)
+            val idStudent = uiState.students.first { it.fullName == uiState.studentSelect.value }.id
+            val idTeacher = uiState.teachers.first { it.fullName == uiState.teacherSelect.value }.id
             assign(
-                uiState.selectedStudent!!.id,
-                uiState.selectedTeacher!!.id,
+                idStudent,
+                idTeacher,
                 uiState.selectedSubject!!.name
             )
         }
@@ -126,8 +154,9 @@ class AssignViewModel @Inject constructor(
             userRepository.assignProjectInstructions(idStudent, idTeacher, nameProject).collect {
                 when (val state = it) {
                     is State.Error -> snackbarHostState.showSnackbar("Error: ${state.exception}")
-                    is State.Success -> {snackbarHostState.showSnackbar("Success")
-                    uiState = AssignScreenState(subjects = uiState.subjects)
+                    is State.Success -> {
+                        snackbarHostState.showSnackbar("Success")
+                        uiState = AssignScreenState(subjects = uiState.subjects)
                     }
                     else -> return@collect
                 }
@@ -137,11 +166,54 @@ class AssignViewModel @Inject constructor(
     }
 
 
-    fun getInformationDashBoard(){
+    fun getInformationDashBoard() {
         viewModelScope.launch {
-            userRepository.getInformationDashBoard().collect{
+            userRepository.getInformationDashBoard().collect {
                 uiState.getInformationDashBoard(it)
             }
         }
+    }
+
+    fun onItemStudentSelect(selectedPlaceItem: String) {
+        viewModelScope.launch {
+            uiState.studentSelect.value = selectedPlaceItem
+            uiState.predictionsStudent.clear()
+        }
+
+
+    }
+
+    fun onAutoCompleteClearStudent(predictions: MutableState<String>) {
+        viewModelScope.launch {
+            clearPredictions(predictions)
+        }
+    }
+
+    private fun clearPredictions(predictions: MutableState<String>) {
+        predictions.value = ""
+    }
+
+    fun onItemTeacherSelect(selectedItem: String) {
+        viewModelScope.launch {
+            uiState.teacherSelect.value = selectedItem
+            uiState.predictionsTeacher.clear()
+        }
+    }
+
+    fun onAutoCompleteClearTeacher(teacherSelect: MutableState<String>) {
+        viewModelScope.launch {
+            clearPredictions(teacherSelect)
+        }
+    }
+
+    fun getChangePredictionsStudent(value: String) {
+        uiState.predictionsStudent.clear()
+        uiState.predictionsStudent.addAll(uiState.listFullNameStudent.filter { it.startsWith(value) })
+    }
+
+    fun getChangePredictionsTeacher(value: String) {
+        uiState.predictionsTeacher.clear()
+        uiState.predictionsTeacher.addAll(uiState.listFullNameTeacher.filter { it.startsWith(value) })
+
     }
 }
