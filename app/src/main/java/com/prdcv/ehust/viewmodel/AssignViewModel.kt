@@ -29,7 +29,8 @@ data class AssignScreenState(
     val selectedStudent: User? = null,
     val selectedTeacher: User? = null,
     val submitButtonEnabled: Boolean = true,
-    val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard())
+    val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
+    var streetAddress: MutableState<String> = mutableStateOf("hadinh")
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
@@ -39,8 +40,10 @@ data class AssignScreenState(
     }
 
     fun getInformationDashBoard(state: State<DashBoard>) {
-        when(val _state = state){
-            is State.Success -> { informationDashBoard.value = _state.data }
+        when (val _state = state) {
+            is State.Success -> {
+                informationDashBoard.value = _state.data
+            }
             else -> {}
         }
 
@@ -126,8 +129,9 @@ class AssignViewModel @Inject constructor(
             userRepository.assignProjectInstructions(idStudent, idTeacher, nameProject).collect {
                 when (val state = it) {
                     is State.Error -> snackbarHostState.showSnackbar("Error: ${state.exception}")
-                    is State.Success -> {snackbarHostState.showSnackbar("Success")
-                    uiState = AssignScreenState(subjects = uiState.subjects)
+                    is State.Success -> {
+                        snackbarHostState.showSnackbar("Success")
+                        uiState = AssignScreenState(subjects = uiState.subjects)
                     }
                     else -> return@collect
                 }
@@ -137,9 +141,9 @@ class AssignViewModel @Inject constructor(
     }
 
 
-    fun getInformationDashBoard(){
+    fun getInformationDashBoard() {
         viewModelScope.launch {
-            userRepository.getInformationDashBoard().collect{
+            userRepository.getInformationDashBoard().collect {
                 uiState.getInformationDashBoard(it)
             }
         }
