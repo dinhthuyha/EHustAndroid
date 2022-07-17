@@ -1,6 +1,7 @@
 package com.prdcv.ehust.ui.admin
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,42 +33,56 @@ fun AssignScreen(viewModel: AssignViewModel) {
     DefaultTheme {
         Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState)) {
             ToolBarAssign(title = "Trang chủ")
-            Column(
+            LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SpinnerProject(
-                    label = "Danh sách dự án",
-                    options = uiState.subjects,
-                    selectedOption = uiState.selectedSubject,
-                    onItemClick = viewModel::onProjectSelected
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                SpinnerStudent(
-                    label = "Danh sách sinh viên",
-                    options = uiState.students,
-                    selectedOption = uiState.selectedStudent,
-                    onItemClick = viewModel::onStudentSelected
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                SpinnerTeacher(
-                    label = "Danh sách giảng viên",
-                    options = uiState.teachers,
-                    selectedOption = uiState.selectedTeacher,
-                    onItemClick = viewModel::onTeacherSelected
-                )
-                Spacer(modifier = Modifier.height(45.dp))
-
-                Button(onClick = viewModel::onSubmit, enabled = uiState.submitButtonEnabled) {
-                    Text(
-                        text = "Gán dự án",
-                        fontSize = 16.sp,
-                        color = White,
-                        modifier = Modifier.padding(15.dp, 6.dp)
+                item {
+                    SpinnerProject(
+                        label = "Danh sách dự án",
+                        options = uiState.subjects,
+                        selectedOption = uiState.selectedSubject,
+                        onItemClick = viewModel::onProjectSelected
                     )
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        RowComplete(viewModel, title = "Danh sách sinh viên",selected = uiState.studentSelect, predictionsUser = uiState.predictionsStudent, listUser = uiState.listStudent)
+                    }
+                }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        RowComplete(viewModel, title = "Danh sách giảng viên",selected = uiState.teacherSelect, predictionsUser = uiState.predictionsTeacher, listUser = uiState.listTeacher)
+                    }
+                }
+//                SpinnerStudent(
+//                    label = "Danh sách sinh viên",
+//                    options = uiState.students,
+//                    selectedOption = uiState.selectedStudent,
+//                    onItemClick = viewModel::onStudentSelected
+//                )
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                SpinnerTeacher(
+//                    label = "Danh sách giảng viên",
+//                    options = uiState.teachers,
+//                    selectedOption = uiState.selectedTeacher,
+//                    onItemClick = viewModel::onTeacherSelected
+//                )
+                item { Spacer(modifier = Modifier.height(45.dp)) }
+
+                item {
+                    Button(onClick = viewModel::onSubmit, enabled = uiState.submitButtonEnabled) {
+                        Text(
+                            text = "Gán dự án",
+                            fontSize = 16.sp,
+                            color = White,
+                            modifier = Modifier.padding(15.dp, 6.dp)
+                        )
+                    }
                 }
             }
         }

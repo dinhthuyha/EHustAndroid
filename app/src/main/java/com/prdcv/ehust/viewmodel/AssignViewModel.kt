@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prdcv.ehust.common.State
@@ -17,7 +19,6 @@ import com.prdcv.ehust.repo.SubjectRepository
 import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +31,28 @@ data class AssignScreenState(
     val selectedTeacher: User? = null,
     val submitButtonEnabled: Boolean = true,
     val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
-    var streetAddress: MutableState<String> = mutableStateOf("hadinh")
+    var teacherSelect: MutableState<String> = mutableStateOf(""),
+    var studentSelect: MutableState<String> = mutableStateOf(""),
+    var listTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
+        "hà nội",
+        "thành phố hồ chí minh",
+        "nha trang",
+        " vũng tàu",
+        "thanh ho",
+        "ha thanh",
+        "ha giang"
+    ),
+    var listStudent: SnapshotStateList<String> = mutableStateListOf<String>(
+        "hà nội",
+        "thành phố hồ chí minh",
+        "nha trang",
+        " vũng tàu",
+        "thanh ho",
+        "ha thanh",
+        "ha giang"
+    ),
+    var predictionsTeacher: SnapshotStateList<String> = mutableStateListOf<String>(),
+    var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>()
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
@@ -82,8 +104,16 @@ class AssignViewModel @Inject constructor(
                 when (val state = it) {
                     is State.Success -> {
                         uiState = when (role) {
-                            Role.ROLE_TEACHER -> uiState.copy(teachers = state.data)
-                            Role.ROLE_STUDENT -> uiState.copy(students = state.data)
+                            Role.ROLE_TEACHER -> {
+                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                list.addAll(state.data.map { it.fullName!! })
+                                uiState.copy(teachers = state.data, listTeacher = list)
+                            }
+                            Role.ROLE_STUDENT -> {
+                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                list.addAll(state.data.map { it.fullName!! })
+                                uiState.copy(students = state.data, listStudent = list)
+                            }
                             else -> uiState
                         }
                     }
@@ -147,5 +177,48 @@ class AssignViewModel @Inject constructor(
                 uiState.getInformationDashBoard(it)
             }
         }
+    }
+
+    fun onItemStudentSelect(selectedPlaceItem: String) {
+        viewModelScope.launch {
+            uiState.studentSelect.value = selectedPlaceItem
+            uiState.predictionsStudent.clear()
+        }
+
+
+    }
+
+    fun onAutoCompleteClearStudent(predictions: MutableState<String>) {
+        viewModelScope.launch {
+            clearPredictions(predictions)
+        }
+    }
+
+    private fun clearPredictions(predictions: MutableState<String>) {
+        predictions.value = ""
+    }
+
+    fun onItemTeacherSelect(selectedItem: String) {
+        viewModelScope.launch {
+            uiState.teacherSelect.value = selectedItem
+            uiState.predictionsTeacher.clear()
+        }
+    }
+
+    fun onAutoCompleteClearTeacher(teacherSelect: MutableState<String>) {
+        viewModelScope.launch {
+            clearPredictions(teacherSelect)
+        }
+    }
+
+    fun getChangePredictionsStudent(value: String) {
+        uiState.predictionsStudent.clear()
+        uiState.predictionsStudent.addAll(uiState.listStudent.filter { it.startsWith(value) })
+    }
+
+    fun getChangePredictionsTeacher(value: String) {
+        uiState.predictionsTeacher.clear()
+        uiState.predictionsTeacher.addAll(uiState.listTeacher.filter { it.startsWith(value) })
+
     }
 }
