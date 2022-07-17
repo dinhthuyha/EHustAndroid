@@ -27,13 +27,11 @@ data class AssignScreenState(
     val students: List<User> = emptyList(),
     val teachers: List<User> = emptyList(),
     val selectedSubject: Subject? = null,
-    val selectedStudent: User? = null,
-    val selectedTeacher: User? = null,
     val submitButtonEnabled: Boolean = true,
     val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
     var teacherSelect: MutableState<String> = mutableStateOf(""),
     var studentSelect: MutableState<String> = mutableStateOf(""),
-    var listTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
+    var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
         "hà nội",
         "thành phố hồ chí minh",
         "nha trang",
@@ -42,7 +40,7 @@ data class AssignScreenState(
         "ha thanh",
         "ha giang"
     ),
-    var listStudent: SnapshotStateList<String> = mutableStateListOf<String>(
+    var listFullNameStudent: SnapshotStateList<String> = mutableStateListOf<String>(
         "hà nội",
         "thành phố hồ chí minh",
         "nha trang",
@@ -56,8 +54,8 @@ data class AssignScreenState(
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
-            ?.let { selectedStudent }
-            ?.let { selectedTeacher }
+            ?.let { studentSelect.value !="" }
+            ?.let { teacherSelect.value !=""}
             ?.let { true } ?: false
     }
 
@@ -107,12 +105,12 @@ class AssignViewModel @Inject constructor(
                             Role.ROLE_TEACHER -> {
                                 val list : SnapshotStateList<String> = mutableStateListOf()
                                 list.addAll(state.data.map { it.fullName!! })
-                                uiState.copy(teachers = state.data, listTeacher = list)
+                                uiState.copy(teachers = state.data, listFullNameTeacher = list)
                             }
                             Role.ROLE_STUDENT -> {
                                 val list : SnapshotStateList<String> = mutableStateListOf()
                                 list.addAll(state.data.map { it.fullName!! })
-                                uiState.copy(students = state.data, listStudent = list)
+                                uiState.copy(students = state.data, listFullNameStudent = list)
                             }
                             else -> uiState
                         }
@@ -125,26 +123,20 @@ class AssignViewModel @Inject constructor(
 
     fun onProjectSelected(project: Subject) {
         uiState =
-            uiState.copy(selectedSubject = project, selectedStudent = null, selectedTeacher = null)
+            uiState.copy(selectedSubject = project)
         getAllUserInClass(project.name, Role.ROLE_TEACHER)
         getAllUserInClass(project.name, Role.ROLE_STUDENT)
-    }
-
-    fun onTeacherSelected(user: User) {
-        uiState = uiState.copy(selectedTeacher = user)
-    }
-
-    fun onStudentSelected(user: User) {
-        uiState = uiState.copy(selectedStudent = user)
     }
 
     fun onSubmit() {
         Log.d("AssignVM", "onSubmit: clicked")
         if (uiState.isAllSelected()) {
             uiState = uiState.copy(submitButtonEnabled = false)
+            val idStudent = uiState.students.first { it.fullName == uiState.studentSelect.value }.id
+            val idTeacher = uiState.teachers.first { it.fullName == uiState.teacherSelect.value }.id
             assign(
-                uiState.selectedStudent!!.id,
-                uiState.selectedTeacher!!.id,
+                idStudent,
+                idTeacher,
                 uiState.selectedSubject!!.name
             )
         }
@@ -213,12 +205,12 @@ class AssignViewModel @Inject constructor(
 
     fun getChangePredictionsStudent(value: String) {
         uiState.predictionsStudent.clear()
-        uiState.predictionsStudent.addAll(uiState.listStudent.filter { it.startsWith(value) })
+        uiState.predictionsStudent.addAll(uiState.listFullNameStudent.filter { it.startsWith(value) })
     }
 
     fun getChangePredictionsTeacher(value: String) {
         uiState.predictionsTeacher.clear()
-        uiState.predictionsTeacher.addAll(uiState.listTeacher.filter { it.startsWith(value) })
+        uiState.predictionsTeacher.addAll(uiState.listFullNameTeacher.filter { it.startsWith(value) })
 
     }
 }

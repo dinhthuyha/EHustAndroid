@@ -49,13 +49,13 @@ fun AssignScreen(viewModel: AssignViewModel) {
                 item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        RowComplete(viewModel, title = "Danh sách sinh viên",selected = uiState.studentSelect, predictionsUser = uiState.predictionsStudent, listUser = uiState.listStudent)
+                        RowComplete(viewModel, title = "Danh sách sinh viên",selected = uiState.studentSelect, predictionsUser = uiState.predictionsStudent, listUser = uiState.listFullNameStudent)
                     }
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        RowComplete(viewModel, title = "Danh sách giảng viên",selected = uiState.teacherSelect, predictionsUser = uiState.predictionsTeacher, listUser = uiState.listTeacher)
+                        RowComplete(viewModel, title = "Danh sách giảng viên",selected = uiState.teacherSelect, predictionsUser = uiState.predictionsTeacher, listUser = uiState.listFullNameTeacher)
                     }
                 }
 //                SpinnerStudent(
