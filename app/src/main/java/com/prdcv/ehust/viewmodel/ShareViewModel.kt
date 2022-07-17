@@ -237,7 +237,10 @@ class ShareViewModel @Inject constructor(
                 when (it) {
                     is State.Error -> _token.postValue(State.Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."))
                     State.Loading -> _token.postValue(State.Loading)
-                    is State.Success -> _token.postValue(it as State<Map<String, Any>>)
+                    is State.Success -> {
+                        delay(800)
+                        _token.postValue(it as State<Map<String, Any>>)
+                    }
                 }
             }
         }
