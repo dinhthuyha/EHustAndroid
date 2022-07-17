@@ -33,7 +33,7 @@ private sealed class Screen(val route: String, val label: String, @DrawableRes v
 }
 
 @Composable
-fun AdminMainScreen(viewModel: AssignViewModel) {
+fun AdminMainScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
     val navController = rememberNavController()
 
     DefaultTheme {
@@ -44,7 +44,7 @@ fun AdminMainScreen(viewModel: AssignViewModel) {
                 modifier = Modifier.padding(it)
             ) {
                 composable(Screen.Statistic.route) { DashboardScreen(viewModel) }
-                composable(Screen.Assignment.route) { AssignScreen(viewModel) }
+                composable(Screen.Assignment.route) { AssignScreen(viewModel, hideKeyboard) }
             }
         }
     }

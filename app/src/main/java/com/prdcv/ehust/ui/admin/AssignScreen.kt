@@ -21,7 +21,7 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.AssignViewModel
 
 @Composable
-fun AssignScreen(viewModel: AssignViewModel) {
+fun AssignScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getAllProjectCurrentSemester()
@@ -49,29 +49,16 @@ fun AssignScreen(viewModel: AssignViewModel) {
                 item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        RowComplete(viewModel, title = "Danh sách sinh viên",selected = uiState.studentSelect, predictionsUser = uiState.predictionsStudent, listUser = uiState.listFullNameStudent)
+                        RowComplete(viewModel, title = "Danh sách sinh viên",selected = uiState.studentSelect, predictionsUser = uiState.predictionsStudent, listUser = uiState.listFullNameStudent, hideKeyboard = hideKeyboard)
                     }
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
                 item {
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        RowComplete(viewModel, title = "Danh sách giảng viên",selected = uiState.teacherSelect, predictionsUser = uiState.predictionsTeacher, listUser = uiState.listFullNameTeacher)
+                        RowComplete(viewModel, title = "Danh sách giảng viên",selected = uiState.teacherSelect, predictionsUser = uiState.predictionsTeacher, listUser = uiState.listFullNameTeacher, hideKeyboard = hideKeyboard)
                     }
                 }
-//                SpinnerStudent(
-//                    label = "Danh sách sinh viên",
-//                    options = uiState.students,
-//                    selectedOption = uiState.selectedStudent,
-//                    onItemClick = viewModel::onStudentSelected
-//                )
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                SpinnerTeacher(
-//                    label = "Danh sách giảng viên",
-//                    options = uiState.teachers,
-//                    selectedOption = uiState.selectedTeacher,
-//                    onItemClick = viewModel::onTeacherSelected
-//                )
+
                 item { Spacer(modifier = Modifier.height(45.dp)) }
 
                 item {

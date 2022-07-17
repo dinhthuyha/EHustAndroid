@@ -49,7 +49,6 @@ fun <T> QuerySearch(
     predictions: SnapshotStateList<T>,
     list: SnapshotStateList<T>
 ) {
-
     var showClearButton by remember { mutableStateOf(false) }
 
     OutlinedTextField(
@@ -89,15 +88,15 @@ fun <T> QuerySearch(
 fun RowComplete(viewModel: AssignViewModel, title: String,
                 selected: MutableState<String>,
                 predictionsUser: SnapshotStateList<String>,
-                listUser: SnapshotStateList<String>) {
+                listUser: SnapshotStateList<String>,
+                hideKeyboard: ()-> Unit) {
     val scope = rememberCoroutineScope()
-    val keyboardController = LocalFocusManager.current
     RowAutoCompleteTextView(title = title,selected, predictionsUser, listUser ) { action ->
 
         when (action) {
             is UserUIAction.OnAddressSelected -> {
-                keyboardController.clearFocus()
                 scope.launch {
+                 hideKeyboard.invoke()
                     if (title == "Danh sách sinh viên"){
                         viewModel.onItemStudentSelect(action.selectedItem)
                     }else{
@@ -119,7 +118,7 @@ fun RowComplete(viewModel: AssignViewModel, title: String,
 
             is UserUIAction.OnAddressAutoCompleteDone -> {
 
-                keyboardController.clearFocus()
+                hideKeyboard.invoke()
 
             }
 
