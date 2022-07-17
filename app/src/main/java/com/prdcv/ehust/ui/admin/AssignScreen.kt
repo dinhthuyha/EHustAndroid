@@ -20,7 +20,7 @@ import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.viewmodel.AssignViewModel
 
 @Composable
-fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun AssignScreen(viewModel: AssignViewModel) {
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getAllProjectCurrentSemester()
@@ -38,7 +38,7 @@ fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compo
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SpinnerProject(
-                    label = "Danh sách project",
+                    label = "Danh sách dự án",
                     options = uiState.subjects,
                     selectedOption = uiState.selectedSubject,
                     onItemClick = viewModel::onProjectSelected
@@ -46,7 +46,7 @@ fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compo
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SpinnerStudent(
-                    label = "Danh sách Sinh vien",
+                    label = "Danh sách sinh viên",
                     options = uiState.students,
                     selectedOption = uiState.selectedStudent,
                     onItemClick = viewModel::onStudentSelected
@@ -54,7 +54,7 @@ fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compo
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SpinnerTeacher(
-                    label = "Danh sách giang vien",
+                    label = "Danh sách giảng viên",
                     options = uiState.teachers,
                     selectedOption = uiState.selectedTeacher,
                     onItemClick = viewModel::onTeacherSelected
@@ -63,8 +63,9 @@ fun AssignScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compo
 
                 Button(onClick = viewModel::onSubmit, enabled = uiState.submitButtonEnabled) {
                     Text(
-                        text = "Submit",
+                        text = "Gán dự án",
                         fontSize = 16.sp,
+                        color = White,
                         modifier = Modifier.padding(15.dp, 6.dp)
                     )
                 }
@@ -83,11 +84,10 @@ fun ToolBarAssign(title: String) {
             fontSize = 21.sp,
             modifier = Modifier
                 .padding(start = 16.dp)
-                .weight(4f)
         )
+        Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "Log out",
-            modifier = Modifier.weight(1f),
+            text = "Đăng xuất",
             color = White
         )
     }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.viewmodel.AssignViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +28,7 @@ class HomeAdminFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { AssignScreen(viewModel) }
+            setContent { AdminMainScreen(viewModel) }
         }
     }
 
