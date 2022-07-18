@@ -42,7 +42,10 @@ data class AssignScreenState(
     var userSelect: MutableState<String> = mutableStateOf(""),
     var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf(),
     var listFullNameStudent: SnapshotStateList<String> = mutableStateListOf(),
+
     var listFullNameUser: SnapshotStateList<String> = mutableStateListOf(),
+    var listProject: SnapshotStateList<String> = mutableStateListOf(),
+
     var predictionsTeacher: SnapshotStateList<String> = mutableStateListOf<String>(),
     var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>(),
     var predictionsUser: SnapshotStateList<String> = mutableStateListOf<String>(),
@@ -102,6 +105,13 @@ data class AssignScreenState(
             is State.Success -> {
                 tableData.clear()
                 tableData.addAll(_state.data)
+                listFullNameUser.clear()
+                val listFullNameTeacher  = tableData.map { it.nameTeacher }.distinct()
+                val listFullNameStudent = tableData.map { it.nameStudent }.distinct()
+                val listNameProject = tableData.map { it.nameProject }.distinct()
+                listFullNameUser.addAll(listFullNameStudent)
+                listFullNameUser.addAll(listFullNameTeacher)
+                listProject.addAll(listNameProject)
                 refreshState.isRefreshing = false
             }
             is State.Loading -> {
@@ -159,7 +169,7 @@ class AssignViewModel @Inject constructor(
         viewModelScope.launch {
             subjectRepository.getAllDataBySemester(semester).collect {
                 if (it is State.Success)
-                    delay(2000)
+                    delay(1000)
                 uiState.getAllDataBySemester(it)
             }
         }
@@ -337,5 +347,11 @@ class AssignViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun filterItem(selectedName: String) {
+        val list = uiState.tableData.filter { it.nameStudent == selectedName || it.nameTeacher == selectedName || it.nameProject == selectedName}
+        uiState.tableData.clear()
+        uiState.tableData.addAll(list)
     }
 }

@@ -52,7 +52,7 @@ fun AdminMainScreen(viewModel: AssignViewModel, nav: NavController,
                 modifier = Modifier.padding(it)
             ) {
                 composable(Screen.Statistic.route) { DashboardScreen(viewModel) }
-                composable(Screen.Manager.route) { ManagementScreen(viewModel) }
+                composable(Screen.Manager.route) { ManagementScreen(viewModel, nav, hideKeyboard) }
                 composable(Screen.Assignment.route) { AssignScreen(viewModel,nav, sharedPreferences, hideKeyboard) }
             }
         }

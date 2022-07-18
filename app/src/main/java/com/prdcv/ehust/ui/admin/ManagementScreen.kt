@@ -1,12 +1,14 @@
 package com.prdcv.ehust.ui.admin
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -15,18 +17,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -37,12 +47,16 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -56,11 +70,18 @@ import com.prdcv.ehust.viewmodel.AssignViewModel
 import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.LocalDate
 import java.time.Period
+import java.util.*
 
 @Composable
-fun ManagementScreen(viewModel: AssignViewModel) {
+fun ManagementScreen(
+    viewModel: AssignViewModel = hiltViewModel(),
+    navController: NavController? = null,
+    hideKeyboard: () -> Unit
+) {
     val uiState = viewModel.uiState
-    uiState.semesterStatus.value = uiState.informationDashBoard.value.semester?:0
+    uiState.semesterStatus.value = uiState.informationDashBoard.value.semester ?: 0
+    var textStateFilterUser = remember { mutableStateOf("") }
+    var textStateFilterProject = remember { mutableStateOf("") }
     LaunchedEffect(key1 = Unit) {
         viewModel.fetchDataManagementScreen()
     }
@@ -100,17 +121,43 @@ fun ManagementScreen(viewModel: AssignViewModel) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-//                Column(horizontalAlignment = Alignment.End) {
-//                    Text(text = "Lọc sinh viên/ giảng viên theo tên:")
-//                    RowComplete(
-//                        viewModel = viewModel,
-//                        title = "",
-//                        selected = viewModel.uiState.userSelect,
-//                        predictionsUser = viewModel.uiState.predictionsUser,
-//                        listUser = viewModel.uiState.listFullNameUser,
-//                        hideKeyboard = {}
-//                    )
-//                }
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Lọc sinh viên/ giảng viên theo tên:",
+                        modifier = Modifier.placeholder(
+                            visible = uiState.refreshState.isRefreshing,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    RowFilter(
+                        isLoading = uiState.refreshState.isRefreshing,
+                        viewModel = viewModel,
+                        textState = textStateFilterUser,
+                        data = viewModel.uiState.listFullNameUser,
+                        hideKeyboard = hideKeyboard
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+
+                    Text(
+                        text = "Lọc danh sách đồ án:",
+                        modifier = Modifier.placeholder(
+                            visible = uiState.refreshState.isRefreshing,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    RowFilter(
+                        isLoading = uiState.refreshState.isRefreshing,
+                        viewModel = viewModel,
+                        textState = textStateFilterProject,
+                        data = viewModel.uiState.listProject,
+                        hideKeyboard = hideKeyboard
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                }
                 if (uiState.refreshState.isRefreshing) {
                     (1..8).forEach {
                         TableRowReplace(isLoading = true)
@@ -118,11 +165,180 @@ fun ManagementScreen(viewModel: AssignViewModel) {
 
                 } else
                     TableScreen(
-                        viewModel = viewModel
+                        viewModel = viewModel,
                     )
             }
         }
     }
+}
+
+@Composable
+fun RowFilter(
+    isLoading: Boolean = false,
+    viewModel: AssignViewModel,
+    textState: MutableState<String>,
+    hideKeyboard: () -> Unit,
+    data: SnapshotStateList<String>
+) {
+
+    var visibleSuggest: MutableState<Boolean> = remember {
+        mutableStateOf(true)
+    }
+    Column {
+        SearchView(textState, isLoading = isLoading, visibleSuggest) {
+            viewModel.fetchDataManagementScreen()
+        }
+        Log.d("TAG", "RowFilter: ${textState.value}, ${visibleSuggest.value}")
+        if (textState.value != "")
+            if (visibleSuggest.value)
+                FullNameList(
+                    state = textState,
+                    viewModel = viewModel,
+                    visible = visibleSuggest,
+                    data = data,
+                    hideKeyboard = hideKeyboard
+                )
+    }
+}
+
+fun getListOfCountries(): ArrayList<String> {
+    val isoCountryCodes = Locale.getISOCountries()
+    val countryListWithEmojis = ArrayList<String>()
+    for (countryCode in isoCountryCodes) {
+        val locale = Locale("", countryCode)
+        val countryName = locale.displayCountry
+        val flagOffset = 0x1F1E6
+        val asciiOffset = 0x41
+        val firstChar = Character.codePointAt(countryCode, 0) - asciiOffset + flagOffset
+        val secondChar = Character.codePointAt(countryCode, 1) - asciiOffset + flagOffset
+        val flag =
+            (String(Character.toChars(firstChar)) + String(Character.toChars(secondChar)))
+        countryListWithEmojis.add("$countryName $flag")
+    }
+    return countryListWithEmojis
+}
+
+@Composable
+fun FullNameList(
+    state: MutableState<String>,
+    viewModel: AssignViewModel,
+    visible: MutableState<Boolean>,
+    data: SnapshotStateList<String>,
+    hideKeyboard: () -> Unit
+) {
+    var filteredFullName: SnapshotStateList<String> = mutableStateListOf()
+    LazyColumn(modifier = Modifier.widthIn(min = 70.dp, max = 180.dp)) {
+        val searchedText = state.value
+        filteredFullName = if (searchedText.isEmpty()) {
+            data
+        } else {
+            val resultList: SnapshotStateList<String> = mutableStateListOf()
+            for (country in data) {
+                if (country.lowercase(Locale.getDefault())
+                        .contains(searchedText.lowercase(Locale.getDefault()))
+                ) {
+                    resultList.add(country)
+                }
+            }
+            resultList
+        }
+        items(filteredFullName) { filteredList ->
+            UserListItem(
+                countryText = filteredList,
+                onItemClick = { selectedName ->
+
+                    visible.value = false
+                    Log.d("TAG", "click: ${visible.value}")
+                    state.value = selectedName
+                    filteredFullName.clear()
+                    viewModel.filterItem(selectedName)
+                    hideKeyboard.invoke()
+
+//                    navController.navigate("details/$selectedCountry") {
+//                        // Pop up to the start destination of the graph to
+//                        // avoid building up a large stack of destinations
+//                        // on the back stack as users select items
+//                        popUpTo("main") {
+//                            saveState = true
+//                        }
+//                        // Avoid multiple copies of the same destination when
+//                        // reselecting the same item
+//                        launchSingleTop = true
+//                        // Restore state when reselecting a previously selected item
+//                        restoreState = true
+//                    }
+                }
+            )
+        }
+    }
+}
+
+
+@Composable
+fun UserListItem(countryText: String, onItemClick: (String) -> Unit) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = { onItemClick(countryText) })
+            .background(color = Color.LightGray)
+            .height(57.dp)
+            .fillMaxWidth()
+            .padding(PaddingValues(8.dp, 16.dp))
+    ) {
+        Text(text = countryText, fontSize = 12.sp, color = Color.Black)
+    }
+}
+
+@Composable
+fun SearchView(
+    state: MutableState<String>,
+    isLoading: Boolean = false,
+    visible: MutableState<Boolean>,
+    showAllData: () -> Unit
+) {
+    TextField(
+        value = state.value,
+        onValueChange = { value ->
+            state.value = value
+        },
+        modifier = Modifier
+            .widthIn(min = 70.dp, max = 180.dp)
+            .height(60.dp)
+            .border(border = BorderStroke(2.dp, Color.LightGray), shape = RoundedCornerShape(12))
+            .placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer()
+            ),
+        textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
+        trailingIcon = {
+            if (state.value != "") {
+                if (!visible.value)
+                    IconButton(
+                        onClick = {
+                            state.value = ""
+                            showAllData.invoke()
+                            // Remove text from TextField when you press the 'X' icon
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+                    }
+            }
+        },
+        singleLine = true,
+        shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.Black,
+            leadingIconColor = Color.Black,
+            trailingIconColor = Color.Black,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
 }
 
 @Preview(showBackground = true)
@@ -252,7 +468,7 @@ fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit = {}, checked:
 
 }
 
-@Preview(showBackground = true)
+
 @Composable
 fun TableScreen(
     viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
