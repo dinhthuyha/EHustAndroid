@@ -70,6 +70,7 @@ class DetailTaskViewModel @Inject constructor(
 
     fun getDetailTask() {
         if (isNewTask) return
+        uiState.readOnly.value = true
         viewModelScope.launch(Dispatchers.IO) {
             taskRepository.getDetailTask(idTask).collect {
                 when (val state = it) {

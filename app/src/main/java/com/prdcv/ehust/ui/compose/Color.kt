@@ -12,6 +12,6 @@ val TagDone = Color(0xFFF0E4D7)
 val TagInProgress = Color(0xFF44b476)
 val Button = Color(0xFFCD1627)
 val BGBottomBar = Color(0xFFF4F5F7)
-val VeryLighGray = Color(0xFFECECEC)
-
+val VeryLightGray = Color(0xFFECECEC)
+val LightCyan = Color(0xFFDAEEFF)
 val UNREAD = Color(0xFFECF3FF)

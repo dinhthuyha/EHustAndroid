@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
@@ -78,7 +79,8 @@ fun DetailTask(
                 isEditing = !uiState.readOnly.value,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { uiState.readOnly.value = false },
-                onSaveTask = viewModel::saveTask
+                onSaveTask = viewModel::saveTask,
+                onDiscardTask = viewModel::getDetailTask
             )
         }, bottomBar = {
             if (!viewModel.isNewTask) {
@@ -234,7 +236,7 @@ fun AttachmentRow(attachment: Attachment, onClick: () -> Unit) {
             )
             .clickable { onClick() }
             .background(
-                color = VeryLighGray,
+                color = VeryLightGray,
                 shape = RoundedCornerShape(3.dp)
             )
     ) {
@@ -256,7 +258,7 @@ fun RowTaskSetup(
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = "Task setup",
+            text = "Thiết lập",
             Modifier.padding(start = 15.dp, bottom = 12.dp),
             color = Black,
             fontWeight = FontWeight.Bold
@@ -276,7 +278,7 @@ fun RowTaskSetup(
                     RowElementSetupTask(
                         value = uiState.uiDateRange,
                         title = "Thời gian thực hiện",
-                        readOnly = mutableStateOf(true),
+                        readOnly = uiState.readOnly,
                         idIcon = R.drawable.ic_date,
                         modifier = Modifier
                             .heightIn(20.dp, 50.dp)
@@ -365,6 +367,7 @@ fun RowTaskSetup(
                     Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
+                            .editableHighlight(!uiState.readOnly.value)
                             .fillMaxSize(),
                     ) {
                         SpinnerStatusTask(
@@ -380,8 +383,6 @@ fun RowTaskSetup(
                             .noRippleClickable {}) {}
                     }
                 }
-
-                Spacer(modifier = Modifier.height(10.dp))
             }
 
         }
@@ -410,8 +411,10 @@ fun SpinnerStatusTask(
             onValueChange = {},
             label = { Text(label) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Purple500,
-                unfocusedBorderColor = LightGray
+                focusedBorderColor = Gray,
+                unfocusedBorderColor = LightGray,
+                focusedLabelColor = Gray,
+                focusedTrailingIconColor = Gray
             ),
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
@@ -457,6 +460,7 @@ fun RowElementSetupTask(
             onValueChange = { value.value = it },
             modifier = modifier
                 .width(95.dp)
+                .editableHighlight(!readOnly.value)
                 .then(modifier),
             colors =
             TextFieldDefaults.outlinedTextFieldColors(
@@ -515,7 +519,7 @@ fun RowTaskDescription(
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = "Description",
+            text = "Mô tả",
             Modifier.padding(start = 15.dp, bottom = 12.dp),
             fontWeight = FontWeight.Bold,
         )
@@ -530,6 +534,7 @@ fun RowTaskDescription(
                     value = taskTitle.value,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .editableHighlight(!readOnly.value)
                         .padding(10.dp)
                         .padding(start = 5.dp),
                     onValueChange = { taskTitle.value = it },
@@ -542,7 +547,10 @@ fun RowTaskDescription(
                 )
                 Divider(thickness = 0.5.dp)
                 OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .editableHighlight(!readOnly.value)
+                    ,
                     value = taskDescription.value,
                     onValueChange = {
                         taskDescription.value = it
@@ -616,21 +624,21 @@ fun ToolBar(
     isEditing: Boolean,
     onEditTask: () -> Unit,
     onCloseScreen: () -> Unit,
-    onSaveTask: () -> Unit
+    onSaveTask: () -> Unit,
+    onDiscardTask: () -> Unit
 ) {
-
     TopAppBar(
         title = {
             Text(text = title ?: "Detail task")
         },
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                if (isEditing) onDiscardTask() else onCloseScreen()
+            }) {
                 Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Menu Btn",
-                    modifier = Modifier.clickable {
-                        onCloseScreen.invoke()
-                    })
+                    imageVector = if (isEditing) Icons.Filled.Close else Icons.Filled.ArrowBack,
+                    contentDescription = "Menu Btn"
+                )
             }
         },
         backgroundColor = colorResource(id = R.color.text_color),
@@ -742,7 +750,8 @@ private fun ToolBarPreview() {
         isEditing = true,
         onEditTask = {},
         onCloseScreen = {},
-        onSaveTask = {}
+        onSaveTask = {},
+        onDiscardTask = {}
     )
 }
 
