@@ -29,6 +29,7 @@ import com.prdcv.ehust.viewmodel.AssignViewModel
 
 private sealed class Screen(val route: String, val label: String, @DrawableRes val icon: Int) {
     object Assignment : Screen("assignment", "Trang chủ", R.drawable.ic_baseline_home_24)
+    object Manager : Screen("manager", "Quản lí", R.drawable.ic_baseline_dataset)
     object Statistic : Screen("statistic", "Dashboard", R.drawable.ic_baseline_insert_chart_24)
 }
 
@@ -44,6 +45,7 @@ fun AdminMainScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
                 modifier = Modifier.padding(it)
             ) {
                 composable(Screen.Statistic.route) { DashboardScreen(viewModel) }
+                composable(Screen.Manager.route) { ManagementScreen(viewModel) }
                 composable(Screen.Assignment.route) { AssignScreen(viewModel, hideKeyboard) }
             }
         }
@@ -52,7 +54,7 @@ fun AdminMainScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
 
 @Composable
 fun AdminBottomNavigation(navController: NavController) {
-    val items = listOf(Screen.Assignment, Screen.Statistic)
+    val items = listOf(Screen.Assignment,Screen.Manager, Screen.Statistic)
     BottomNavigation(backgroundColor = Color.White) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination

@@ -78,6 +78,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
     implementation 'androidx.compose.runtime:runtime-livedata:1.2.0-rc02'
 
+
     // accompanist
     implementation "com.google.accompanist:accompanist-swiperefresh:0.24.11-rc"
     implementation "com.google.accompanist:accompanist-placeholder-material:0.24.11-rc"
