@@ -11,9 +11,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.DashBoard
+import com.prdcv.ehust.model.PairingStudentWithTeacher
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.User
@@ -23,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,11 +47,23 @@ data class AssignScreenState(
     var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>(),
     var predictionsUser: SnapshotStateList<String> = mutableStateListOf<String>(),
     val listSemester: SnapshotStateList<Int> = mutableStateListOf(),
-    val semesterStatus: MutableState<Int?> = mutableStateOf(0),
-    val listItemChecked: SnapshotStateList<String> = mutableStateListOf(),
-    val tableData: SnapshotStateList<String> = mutableStateListOf<String>().apply { addAll((1..35).mapIndexed { index, item ->
-        index to "Item $index"
-    }.map { it.second }) }
+    val semesterStatus: MutableState<Int> = mutableStateOf(0),
+    val listItemChecked: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf(),
+    val tableData: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf(
+        PairingStudentWithTeacher(
+            1,
+            1001,
+            20173086,
+            "DDo an",
+            20212,
+            "DDinh thuy ha",
+            "Le ba vui",
+            "",
+            1
+        )
+    ),
+
+    val refreshState: SwipeRefreshState = SwipeRefreshState(true),
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
@@ -64,10 +79,10 @@ data class AssignScreenState(
                 listSemester.addAll(_state.data)
             }
             is State.Loading -> {
-               // refreshState.isRefreshing = false
+                refreshState.isRefreshing = true
             }
             is State.Error -> {
-               // refreshState.isRefreshing = true
+                // refreshState.isRefreshing = true
             }
         }
     }
@@ -81,7 +96,21 @@ data class AssignScreenState(
         }
 
     }
+
+    fun getAllDataBySemester(state: State<List<PairingStudentWithTeacher>>) {
+        when (val _state = state) {
+            is State.Success -> {
+                tableData.clear()
+                tableData.addAll(_state.data)
+                refreshState.isRefreshing = false
+            }
+            else -> {}
+        }
+    }
+
+
 }
+
 
 @HiltViewModel
 class AssignViewModel @Inject constructor(
@@ -109,13 +138,28 @@ class AssignViewModel @Inject constructor(
         }
     }
 
-    fun getAllDataBySemester(semester: Int){
-        viewModelScope.launch {
-            subjectRepository.getAllDataBySemester(semester).collect{
 
+    private fun findMaxSemester() {
+        viewModelScope.launch {
+            userRepository.findMaxSemester().collect {
+                if (it is State.Success) {
+                    val semester = mutableStateOf(it.data?:0)
+                    uiState.copy(semesterStatus = semester)
+                }
             }
         }
     }
+
+    private fun getAllDataBySemester(semester: Int) {
+        viewModelScope.launch {
+            subjectRepository.getAllDataBySemester(semester).collect {
+                if (it is State.Success)
+                    delay(2000)
+                uiState.getAllDataBySemester(it)
+            }
+        }
+    }
+
     fun onSemesterSelected(semester: Int) {
         uiState.semesterStatus.value = semester
     }
@@ -177,7 +221,13 @@ class AssignViewModel @Inject constructor(
                     is State.Error -> snackbarHostState.showSnackbar("Error: ${state.exception}")
                     is State.Success -> {
                         snackbarHostState.showSnackbar("Success")
-                        uiState = AssignScreenState(subjects = uiState.subjects)
+                        uiState = uiState.copy(
+                            subjects = uiState.subjects,
+                            teachers = emptyList(),
+                            students = emptyList(),
+                            selectedSubject = null,
+                            teacherSelect = mutableStateOf(""),
+                            studentSelect = mutableStateOf("") )
                     }
                     else -> return@collect
                 }
@@ -237,11 +287,11 @@ class AssignViewModel @Inject constructor(
 
     }
 
-    fun onItemChecked(t: String) {
+    fun onItemChecked(t: PairingStudentWithTeacher) {
         uiState.listItemChecked.add(t)
     }
 
-    fun getAllSemester() {
+    private fun getAllSemester() {
         viewModelScope.launch {
             subjectRepository.getAllSemester().collect {
                 uiState.getAllSemester(it)
@@ -251,18 +301,35 @@ class AssignViewModel @Inject constructor(
         }
     }
 
-    fun fetchDataManagementScreen(semester: Int){
+    fun fetchDataManagementScreen() {
         viewModelScope.launch {
             async { getAllSemester() }
-            async { getAllDataBySemester(semester) }
+            async { getAllDataBySemester(uiState.semesterStatus.value) }
         }
     }
 
-    fun deleteItemChecked(listFilter: SnapshotStateList<String>) {
+    fun fetchDataAssignScreen() {
         viewModelScope.launch {
-            listFilter.removeAll(uiState.listItemChecked)
-            uiState.tableData.removeAll(uiState.listItemChecked)
+            async { getInformationDashBoard() }
+            async { getAllProjectCurrentSemester() }
+
         }
     }
 
+    fun deleteItemChecked() {
+        viewModelScope.launch {
+            deleteAssigns(uiState.listItemChecked)
+        }
+    }
+
+    fun deleteAssigns(list: List<PairingStudentWithTeacher>) {
+        viewModelScope.launch {
+            subjectRepository.deleteAssigns(list).collect {
+                if (it is State.Success) {
+                    getAllDataBySemester(uiState.semesterStatus.value ?: 0)
+                    snackbarHostState.showSnackbar("Xoá thành công")
+                }
+            }
+        }
+    }
 }

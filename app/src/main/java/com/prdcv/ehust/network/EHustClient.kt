@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Path
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(
@@ -166,5 +167,7 @@ class EHustClient @Inject constructor(
     suspend fun checkToken() = ehustService.checkToken()
 
     suspend fun getAllDataBySemester( semester: Int) = ehustService.getAllDataBySemester(semester)
+
+    suspend fun deleteAssigns(list: List<PairingStudentWithTeacher>) = ehustService.deleteAssigns(list)
 
 }

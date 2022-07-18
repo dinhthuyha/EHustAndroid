@@ -13,6 +13,8 @@ data class PairingStudentWithTeacher (
     val semester: Int,
     @SerializedName("name_student")
     val nameStudent: String,
+    @SerializedName("name_teacher")
+    val nameTeacher: String,
     @SerializedName("code_project")
     val codeProject: String,
     var numberOfStudentsGuiding: Int

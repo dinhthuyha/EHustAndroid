@@ -5,12 +5,14 @@ import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.model.*
 import okhttp3.ResponseBody
+import okhttp3.internal.http.hasBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -174,4 +176,7 @@ interface EHustService {
 
     @GET("all/pairing/{semester}")
     suspend fun getAllDataBySemester(@Path("semester") semester: Int): Response<List<PairingStudentWithTeacher>>
+
+    @HTTP(method = "DELETE", path = "delete/{assigns}", hasBody = true)
+    suspend fun deleteAssigns(@Body list: List<PairingStudentWithTeacher>): Response<ResponseBody>
 }

@@ -33,10 +33,6 @@ import com.prdcv.ehust.viewmodel.AssignViewModel
 @Composable
 fun AssignScreen(viewModel: AssignViewModel,navController: NavController,sharedPreferences: SharedPreferences, hideKeyboard: () -> Unit) {
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.getAllProjectCurrentSemester()
-        viewModel.getInformationDashBoard()
-    }
 
     val uiState = viewModel.uiState
 

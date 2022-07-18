@@ -6,17 +6,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -26,7 +30,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,20 +43,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.prdcv.ehust.R
+import com.prdcv.ehust.model.PairingStudentWithTeacher
+import com.prdcv.ehust.model.TaskData
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.projects.SpinnerSemester
+import com.prdcv.ehust.ui.task.CircularProgressWithPercent
 import com.prdcv.ehust.viewmodel.AssignViewModel
-import kotlinx.coroutines.delay
+import com.prdcv.ehust.viewmodel.TaskStatus
+import java.time.LocalDate
+import java.time.Period
 
 @Composable
 fun ManagementScreen(viewModel: AssignViewModel) {
     val uiState = viewModel.uiState
-    val dashboardInfo by uiState.informationDashBoard
-    uiState.semesterStatus.value = dashboardInfo.semester
+    uiState.semesterStatus.value = uiState.informationDashBoard.value.semester?:0
     LaunchedEffect(key1 = Unit) {
-        viewModel.fetchDataManagementScreen(dashboardInfo.semester?:0)
-
+        viewModel.fetchDataManagementScreen()
     }
     DefaultTheme() {
         Scaffold(topBar = {
@@ -67,21 +76,27 @@ fun ManagementScreen(viewModel: AssignViewModel) {
                 )
             }
         }) {
-            Column() {
+            Column {
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
+                    modifier = Modifier
+                        .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
+                        .placeholder(
+                            visible = uiState.refreshState.isRefreshing,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
                 ) {
                     Text(
                         text = "Học kì: ",
                         color = Color.Black,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     SpinnerSemester(
                         options = uiState.listSemester,
                         selectedOption = uiState.semesterStatus,
-                        onItemClick = viewModel::onSemesterSelected
+                        onItemClick = viewModel::onSemesterSelected,
+                        isLoading = uiState.refreshState.isRefreshing
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -96,10 +111,88 @@ fun ManagementScreen(viewModel: AssignViewModel) {
 //                        hideKeyboard = {}
 //                    )
 //                }
+                if (uiState.refreshState.isRefreshing) {
+                    (1..8).forEach {
+                        TableRowReplace(isLoading = true)
+                    }
 
-
-                TableScreen(viewModel = viewModel)
+                } else
+                    TableScreen(
+                        viewModel = viewModel
+                    )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TableRowReplace(
+    data: TaskData = TaskData(),
+    isLoading: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    fun showTimeRemain(): String {
+        if (data.status == TaskStatus.IN_PROGRESS) {
+            val today = LocalDate.now()
+            val dueDate = data.dueDate
+            val dateRemain = Period.between(today, dueDate).days
+            return "(in $dateRemain days)"
+        }
+
+        return ""
+    }
+    Card(
+        elevation = 4.dp,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier
+            .padding(5.dp)
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            CircularProgressWithPercent(progress = data.progress, isLoading = isLoading)
+            Text(
+                text = "${data.dueDate} ${showTimeRemain()}",
+                fontWeight = FontWeight.Light,
+                fontSize = 13.sp,
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer()
+                )
+            )
+            Spacer(modifier = Modifier.width(20.dp))
+            Text(
+                text = "${data.dueDate} ${showTimeRemain()}",
+                fontWeight = FontWeight.Light,
+                fontSize = 13.sp,
+                modifier = Modifier.placeholder(
+                    visible = isLoading,
+                    highlight = PlaceholderHighlight.shimmer()
+                )
+            )
+            Column(
+                modifier = Modifier
+                    .width(IntrinsicSize.Max)
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = data.title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp, top = 2.dp)
+                        .placeholder(
+                            visible = isLoading,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
+                )
+
+            }
+
         }
     }
 }
@@ -114,7 +207,6 @@ fun RowScope.TableCell(
     Row(
         modifier = Modifier
             .weight(weight)
-            .height(30.dp)
             .padding(start = 8.dp)
             .border(end = borders.end),
         verticalAlignment = Alignment.CenterVertically
@@ -129,7 +221,7 @@ fun RowScope.TableCell(
 }
 
 @Composable
-fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit, checked: Boolean =false) {
+fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit = {}, checked: Boolean = false) {
     val end = Border(0.5.dp, Color.Black)
     val borders = Borders(bottom = end, top = end, end = end)
     val checkedState = remember { mutableStateOf(checked) }
@@ -162,14 +254,17 @@ fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit, checked: Bool
 
 @Preview(showBackground = true)
 @Composable
-fun TableScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun TableScreen(
+    viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+) {
     val tableData = viewModel.uiState.tableData
     val numberPager =
         if (tableData.size % 10 == 0) tableData.size / 10 else (tableData.size / 10) + 1
     var number = mutableStateOf(1)
     // Each cell of a column must have the same weight.
     val column1Weight = .1f // 30%
-    val column2Weight = .3f // 70%
+    val column2Weight = .25f // 70%
+    val column3Weight = .4f // 70%
     // The LazyColumn will be our table. Notice the use of the weights below
     LazyColumn(
         Modifier
@@ -183,24 +278,34 @@ fun TableScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compos
                     .background(Color.LightGray)
                     .fillMaxWidth()
                     .height(30.dp)
+
             ) {
                 TableCell(text = "", weight = column1Weight)
                 TableCell(text = "Sinh viên", weight = column2Weight)
                 TableCell(text = "Giảng viên", weight = column2Weight)
-                TableCell(text = "Đồ án", weight = column2Weight)
+                TableCell(text = "Đồ án", weight = column3Weight)
 
             }
         }
         // Here are all the lines of your table.
         val count: MutableState<Int> = mutableStateOf(0)
+        val temps = mutableListOf<PairingStudentWithTeacher>()
         count.value =
-            if (number.value == numberPager) tableData.size - 10 * (number.value - 1) else 10
-        val temps = if (count.value == 10) {
-            tableData.slice(10 * (number.value - 1)..(10 * (number.value - 1) + count.value - 1))
-        } else {
-            tableData.slice(10 * (number.value - 1)..(10 * (number.value - 1) + count.value - 1))
+            if (number.value == numberPager) tableData.size - 8 * (number.value - 1) else 8
+        when (tableData.isNotEmpty()) {
+            true -> {
+                val items = if (count.value == 8 && tableData.size != 0) {
+                    tableData.slice(8 * (number.value - 1) until 8 * (number.value - 1) + count.value)
+                } else {
+                    tableData.slice(8 * (number.value - 1) until 8 * (number.value - 1) + count.value)
+                }
+                temps.addAll(items)
+            }
+            false -> {
+
+            }
         }
-        val listFilter: SnapshotStateList<String> = mutableStateListOf()
+        val listFilter: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf()
         listFilter.addAll(temps)
         items(listFilter) { t ->
             Row(
@@ -208,12 +313,13 @@ fun TableScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compos
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .border(0.5.dp, Color.Black)
-                    .height(40.dp)
+                    .heightIn(min = 40.dp, max = 100.dp)
+
             ) {
-                RowCheckBox(weight = column1Weight, onItemChecked = { viewModel.onItemChecked(t) },)
-                TableCell(text = t, weight = column2Weight)
-                TableCell(text = t, weight = column2Weight)
-                TableCell(text = t, weight = column2Weight)
+                RowCheckBox(weight = column1Weight, onItemChecked = { viewModel.onItemChecked(t) })
+                TableCell(text = t.nameStudent, weight = column2Weight)
+                TableCell(text = t.nameTeacher, weight = column2Weight)
+                TableCell(text = t.nameProject, weight = column3Weight)
             }
         }
         item {
@@ -222,11 +328,12 @@ fun TableScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compos
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 15.dp, top = 8.dp)
+
             ) {
                 Button(
                     onClick = {
                         Log.d("TAG", "click button xoa: ${viewModel.uiState.listItemChecked.size}")
-                        viewModel.deleteItemChecked(listFilter)
+                        viewModel.deleteItemChecked()
                         viewModel.uiState.listItemChecked.clear()
                     },
                     content = {
@@ -277,5 +384,22 @@ fun TableScreen(viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compos
             }
         }
     }
+}
+
+@Composable
+fun RowReplace(isLoading: Boolean = false) {
+
+    Text(
+        text = "dinh thuy ha", modifier = Modifier
+            .border(0.5.dp, Color.Black)
+            .heightIn(min = 40.dp, max = 100.dp)
+            .padding(start = 10.dp, end = 10.dp)
+            .placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer()
+            )
+            .fillMaxWidth()
+    )
+
 }
 

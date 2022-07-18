@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.admin
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,8 +21,10 @@ import com.prdcv.ehust.viewmodel.AssignViewModel
 @Composable
 fun DashboardScreen(viewModel: AssignViewModel) {
     val uiState = viewModel.uiState
-    val dashboardInfo by uiState.informationDashBoard
+    val TAG ="hadinh"
 
+    val dashboardInfo by uiState.informationDashBoard
+    Log.d(TAG, "DashboardScreen: ${dashboardInfo.semester}")
     Scaffold(topBar = {
         TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {
             Text(

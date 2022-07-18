@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,6 +40,9 @@ fun AdminMainScreen(viewModel: AssignViewModel, nav: NavController,
                     sharedPreferences: SharedPreferences,
                     hideKeyboard: () -> Unit) {
     val navController = rememberNavController()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchDataAssignScreen()
+    }
 
     DefaultTheme {
         Scaffold(bottomBar = { AdminBottomNavigation(navController) }) {

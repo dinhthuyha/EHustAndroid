@@ -13,7 +13,7 @@ data class ProjectsScreenState(
     val projects: SnapshotStateList<ClassStudent> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val listSemester: SnapshotStateList<Int> = mutableStateListOf(),
-    val semesterStatus: MutableState<Int?> = mutableStateOf(0),
+    val semesterStatus: MutableState<Int> = mutableStateOf(0),
     val listProject: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf()
 ) {
     fun addProjectListFromState(state: State<List<ClassStudent>>) {

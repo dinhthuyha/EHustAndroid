@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.prdcv.ehust.model.ClassStudent
 import com.prdcv.ehust.model.PairingStudentWithTeacher
@@ -185,8 +188,9 @@ fun ProjectStudent(
 @Composable
 fun SpinnerSemester(
     options: List<Int>,
-    selectedOption: MutableState<Int?>,
-    onItemClick: (Int) -> Unit
+    selectedOption: MutableState<Int>,
+    onItemClick: (Int) -> Unit,
+    isLoading: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -208,7 +212,11 @@ fun SpinnerSemester(
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded
                 )
-            }
+            },
+            modifier = Modifier.placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer()
+            )
         )
 
         ExposedDropdownMenu(
