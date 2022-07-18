@@ -168,4 +168,7 @@ interface EHustService {
 
     @GET("information/dashboard")
     suspend fun getInformationDashBoard(): Response<DashBoard>
+
+    @GET("checkpoint")
+    suspend fun checkToken(): Response<Any>
 }

@@ -130,4 +130,12 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun checkToken(): Flow<State<Any>> {
+        return object : NetworkBoundRepository<Any>() {
+            override suspend fun fetchFromRemote(): Response<Any> {
+                return eHustClient.checkToken()
+            }
+        }.asFlow()
+    }
 }
