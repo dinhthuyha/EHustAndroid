@@ -307,6 +307,10 @@ class AssignViewModel @Inject constructor(
         uiState.listItemChecked.add(t)
     }
 
+    fun onItemUnChecked(item: PairingStudentWithTeacher) {
+        uiState.listItemChecked.remove(item)
+    }
+
     private fun getAllSemester() {
         viewModelScope.launch {
             subjectRepository.getAllSemester().collect {
@@ -338,11 +342,11 @@ class AssignViewModel @Inject constructor(
         }
     }
 
-    fun deleteAssigns(list: List<PairingStudentWithTeacher>) {
+    private fun deleteAssigns(list: List<PairingStudentWithTeacher>) {
         viewModelScope.launch {
             subjectRepository.deleteAssigns(list).collect {
                 if (it is State.Success) {
-                    getAllDataBySemester(uiState.semesterStatus.value ?: 0)
+                    getAllDataBySemester(uiState.semesterStatus.value)
                     snackbarHostState.showSnackbar("Xoá thành công")
                 }
             }

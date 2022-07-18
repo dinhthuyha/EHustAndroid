@@ -437,7 +437,7 @@ fun RowScope.TableCell(
 }
 
 @Composable
-fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit = {}, checked: Boolean = false) {
+fun RowScope.RowCheckBox(weight: Float, onItemChecked: (Boolean) -> Unit = {}, checked: Boolean = false) {
     val end = Border(0.5.dp, Color.Black)
     val borders = Borders(bottom = end, top = end, end = end)
     val checkedState = remember { mutableStateOf(checked) }
@@ -458,9 +458,7 @@ fun RowScope.RowCheckBox(weight: Float, onItemChecked: () -> Unit = {}, checked:
             // change to our checkbox.
             onCheckedChange = {
                 checkedState.value = it
-                if (it) {
-                    onItemChecked.invoke()
-                }
+                onItemChecked(it)
             },
         )
     }
@@ -532,7 +530,7 @@ fun TableScreen(
                     .heightIn(min = 40.dp, max = 100.dp)
 
             ) {
-                RowCheckBox(weight = column1Weight, onItemChecked = { viewModel.onItemChecked(t) })
+                RowCheckBox(weight = column1Weight, onItemChecked = { if (it) viewModel.onItemChecked(t) else viewModel.onItemUnChecked(t) })
                 TableCell(text = t.nameStudent, weight = column2Weight)
                 TableCell(text = t.nameTeacher, weight = column2Weight)
                 TableCell(text = t.nameProject, weight = column3Weight)
