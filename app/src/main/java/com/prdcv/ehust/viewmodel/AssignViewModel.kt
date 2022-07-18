@@ -22,6 +22,8 @@ import com.prdcv.ehust.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,33 +37,9 @@ data class AssignScreenState(
     var teacherSelect: MutableState<String> = mutableStateOf(""),
     var studentSelect: MutableState<String> = mutableStateOf(""),
     var userSelect: MutableState<String> = mutableStateOf(""),
-    var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
-        "hà nội",
-        "thành phố hồ chí minh",
-        "nha trang",
-        " vũng tàu",
-        "thanh ho",
-        "ha thanh",
-        "ha giang"
-    ),
-    var listFullNameStudent: SnapshotStateList<String> = mutableStateListOf<String>(
-        "hà nội",
-        "thành phố hồ chí minh",
-        "nha trang",
-        " vũng tàu",
-        "thanh ho",
-        "ha thanh",
-        "ha giang"
-    ),
-    var listFullNameUser: SnapshotStateList<String> = mutableStateListOf<String>(
-        "hà nội",
-        "thành phố hồ chí minh",
-        "nha trang",
-        " vũng tàu",
-        "thanh ho",
-        "ha thanh",
-        "ha giang"
-    ),
+    var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf(),
+    var listFullNameStudent: SnapshotStateList<String> = mutableStateListOf(),
+    var listFullNameUser: SnapshotStateList<String> = mutableStateListOf(),
     var predictionsTeacher: SnapshotStateList<String> = mutableStateListOf<String>(),
     var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>(),
     var predictionsUser: SnapshotStateList<String> = mutableStateListOf<String>(),
@@ -131,6 +109,13 @@ class AssignViewModel @Inject constructor(
         }
     }
 
+    fun getAllDataBySemester(semester: Int){
+        viewModelScope.launch {
+            subjectRepository.getAllDataBySemester(semester).collect{
+
+            }
+        }
+    }
     fun onSemesterSelected(semester: Int) {
         uiState.semesterStatus.value = semester
     }
@@ -263,6 +248,13 @@ class AssignViewModel @Inject constructor(
 
 
             }
+        }
+    }
+
+    fun fetchDataManagementScreen(semester: Int){
+        viewModelScope.launch {
+            async { getAllSemester() }
+            async { getAllDataBySemester(semester) }
         }
     }
 

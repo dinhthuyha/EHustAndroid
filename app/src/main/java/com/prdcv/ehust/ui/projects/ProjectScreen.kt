@@ -28,21 +28,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.ProjectTeacher
+import com.prdcv.ehust.model.PairingStudentWithTeacher
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.viewmodel.ProjectViewModel
-import com.prdcv.ehust.viewmodel.ShareViewModel
 import com.prdcv.ehust.viewmodel.TopicsViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -233,7 +231,7 @@ fun SpinnerSemester(
 
 @Composable
 fun ProjectTeacher(
-    data: ProjectTeacher ,
+    data: PairingStudentWithTeacher,
     navController: NavController? = null,
     teacher: User? = User(id = 123, roleId = Role.ROLE_TEACHER)
 ) {

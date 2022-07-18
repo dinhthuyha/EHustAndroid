@@ -152,7 +152,7 @@ interface EHustService {
     suspend fun getAllSemester(): Response< List<Int>>
 
     @GET("project/teacher/{id_teacher}/{semester}")
-   suspend fun getAllProjectByIdTeacherAndSemester(@Path("id_teacher") idTeacher: Int, @Path("semester") semester: Int): Response<List<ProjectTeacher>>
+   suspend fun getAllProjectByIdTeacherAndSemester(@Path("id_teacher") idTeacher: Int, @Path("semester") semester: Int): Response<List<PairingStudentWithTeacher>>
 
     @GET("max/semester")
     suspend fun findMaxSemester(): Response<Int>
@@ -171,4 +171,7 @@ interface EHustService {
 
     @GET("checkpoint")
     suspend fun checkToken(): Response<Any>
+
+    @GET("all/pairing/{semester}")
+    suspend fun getAllDataBySemester(@Path("semester") semester: Int): Response<List<PairingStudentWithTeacher>>
 }

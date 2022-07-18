@@ -165,4 +165,6 @@ class EHustClient @Inject constructor(
 
     suspend fun checkToken() = ehustService.checkToken()
 
+    suspend fun getAllDataBySemester( semester: Int) = ehustService.getAllDataBySemester(semester)
+
 }

@@ -1,6 +1,5 @@
 package com.prdcv.ehust.viewmodel.state
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,14 +7,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.ProjectTeacher
+import com.prdcv.ehust.model.PairingStudentWithTeacher
 
 data class ProjectsScreenState(
     val projects: SnapshotStateList<ClassStudent> = mutableStateListOf(),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val listSemester: SnapshotStateList<Int> = mutableStateListOf(),
     val semesterStatus: MutableState<Int?> = mutableStateOf(0),
-    val listProject: SnapshotStateList<ProjectTeacher> = mutableStateListOf()
+    val listProject: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf()
 ) {
     fun addProjectListFromState(state: State<List<ClassStudent>>) {
         when (val _state = state) {
@@ -30,10 +29,10 @@ data class ProjectsScreenState(
         }
     }
 
-    fun getAllProjectByIdTeacherAndSemester(state: State<List<ProjectTeacher>>) {
+    fun getAllProjectByIdTeacherAndSemester(state: State<List<PairingStudentWithTeacher>>) {
         when (val _state = state) {
             is State.Success -> {
-                val list = mutableListOf<ProjectTeacher>()
+                val list = mutableListOf<PairingStudentWithTeacher>()
                 list.addAll(_state.data)
                 list.forEach { t ->
                    val numberStudentInProject = list.filter { it.codeProject ==t.codeProject }.size

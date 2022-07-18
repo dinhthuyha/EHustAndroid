@@ -2,7 +2,7 @@ package com.prdcv.ehust.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ProjectTeacher (
+data class PairingStudentWithTeacher (
     val id: Int,
     @SerializedName("id_teacher")
     val idTeacher: Int,

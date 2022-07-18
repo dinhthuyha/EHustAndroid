@@ -24,6 +24,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -50,7 +51,10 @@ fun ManagementScreen(viewModel: AssignViewModel) {
     val uiState = viewModel.uiState
     val dashboardInfo by uiState.informationDashBoard
     uiState.semesterStatus.value = dashboardInfo.semester
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchDataManagementScreen(dashboardInfo.semester?:0)
 
+    }
     DefaultTheme() {
         Scaffold(topBar = {
             TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {

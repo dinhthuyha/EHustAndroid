@@ -2,7 +2,7 @@ package com.prdcv.ehust.repo
 
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.di.NetworkBoundRepository
-import com.prdcv.ehust.model.ProjectTeacher
+import com.prdcv.ehust.model.PairingStudentWithTeacher
 import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.network.EHustClient
 
@@ -30,10 +30,18 @@ class SubjectRepository @Inject constructor(
         }.asFlow()
     }
 
-    fun getAllProjectByIdTeacherAndSemester(idTeacher: Int, semester: Int): Flow<State< List<ProjectTeacher>>>{
-        return object : NetworkBoundRepository< List<ProjectTeacher>>(){
-            override suspend fun fetchFromRemote(): Response<List<ProjectTeacher>> {
+    fun getAllProjectByIdTeacherAndSemester(idTeacher: Int, semester: Int): Flow<State< List<PairingStudentWithTeacher>>>{
+        return object : NetworkBoundRepository< List<PairingStudentWithTeacher>>(){
+            override suspend fun fetchFromRemote(): Response<List<PairingStudentWithTeacher>> {
                 return eHustClient.getAllProjectByIdTeacherAndSemester(idTeacher, semester)
+            }
+        }.asFlow()
+    }
+
+    fun getAllDataBySemester( semester: Int): Flow<State< List<PairingStudentWithTeacher>>>{
+        return object : NetworkBoundRepository< List<PairingStudentWithTeacher>>(){
+            override suspend fun fetchFromRemote(): Response<List<PairingStudentWithTeacher>> {
+                return eHustClient.getAllDataBySemester(semester)
             }
         }.asFlow()
     }
