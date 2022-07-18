@@ -110,6 +110,8 @@ class ShareViewModel @Inject constructor(
             imageBg,
             imageAva
         )
+
+        sharedPreferences.edit().putString(SharedPreferencesKey.USER_ID, id.toString()).commit()
     }
 
     private fun convertRole(roleId: String): Role {

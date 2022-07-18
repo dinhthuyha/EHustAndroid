@@ -188,7 +188,7 @@ fun TaskRow(
             val today = LocalDate.now()
             val dueDate = data.dueDate
             val dateRemain = Period.between(today, dueDate).days
-            return "(in $dateRemain days)"
+            return "(còn $dateRemain ngày)"
         }
 
         return ""

@@ -62,6 +62,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
 
 
         binding.apply {
+            contentId.setText(sharedPreferences.getString(SharedPreferencesKey.USER_ID, ""))
             login.setOnClickListener {
                 if (contentId.text?.isNotEmpty() == true && contentPassword.text?.isNotEmpty() == true) {
                     hideKeyboard()
