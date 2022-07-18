@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.admin
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +8,12 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.extension.hideKeyboard
 import com.prdcv.ehust.viewmodel.AssignViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 /**
@@ -20,7 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class HomeAdminFragment : BaseFragment() {
-
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
     private val viewModel: AssignViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,7 +33,7 @@ class HomeAdminFragment : BaseFragment() {
     ): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent { AdminMainScreen(viewModel, hideKeyboard = { hideKeyboard() }) }
+            setContent { AdminMainScreen(viewModel,findNavController(), sharedPreferences, hideKeyboard = { hideKeyboard() }) }
         }
     }
 

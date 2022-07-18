@@ -194,7 +194,8 @@ fun SpinnerSemester(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.width(140.dp).height(60.dp)
     ) {
         OutlinedTextField(
             readOnly = true,

@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.admin
 
+import android.content.SharedPreferences
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -34,7 +35,9 @@ private sealed class Screen(val route: String, val label: String, @DrawableRes v
 }
 
 @Composable
-fun AdminMainScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
+fun AdminMainScreen(viewModel: AssignViewModel, nav: NavController,
+                    sharedPreferences: SharedPreferences,
+                    hideKeyboard: () -> Unit) {
     val navController = rememberNavController()
 
     DefaultTheme {
@@ -46,7 +49,7 @@ fun AdminMainScreen(viewModel: AssignViewModel, hideKeyboard: () -> Unit) {
             ) {
                 composable(Screen.Statistic.route) { DashboardScreen(viewModel) }
                 composable(Screen.Manager.route) { ManagementScreen(viewModel) }
-                composable(Screen.Assignment.route) { AssignScreen(viewModel, hideKeyboard) }
+                composable(Screen.Assignment.route) { AssignScreen(viewModel,nav, sharedPreferences, hideKeyboard) }
             }
         }
     }

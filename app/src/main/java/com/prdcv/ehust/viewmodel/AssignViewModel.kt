@@ -34,6 +34,7 @@ data class AssignScreenState(
     val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
     var teacherSelect: MutableState<String> = mutableStateOf(""),
     var studentSelect: MutableState<String> = mutableStateOf(""),
+    var userSelect: MutableState<String> = mutableStateOf(""),
     var listFullNameTeacher: SnapshotStateList<String> = mutableStateListOf<String>(
         "hà nội",
         "thành phố hồ chí minh",
@@ -52,14 +53,45 @@ data class AssignScreenState(
         "ha thanh",
         "ha giang"
     ),
+    var listFullNameUser: SnapshotStateList<String> = mutableStateListOf<String>(
+        "hà nội",
+        "thành phố hồ chí minh",
+        "nha trang",
+        " vũng tàu",
+        "thanh ho",
+        "ha thanh",
+        "ha giang"
+    ),
     var predictionsTeacher: SnapshotStateList<String> = mutableStateListOf<String>(),
-    var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>()
+    var predictionsStudent: SnapshotStateList<String> = mutableStateListOf<String>(),
+    var predictionsUser: SnapshotStateList<String> = mutableStateListOf<String>(),
+    val listSemester: SnapshotStateList<Int> = mutableStateListOf(),
+    val semesterStatus: MutableState<Int?> = mutableStateOf(0),
+    val listItemChecked: SnapshotStateList<String> = mutableStateListOf(),
+    val tableData: SnapshotStateList<String> = mutableStateListOf<String>().apply { addAll((1..35).mapIndexed { index, item ->
+        index to "Item $index"
+    }.map { it.second }) }
 ) {
     fun isAllSelected(): Boolean {
         return selectedSubject
-            ?.let { studentSelect.value !="" }
-            ?.let { teacherSelect.value !=""}
+            ?.let { studentSelect.value != "" }
+            ?.let { teacherSelect.value != "" }
             ?.let { true } ?: false
+    }
+
+    fun getAllSemester(state: State<List<Int>>) {
+        when (val _state = state) {
+            is State.Success -> {
+                listSemester.clear()
+                listSemester.addAll(_state.data)
+            }
+            is State.Loading -> {
+               // refreshState.isRefreshing = false
+            }
+            is State.Error -> {
+               // refreshState.isRefreshing = true
+            }
+        }
     }
 
     fun getInformationDashBoard(state: State<DashBoard>) {
@@ -99,6 +131,10 @@ class AssignViewModel @Inject constructor(
         }
     }
 
+    fun onSemesterSelected(semester: Int) {
+        uiState.semesterStatus.value = semester
+    }
+
     private fun getAllUserInClass(nameCourse: String, role: Role) {
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.getAllUserInProject(nameCourse, role).collect {
@@ -106,12 +142,12 @@ class AssignViewModel @Inject constructor(
                     is State.Success -> {
                         uiState = when (role) {
                             Role.ROLE_TEACHER -> {
-                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                val list: SnapshotStateList<String> = mutableStateListOf()
                                 list.addAll(state.data.map { it.fullName!! })
                                 uiState.copy(teachers = state.data, listFullNameTeacher = list)
                             }
                             Role.ROLE_STUDENT -> {
-                                val list : SnapshotStateList<String> = mutableStateListOf()
+                                val list: SnapshotStateList<String> = mutableStateListOf()
                                 list.addAll(state.data.map { it.fullName!! })
                                 uiState.copy(students = state.data, listFullNameStudent = list)
                             }
@@ -213,7 +249,28 @@ class AssignViewModel @Inject constructor(
 
     fun getChangePredictionsTeacher(value: String) {
         uiState.predictionsTeacher.clear()
-        uiState.predictionsTeacher.addAll(uiState.listFullNameTeacher.filter { it.startsWith(value) })
 
     }
+
+    fun onItemChecked(t: String) {
+        uiState.listItemChecked.add(t)
+    }
+
+    fun getAllSemester() {
+        viewModelScope.launch {
+            subjectRepository.getAllSemester().collect {
+                uiState.getAllSemester(it)
+
+
+            }
+        }
+    }
+
+    fun deleteItemChecked(listFilter: SnapshotStateList<String>) {
+        viewModelScope.launch {
+            listFilter.removeAll(uiState.listItemChecked)
+            uiState.tableData.removeAll(uiState.listItemChecked)
+        }
+    }
+
 }
