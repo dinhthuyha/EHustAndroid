@@ -104,7 +104,12 @@ data class AssignScreenState(
                 tableData.addAll(_state.data)
                 refreshState.isRefreshing = false
             }
-            else -> {}
+            is State.Loading -> {
+                refreshState.isRefreshing = true
+            }
+            else -> {
+                refreshState.isRefreshing = true
+            }
         }
     }
 
@@ -162,6 +167,7 @@ class AssignViewModel @Inject constructor(
 
     fun onSemesterSelected(semester: Int) {
         uiState.semesterStatus.value = semester
+        getAllDataBySemester(uiState.semesterStatus.value)
     }
 
     private fun getAllUserInClass(nameCourse: String, role: Role) {
