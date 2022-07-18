@@ -1,13 +1,18 @@
 package com.prdcv.ehust.ui.login
 
 import android.content.SharedPreferences
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentLoginBinding
+import com.prdcv.ehust.extension.findActivity
 import com.prdcv.ehust.extension.hideKeyboard
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.utils.SharedPreferencesKey
@@ -20,6 +25,7 @@ import javax.inject.Inject
 class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+
     override fun getViewBinding(inflater: LayoutInflater) = FragmentLoginBinding.inflate(inflater)
     override fun init() {
         shareViewModel.token.observe(viewLifecycleOwner) {
@@ -54,6 +60,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
             }
         }
 
+
         binding.apply {
             login.setOnClickListener {
                 if (contentId.text?.isNotEmpty() == true && contentPassword.text?.isNotEmpty() == true) {
@@ -77,6 +84,7 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
         }
     }
 
+
     private fun setInputEnabled(enabled: Boolean) {
         binding.apply {
             contentId.isEnabled = enabled
@@ -84,6 +92,20 @@ class LoginFragment : BaseFragmentWithBinding<FragmentLoginBinding>() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(
+            true // default to enabled
+        ) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,  // LifecycleOwner
+            callback
+        )
+    }
     private fun checkTokenSaved(): Boolean {
         val token = sharedPreferences.getString(SharedPreferencesKey.TOKEN, "")
         return !token.isNullOrBlank()
