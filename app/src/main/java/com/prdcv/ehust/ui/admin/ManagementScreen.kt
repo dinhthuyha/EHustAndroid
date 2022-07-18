@@ -5,52 +5,21 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -80,16 +49,16 @@ fun ManagementScreen(
 ) {
     val uiState = viewModel.uiState
     uiState.semesterStatus.value = uiState.informationDashBoard.value.semester ?: 0
-    var textStateFilterUser = remember { mutableStateOf("") }
-    var textStateFilterProject = remember { mutableStateOf("") }
+    val textStateFilterUser = remember { mutableStateOf("") }
+    val textStateFilterProject = remember { mutableStateOf("") }
     LaunchedEffect(key1 = Unit) {
         viewModel.fetchDataManagementScreen()
     }
     DefaultTheme() {
-        Scaffold(topBar = {
+        Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState), topBar = {
             TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {
                 Text(
-                    text = "Quản lí",
+                    text = "Quản lý",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 21.sp,
@@ -109,7 +78,7 @@ fun ManagementScreen(
                         )
                 ) {
                     Text(
-                        text = "Học kì: ",
+                        text = "Học kỳ: ",
                         color = Color.Black,
                         fontWeight = FontWeight.Bold,
                     )
@@ -121,7 +90,7 @@ fun ManagementScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth().padding(12.dp)) {
                     Text(
                         text = "Lọc sinh viên/ giảng viên theo tên:",
                         modifier = Modifier.placeholder(
@@ -181,41 +150,22 @@ fun RowFilter(
     data: SnapshotStateList<String>
 ) {
 
-    var visibleSuggest: MutableState<Boolean> = remember {
+    val visibleSuggest: MutableState<Boolean> = remember {
         mutableStateOf(true)
     }
-    Column {
-        SearchView(textState, isLoading = isLoading, visibleSuggest) {
-            viewModel.fetchDataManagementScreen()
-        }
-        Log.d("TAG", "RowFilter: ${textState.value}, ${visibleSuggest.value}")
-        if (textState.value != "")
-            if (visibleSuggest.value)
-                FullNameList(
-                    state = textState,
-                    viewModel = viewModel,
-                    visible = visibleSuggest,
-                    data = data,
-                    hideKeyboard = hideKeyboard
-                )
+    SearchView(textState, isLoading = isLoading, visibleSuggest) {
+        viewModel.fetchDataManagementScreen()
     }
-}
-
-fun getListOfCountries(): ArrayList<String> {
-    val isoCountryCodes = Locale.getISOCountries()
-    val countryListWithEmojis = ArrayList<String>()
-    for (countryCode in isoCountryCodes) {
-        val locale = Locale("", countryCode)
-        val countryName = locale.displayCountry
-        val flagOffset = 0x1F1E6
-        val asciiOffset = 0x41
-        val firstChar = Character.codePointAt(countryCode, 0) - asciiOffset + flagOffset
-        val secondChar = Character.codePointAt(countryCode, 1) - asciiOffset + flagOffset
-        val flag =
-            (String(Character.toChars(firstChar)) + String(Character.toChars(secondChar)))
-        countryListWithEmojis.add("$countryName $flag")
-    }
-    return countryListWithEmojis
+    Log.d("TAG", "RowFilter: ${textState.value}, ${visibleSuggest.value}")
+    if (textState.value != "")
+        if (visibleSuggest.value)
+            FullNameList(
+                state = textState,
+                viewModel = viewModel,
+                visible = visibleSuggest,
+                data = data,
+                hideKeyboard = hideKeyboard
+            )
 }
 
 @Composable
@@ -295,50 +245,41 @@ fun SearchView(
     visible: MutableState<Boolean>,
     showAllData: () -> Unit
 ) {
-    TextField(
-        value = state.value,
-        onValueChange = { value ->
-            state.value = value
-        },
-        modifier = Modifier
-            .widthIn(min = 70.dp, max = 180.dp)
-            .height(60.dp)
-            .border(border = BorderStroke(2.dp, Color.LightGray), shape = RoundedCornerShape(12))
-            .placeholder(
-                visible = isLoading,
-                highlight = PlaceholderHighlight.shimmer()
-            ),
-        textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
-        trailingIcon = {
-            if (state.value != "") {
-                if (!visible.value)
-                    IconButton(
-                        onClick = {
-                            state.value = ""
-                            showAllData.invoke()
-                            // Remove text from TextField when you press the 'X' icon
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(24.dp)
-                        )
-                    }
-            }
-        },
-        singleLine = true,
-        shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black,
-            leadingIconColor = Color.Black,
-            trailingIconColor = Color.Black,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
+    Row(
+        modifier = Modifier.border(
+            border = BorderStroke(1.dp, Color.LightGray),
+            shape = RoundedCornerShape(12),
+        ).placeholder(
+            visible = isLoading,
+            highlight = PlaceholderHighlight.shimmer()
+        ), verticalAlignment = Alignment.CenterVertically
+    ) {
+        BasicTextField(
+            value = state.value,
+            onValueChange = { value ->
+                state.value = value
+            },
+            modifier = Modifier
+                .widthIn(min = 70.dp, max = 180.dp)
+                .height(IntrinsicSize.Min)
+                .fillMaxWidth()
+                .padding(5.dp),
+            singleLine = true
         )
-    )
+        if (state.value != "") {
+            if (!visible.value)
+
+                Icon(
+                    Icons.Rounded.Close,
+                    contentDescription = "",
+                    modifier = Modifier.clickable {
+                        state.value = ""
+                        showAllData.invoke()
+                    }
+                )
+
+        }
+    }
 }
 
 @Preview(showBackground = true)
