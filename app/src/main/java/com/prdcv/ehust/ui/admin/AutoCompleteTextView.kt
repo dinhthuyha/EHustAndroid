@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.admin
 
+import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -123,7 +124,7 @@ fun RowComplete(viewModel: AssignViewModel, title: String,
             }
 
             is UserUIAction.OnAddressAutoCompleteClear -> {
-
+                hideKeyboard.invoke()
                 if (title == "Danh sách sinh viên"){
                     viewModel.onAutoCompleteClearStudent(action.userSelect)
                 }else{
@@ -158,7 +159,14 @@ fun RowAutoCompleteTextView(
         },
         predictions = predictionsUser,
         onClearClick = {
-            predictionsUser.addAll(listUser)
+            if (selected.value == ""){
+                predictionsUser.clear()
+            }else{
+                predictionsUser.clear()
+                predictionsUser.addAll(listUser)
+            }
+
+
             addressUIAction(UserUIAction.OnAddressAutoCompleteClear(selected))
 
             //Todo: call the view model method to clear the predictions
