@@ -351,9 +351,9 @@ class AssignViewModel @Inject constructor(
     }
 
     fun deleteItemChecked() {
-        viewModelScope.launch {
-            deleteAssigns(uiState.listItemChecked)
-        }
+        if (uiState.listItemChecked.isEmpty()) return
+        deleteAssigns(uiState.listItemChecked)
+        uiState.listItemChecked.clear()
     }
 
     private fun deleteAssigns(list: List<PairingStudentWithTeacher>) {

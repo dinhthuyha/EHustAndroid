@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
@@ -473,19 +472,16 @@ fun TableScreen(
     viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
     val tableData = viewModel.uiState.tableData
-    val numberPager =
-        if (tableData.size % 10 == 0) tableData.size / 10 else (tableData.size / 10) + 1
-    var number = mutableStateOf(1)
+    val totalPage = if (tableData.size % 10 == 0) tableData.size / 10 else (tableData.size / 10) + 1
+    var currentPage by mutableStateOf(1)
+
     // Each cell of a column must have the same weight.
     val column1Weight = .1f // 30%
     val column2Weight = .25f // 70%
     val column3Weight = .4f // 70%
-    // The LazyColumn will be our table. Notice the use of the weights below
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
 
-    ) {
+    // The LazyColumn will be our table. Notice the use of the weights below
+    LazyColumn(Modifier.fillMaxSize()) {
         // Here is the header
         item {
             Row(
@@ -502,23 +498,18 @@ fun TableScreen(
 
             }
         }
-        // Here are all the lines of your table.
-        val count: MutableState<Int> = mutableStateOf(0)
-        val temps = mutableListOf<PairingStudentWithTeacher>()
-        count.value =
-            if (number.value == numberPager) tableData.size - 8 * (number.value - 1) else 8
-        when (tableData.isNotEmpty()) {
-            true -> {
-                val items = if (count.value == 8 && tableData.size != 0) {
-                    tableData.slice(8 * (number.value - 1) until 8 * (number.value - 1) + count.value)
-                } else {
-                    tableData.slice(8 * (number.value - 1) until 8 * (number.value - 1) + count.value)
-                }
-                temps.addAll(items)
-            }
-            false -> {
 
+        // Here are all the lines of your table.
+        val temps = mutableListOf<PairingStudentWithTeacher>()
+        val count: Int = if (currentPage == totalPage) tableData.size - 8 * (currentPage - 1) else 8
+        if (tableData.isNotEmpty()) {
+            val items = if (count == 8 && tableData.size != 0) {
+                tableData.slice(8 * (currentPage - 1) until 8 * (currentPage - 1) + count)
+            } else {
+                tableData.slice(8 * (currentPage - 1) until 8 * (currentPage - 1) + count)
             }
+            temps.addAll(items)
+
         }
         val listFilter: SnapshotStateList<PairingStudentWithTeacher> = mutableStateListOf()
         listFilter.addAll(temps)
@@ -553,7 +544,6 @@ fun TableScreen(
                     onClick = {
                         Log.d("TAG", "click button xoa: ${viewModel.uiState.listItemChecked.size}")
                         viewModel.deleteItemChecked()
-                        viewModel.uiState.listItemChecked.clear()
                     },
                     content = {
                         Text(
@@ -570,7 +560,7 @@ fun TableScreen(
             }
 
         }
-        item() {
+        item {
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
@@ -584,11 +574,11 @@ fun TableScreen(
                     tint = Color.Black,
                     modifier = Modifier.clickable {
                         listFilter.clear()
-                        if (number.value > 1) number.value--
+                        if (currentPage > 1) currentPage--
                     }
                 )
                 Text(
-                    text = "Số page ${number.value}/${numberPager}",
+                    text = "Trang ${currentPage}/${totalPage}",
                     modifier = Modifier.padding(end = 10.dp, start = 10.dp)
                 )
                 Icon(
@@ -596,29 +586,14 @@ fun TableScreen(
                     contentDescription = "",
                     tint = Color.Black,
                     modifier = Modifier.clickable {
-                        listFilter.clear()
-                        if (number.value < tableData.size) number.value++
+                        if (currentPage < totalPage) {
+                            listFilter.clear()
+                            currentPage++
+                        }
                     }
                 )
             }
         }
     }
-}
-
-@Composable
-fun RowReplace(isLoading: Boolean = false) {
-
-    Text(
-        text = "dinh thuy ha", modifier = Modifier
-            .border(0.5.dp, Color.Black)
-            .heightIn(min = 40.dp, max = 100.dp)
-            .padding(start = 10.dp, end = 10.dp)
-            .placeholder(
-                visible = isLoading,
-                highlight = PlaceholderHighlight.shimmer()
-            )
-            .fillMaxWidth()
-    )
-
 }
 
