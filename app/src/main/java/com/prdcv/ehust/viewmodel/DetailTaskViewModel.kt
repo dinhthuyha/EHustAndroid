@@ -3,6 +3,7 @@ package com.prdcv.ehust.viewmodel
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.calendar.model.CalendarState
@@ -254,6 +255,7 @@ class DetailTaskViewModel @Inject constructor(
                             }
 
                             outputStream!!.flush()
+                            Toast.makeText(context,"Lưu file thành công", Toast.LENGTH_SHORT).show()
                             Log.d("TAG", "downloadFile: done")
 
                         } catch (e: Exception) {
