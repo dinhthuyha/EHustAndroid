@@ -50,15 +50,19 @@ class AttachmentViewerFragment : BaseFragment() {
                     },
                 ) {
                     // TODO: WebView only support pdf, word, excel, powerpoint file
-                    WebViewContainer(url = url)
+                    if (args.fileName?.isImageFile() == true) {
+                        WebViewContainer(url = url, true)
+                    } else {
+                        WebViewContainer(url = "https://docs.google.com/viewer?embedded=true&url=$url")
+                    }
                 }
             }
         }
     }
 
     @Composable
-    private fun WebViewContainer(url: String) {
-        val state = rememberWebViewState(url = "https://docs.google.com/viewer?embedded=true&url=$url")
+    private fun WebViewContainer(url: String, zoomEnabled: Boolean = false) {
+        val state = rememberWebViewState(url = url)
 
         Column {
             val loadingState = state.loadingState
@@ -75,6 +79,8 @@ class AttachmentViewerFragment : BaseFragment() {
                 modifier = Modifier.weight(1f),
                 onCreated = { webView ->
                     webView.settings.javaScriptEnabled = true
+                    webView.settings.setSupportZoom(zoomEnabled)
+                    webView.settings.builtInZoomControls = zoomEnabled
                 }, client = object : AccompanistWebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         if (view?.title.isNullOrBlank()) view?.reload()
@@ -82,4 +88,9 @@ class AttachmentViewerFragment : BaseFragment() {
                 })
         }
     }
+
+    private val imageExtensionRegex =
+        "^.*\\.(gif|jpe?g|tiff?|png|webp|bmp)\$".toRegex(RegexOption.IGNORE_CASE)
+
+    private fun String.isImageFile(): Boolean = this.matches(imageExtensionRegex)
 }
