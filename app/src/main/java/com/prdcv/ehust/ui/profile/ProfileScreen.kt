@@ -1,6 +1,5 @@
 package com.prdcv.ehust.ui.profile
 
-import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -8,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,14 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.model.Role
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
-import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.utils.SharedPreferencesKey
 
 @Composable
 fun ProfileInfoRow(label: String, content: String) {
@@ -141,59 +135,61 @@ fun ProfileName(fullName: String?) {
 }
 
 @Composable
-fun ProfileCard(user: User?,navigateFromAdmin: Boolean = false,  navController: NavController, sharedPreferences: SharedPreferences) {
+fun ProfileCard(
+    user: User?,
+    navigateFromAdmin: Boolean = false,
+    enableLogout: Boolean,
+    doLogout: () -> Unit = {}
+) {
     DefaultTheme {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
             item { ToolBar(stringResource(id = R.string.profile_title)) }
-            item { Row {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painter = painterResource(id = R.drawable.background_hust), null)
-                    Surface(
-                        elevation = 5.dp,
-                        shape = MaterialTheme.shapes.small,
-                        modifier = Modifier
-                            .padding(all = 15.dp)
-                            .offset(y = (-60).dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(all = 15.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+            item {
+                Row {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(painter = painterResource(id = R.drawable.background_hust), null)
+                        Surface(
+                            elevation = 5.dp,
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .padding(all = 15.dp)
+                                .offset(y = (-60).dp)
                         ) {
-                            ProfilePicture()
-                            ProfileName(user?.fullName)
-                            when (user?.roleId) {
-                                Role.ROLE_TEACHER -> ProfileInfoTeacher(user)
-                                Role.ROLE_STUDENT -> ProfileInfoStudent(user)
-                                else -> {}
+                            Column(
+                                modifier = Modifier.padding(all = 15.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                ProfilePicture()
+                                ProfileName(user?.fullName)
+                                when (user?.roleId) {
+                                    Role.ROLE_TEACHER -> ProfileInfoTeacher(user)
+                                    Role.ROLE_STUDENT -> ProfileInfoStudent(user)
+                                    else -> {}
+                                }
                             }
                         }
-                    }
-                    Button(
-                        onClick = {
-                            try {
-                                navController?.navigate(ProfileFragmentDirections.actionProfileFragmentToLoginFragment())
-                            } catch (e: Exception) {
-                                navController?.navigate(MainFragmentDirections.actionMainFragmentToLoginFragment())
-                            }
-                            sharedPreferences.edit().remove(SharedPreferencesKey.TOKEN).commit()
-                        },
-                        modifier = Modifier
-                            .width(200.dp)
-                            .offset(y = (-30).dp)
-                            .alpha(if(navigateFromAdmin) 0f else 1f),
-                        content = {
-                            Text(
-                                text = "Logout",
-                                style = MaterialTheme.typography.button,
-                                color = Color.White
+                        if (enableLogout) {
+                            Button(
+                                onClick = doLogout,
+                                modifier = Modifier
+                                    .width(200.dp)
+                                    .offset(y = (-30).dp)
+                                    .alpha(if (navigateFromAdmin) 0f else 1f),
+                                content = {
+                                    Text(
+                                        text = "Logout",
+                                        style = MaterialTheme.typography.button,
+                                        color = Color.White
+                                    )
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = com.prdcv.ehust.ui.compose.Button
+                                )
                             )
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = com.prdcv.ehust.ui.compose.Button
-                        )
-                    )
+                        }
+                    }
                 }
-            } }
+            }
         }
     }
 }
