@@ -8,9 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -139,7 +141,7 @@ fun ProfileName(fullName: String?) {
 }
 
 @Composable
-fun ProfileCard(user: User?, navController: NavController, sharedPreferences: SharedPreferences) {
+fun ProfileCard(user: User?,navigateFromAdmin: Boolean = false,  navController: NavController, sharedPreferences: SharedPreferences) {
     DefaultTheme {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
             item { ToolBar(stringResource(id = R.string.profile_title)) }
@@ -177,7 +179,8 @@ fun ProfileCard(user: User?, navController: NavController, sharedPreferences: Sh
                         },
                         modifier = Modifier
                             .width(200.dp)
-                            .offset(y = (-30).dp),
+                            .offset(y = (-30).dp)
+                            .alpha(if(navigateFromAdmin) 0f else 1f),
                         content = {
                             Text(
                                 text = "Logout",

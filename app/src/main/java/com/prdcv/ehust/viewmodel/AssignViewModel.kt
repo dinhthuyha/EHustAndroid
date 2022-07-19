@@ -1,6 +1,5 @@
 package com.prdcv.ehust.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.MutableState
@@ -11,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 
 import com.prdcv.ehust.common.State
@@ -21,13 +21,13 @@ import com.prdcv.ehust.model.Subject
 import com.prdcv.ehust.model.User
 import com.prdcv.ehust.repo.SubjectRepository
 import com.prdcv.ehust.repo.UserRepository
+import com.prdcv.ehust.ui.admin.HomeAdminFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class AssignScreenState(
@@ -67,7 +67,10 @@ data class AssignScreenState(
     ),
 
     val refreshState: SwipeRefreshState = SwipeRefreshState(true),
+    val user: MutableState<User> = mutableStateOf(User(id = 0, roleId = Role.ROLE_TEACHER)),
+    val stateGetUser: MutableState<Boolean> = mutableStateOf(false)
 ) {
+
     fun isAllSelected(): Boolean {
         return selectedSubject
             ?.let { studentSelect.value != "" }
@@ -106,7 +109,7 @@ data class AssignScreenState(
                 tableData.clear()
                 tableData.addAll(_state.data)
                 listFullNameUser.clear()
-                val listFullNameTeacher  = tableData.map { it.nameTeacher }.distinct()
+                val listFullNameTeacher = tableData.map { it.nameTeacher }.distinct()
                 val listFullNameStudent = tableData.map { it.nameStudent }.distinct()
                 val listNameProject = tableData.map { it.nameProject }.distinct()
                 listFullNameUser.addAll(listFullNameStudent)
@@ -120,6 +123,16 @@ data class AssignScreenState(
             else -> {
                 refreshState.isRefreshing = true
             }
+        }
+    }
+
+    fun findByFullNameUser(value: State<User>, navController: NavController?) {
+        when (val _state = value) {
+            is State.Success -> {
+                user.value = _state.data
+                navController?.navigate(HomeAdminFragmentDirections.actionHomeAdminFragmentToProfileFragment(_state.data, true))
+            }
+            else -> {}
         }
     }
 
@@ -158,7 +171,7 @@ class AssignViewModel @Inject constructor(
         viewModelScope.launch {
             userRepository.findMaxSemester().collect {
                 if (it is State.Success) {
-                    val semester = mutableStateOf(it.data?:0)
+                    val semester = mutableStateOf(it.data ?: 0)
                     uiState.copy(semesterStatus = semester)
                 }
             }
@@ -243,7 +256,8 @@ class AssignViewModel @Inject constructor(
                             students = emptyList(),
                             selectedSubject = null,
                             teacherSelect = mutableStateOf(""),
-                            studentSelect = mutableStateOf("") )
+                            studentSelect = mutableStateOf("")
+                        )
                     }
                     else -> return@collect
                 }
@@ -354,8 +368,27 @@ class AssignViewModel @Inject constructor(
     }
 
     fun filterItem(selectedName: String) {
-        val list = uiState.tableData.filter { it.nameStudent == selectedName || it.nameTeacher == selectedName || it.nameProject == selectedName}
+        val list =
+            uiState.tableData.filter { it.nameStudent == selectedName || it.nameTeacher == selectedName || it.nameProject == selectedName }
         uiState.tableData.clear()
         uiState.tableData.addAll(list)
+    }
+
+    fun getProfileByUser(value: String, navController: NavController?) {
+        viewModelScope.launch {
+            withContext(Dispatchers.Main) {
+                 findByFullNameUser(value, navController)
+            }
+
+        }
+    }
+
+    private fun findByFullNameUser(value: String,navController: NavController?){
+        viewModelScope.launch {
+            userRepository.searchAllUserByFullName(value).collect {
+                uiState.findByFullNameUser(it, navController)
+            }
+        }
+        
     }
 }

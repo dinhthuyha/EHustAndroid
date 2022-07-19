@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
@@ -41,11 +42,12 @@ import java.time.LocalDate
 import java.time.Period
 import java.util.*
 
+@Preview(showBackground = true)
 @Composable
 fun ManagementScreen(
     viewModel: AssignViewModel = hiltViewModel(),
     navController: NavController? = null,
-    hideKeyboard: () -> Unit
+    hideKeyboard: () -> Unit = {}
 ) {
     val uiState = viewModel.uiState
     uiState.semesterStatus.value = uiState.informationDashBoard.value.semester ?: 0
@@ -55,17 +57,19 @@ fun ManagementScreen(
         viewModel.fetchDataManagementScreen()
     }
     DefaultTheme() {
-        Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState), topBar = {
-            TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {
-                Text(
-                    text = "Quản lý",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 21.sp,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
-        }) {
+        Scaffold(
+            scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState),
+            topBar = {
+                TopAppBar(backgroundColor = colorResource(id = R.color.text_color)) {
+                    Text(
+                        text = "Quản lý",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 21.sp,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+            }) {
             Column {
 
                 Row(
@@ -90,7 +94,11 @@ fun ManagementScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+                Column(
+                    horizontalAlignment = Alignment.End, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
                     Text(
                         text = "Lọc sinh viên/ giảng viên theo tên:",
                         modifier = Modifier.placeholder(
@@ -99,13 +107,59 @@ fun ManagementScreen(
                         )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    RowFilter(
-                        isLoading = uiState.refreshState.isRefreshing,
-                        viewModel = viewModel,
-                        textState = textStateFilterUser,
-                        data = viewModel.uiState.listFullNameUser,
-                        hideKeyboard = hideKeyboard
-                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            horizontalAlignment = Alignment.End,
+                            modifier = Modifier.weight(0.45f)
+                        ) {
+                            if (textStateFilterUser.value != "")
+                                Button(
+                                    onClick = {
+                                        viewModel.getProfileByUser(
+                                            textStateFilterUser.value,
+                                            navController
+                                        )
+
+
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.LightGray
+                                    ),
+                                    content = {
+                                        Text(
+                                            text = "Thông tin chi tiết",
+                                            fontSize = 11.sp,
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W300
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .height(32.dp)
+                                        .widthIn(50.dp, 150.dp)
+                                        .placeholder(
+                                            visible = uiState.refreshState.isRefreshing,
+                                            highlight = PlaceholderHighlight.shimmer()
+                                        )
+                                )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.5f), horizontalAlignment = Alignment.End
+                        ) {
+                            RowFilter(
+                                isLoading = uiState.refreshState.isRefreshing,
+                                viewModel = viewModel,
+                                textState = textStateFilterUser,
+                                data = viewModel.uiState.listFullNameUser,
+                                hideKeyboard = hideKeyboard
+                            )
+                        }
+
+                    }
+
                     Spacer(modifier = Modifier.height(12.dp))
 
 
@@ -246,13 +300,15 @@ fun SearchView(
     showAllData: () -> Unit
 ) {
     Row(
-        modifier = Modifier.border(
-            border = BorderStroke(1.dp, Color.LightGray),
-            shape = RoundedCornerShape(12),
-        ).placeholder(
-            visible = isLoading,
-            highlight = PlaceholderHighlight.shimmer()
-        ), verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .border(
+                border = BorderStroke(1.dp, Color.LightGray),
+                shape = RoundedCornerShape(12),
+            )
+            .placeholder(
+                visible = isLoading,
+                highlight = PlaceholderHighlight.shimmer()
+            ), verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField(
             value = state.value,
@@ -378,7 +434,11 @@ fun RowScope.TableCell(
 }
 
 @Composable
-fun RowScope.RowCheckBox(weight: Float, onItemChecked: (Boolean) -> Unit = {}, checked: Boolean = false) {
+fun RowScope.RowCheckBox(
+    weight: Float,
+    onItemChecked: (Boolean) -> Unit = {},
+    checked: Boolean = false
+) {
     val end = Border(0.5.dp, Color.Black)
     val borders = Borders(bottom = end, top = end, end = end)
     val checkedState = remember { mutableStateOf(checked) }
@@ -471,7 +531,11 @@ fun TableScreen(
                     .heightIn(min = 40.dp, max = 100.dp)
 
             ) {
-                RowCheckBox(weight = column1Weight, onItemChecked = { if (it) viewModel.onItemChecked(t) else viewModel.onItemUnChecked(t) })
+                RowCheckBox(
+                    weight = column1Weight,
+                    onItemChecked = {
+                        if (it) viewModel.onItemChecked(t) else viewModel.onItemUnChecked(t)
+                    })
                 TableCell(text = t.nameStudent, weight = column2Weight)
                 TableCell(text = t.nameTeacher, weight = column2Weight)
                 TableCell(text = t.nameProject, weight = column3Weight)

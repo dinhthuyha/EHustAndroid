@@ -179,4 +179,7 @@ interface EHustService {
 
     @HTTP(method = "DELETE", path = "delete/{assigns}", hasBody = true)
     suspend fun deleteAssigns(@Body list: List<PairingStudentWithTeacher>): Response<ResponseBody>
+
+    @GET("find/all/user/{full_name}")
+    suspend fun searchAllUserByFullName(@Path("full_name") value: String): Response<User>
 }

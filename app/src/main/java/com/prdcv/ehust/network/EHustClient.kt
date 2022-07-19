@@ -169,5 +169,6 @@ class EHustClient @Inject constructor(
     suspend fun getAllDataBySemester( semester: Int) = ehustService.getAllDataBySemester(semester)
 
     suspend fun deleteAssigns(list: List<PairingStudentWithTeacher>) = ehustService.deleteAssigns(list)
+    suspend fun searchAllUserByFullName(value: String): Response<User> = ehustService.searchAllUserByFullName(value)
 
 }

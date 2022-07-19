@@ -17,6 +17,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment() {
     private var user: User? = null
+    private var navigateFromAdmin : Boolean = false
     var args: ProfileFragmentArgs? = null
     private val TAG = "ProfileFragment"
     @Inject
@@ -39,7 +40,7 @@ class ProfileFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                ProfileCard(user = user,findNavController(), sharedPreferences)
+                ProfileCard(user = user,navigateFromAdmin,findNavController(), sharedPreferences)
             }
         }
     }
@@ -49,6 +50,7 @@ class ProfileFragment : BaseFragment() {
             user = shareViewModel.user
             val args: ProfileFragmentArgs by navArgs()
             user = args.user
+            navigateFromAdmin = args.navigateFromAdmin
         } catch (e: Exception) {
             e.printStackTrace()
         }

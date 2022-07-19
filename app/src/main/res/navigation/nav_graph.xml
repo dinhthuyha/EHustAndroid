@@ -94,6 +94,9 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <argument
+            android:name="navigateFromAdmin"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/studentsFragment"
@@ -121,7 +124,11 @@
     <fragment
         android:id="@+id/homeAdminFragment"
         android:name="com.prdcv.ehust.ui.admin.HomeAdminFragment"
-        android:label="HomeAdminFragment" />
+        android:label="HomeAdminFragment" >
+        <action
+            android:id="@+id/action_homeAdminFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/detailTaskFragment"
         android:name="com.prdcv.ehust.ui.task.detail.DetailTaskFragment"

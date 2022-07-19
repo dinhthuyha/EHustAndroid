@@ -37,7 +37,8 @@ class StudentsFragment : BaseFragmentWithBinding<FragmentStudentsBinding>() {
     private fun navigateToProfile(newsItem: User) {
         findNavController().navigate(
             StudentsFragmentDirections.actionStudentsFragmentToProfileFragment(
-                newsItem
+                newsItem,
+                false
             )
         )
 

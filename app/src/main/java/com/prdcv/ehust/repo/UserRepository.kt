@@ -138,4 +138,12 @@ class UserRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun searchAllUserByFullName(value: String): Flow<State<User>> {
+        return object : NetworkBoundRepository<User>() {
+            override suspend fun fetchFromRemote(): Response<User> {
+                return eHustClient.searchAllUserByFullName(value)
+            }
+        }.asFlow()
+    }
 }

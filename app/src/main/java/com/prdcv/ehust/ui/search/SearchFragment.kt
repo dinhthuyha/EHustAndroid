@@ -158,7 +158,8 @@ class SearchFragment : BaseFragmentWithBinding<SeachFragmentBinding>() {
             else -> {
                 findNavController().navigate(
                     MainFragmentDirections.actionMainFragmentToProfileFragment(
-                        itemSearch as User
+                        itemSearch as User,
+                        false
                     )
                 )
             }
