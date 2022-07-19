@@ -1,23 +1,33 @@
 package com.prdcv.ehust.ui.task.detail
 
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.LoadingState
@@ -25,9 +35,13 @@ import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragment
+import com.prdcv.ehust.viewmodel.DetailTaskViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AttachmentViewerFragment : BaseFragment() {
     private val args: AttachmentViewerFragmentArgs by navArgs()
+    private val viewModel: DetailTaskViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,10 +56,23 @@ class AttachmentViewerFragment : BaseFragment() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text(text = args.fileName ?: "") },
+                            title = { Text(text = args.fileName ?: "", fontSize = 15.sp) },
                             backgroundColor = colorResource(id = R.color.text_color),
                             contentColor = Color.White,
-                            elevation = 2.dp
+                            elevation = 2.dp,
+                            actions = {
+                                IconButton(onClick = { /* doSomething() */ }) {
+                                    Icon(
+                                        painterResource(id = R.drawable.ic_download ),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clickable {
+                                                viewModel.downloadFile(url, requireContext(), args.fileName?:"")
+                                            }
+
+                                    )
+                                }
+                            }
                         )
                     },
                 ) {

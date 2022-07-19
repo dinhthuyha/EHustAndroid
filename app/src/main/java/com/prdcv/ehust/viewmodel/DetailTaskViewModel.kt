@@ -1,5 +1,7 @@
 package com.prdcv.ehust.viewmodel
 
+import android.content.Context
+import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hadt.ehust.model.TypeNotification
@@ -22,11 +24,15 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+
 
 @HiltViewModel
 class DetailTaskViewModel @Inject constructor(
@@ -197,5 +203,77 @@ class DetailTaskViewModel @Inject constructor(
         // TODO: xử lý các trường hợp lỗi
         taskRepository.uploadAttachment(attachmentInfo.copy(filename = filePath)).filterIsInstance<State.Success<Any>>().last()
         taskRepository.addAttachment(commentId, Attachment(attachmentInfo.filename, filePath)).filterIsInstance<State.Success<Any>>().last()
+    }
+
+    fun downloadFile(url: String, context: Context, fileName: String){
+        viewModelScope.launch {
+            taskRepository.downloadFile(url).collect{
+                Log.d("TAG", "downloadFile: ")
+                if (it is State.Success){
+                    try {
+                        var pdfFileName: File? = null
+                        var dirPath: String? = null
+                        dirPath =
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                                .toString()
+                        val dirFile = File(dirPath)
+                        if (!dirFile.exists()) {
+                            dirFile.mkdirs()
+                        }
+                        val file = "${dirPath}/${fileName}"
+                        pdfFileName = File(file)
+                        if (pdfFileName?.exists() == true) {
+                            pdfFileName?.delete()
+                        }
+
+                        val body = it.data
+                        // todo change the file location/name according to your needs
+
+                        Log.e("retrofitBetaFile", pdfFileName.path)
+                        var inputStream: InputStream? = null
+                        var outputStream: OutputStream? = null
+
+                        try {
+                            val fileReader = ByteArray(4096)
+
+                            val fileSize = body?.contentLength()
+                            var fileSizeDownloaded: Long = 0
+
+                            inputStream = body?.byteStream()
+                            outputStream = FileOutputStream(pdfFileName)
+
+                            while (true) {
+                                val read = inputStream!!.read(fileReader)
+                                //Nó được sử dụng để trả về một ký tự trong mẫu ASCII. Nó trả về -1 vào cuối tập tin.
+                                if (read == -1) {
+                                    break
+                                }
+                                outputStream!!.write(fileReader, 0, read)
+                                fileSizeDownloaded += read.toLong()
+                                Log.d("writeResponseBodyToDisk", "file download: $fileSizeDownloaded of $fileSize")
+                            }
+
+                            outputStream!!.flush()
+                            Log.d("TAG", "downloadFile: done")
+
+                        } catch (e: Exception) {
+                            Log.d("TAG", "error:${e.message} ")
+                        } finally {
+                            if (inputStream != null) {
+                                inputStream!!.close()
+                            }
+
+                            if (outputStream != null) {
+                                outputStream!!.close()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.d("TAG", "error:${e.message} ")
+                    }
+
+                }
+
+            }
+        }
     }
 }

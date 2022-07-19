@@ -171,4 +171,6 @@ class EHustClient @Inject constructor(
     suspend fun deleteAssigns(list: List<PairingStudentWithTeacher>) = ehustService.deleteAssigns(list)
     suspend fun searchAllUserByFullName(value: String): Response<User> = ehustService.searchAllUserByFullName(value)
 
+    suspend fun downloadFile(url: String) = ehustService.downloadFile(url)
+
 }

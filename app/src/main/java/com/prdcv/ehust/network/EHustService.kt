@@ -16,6 +16,7 @@ import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface EHustService {
     @FormUrlEncoded
@@ -182,4 +183,7 @@ interface EHustService {
 
     @GET("find/all/user/{full_name}")
     suspend fun searchAllUserByFullName(@Path("full_name") value: String): Response<User>
+
+    @GET
+    suspend fun downloadFile(@Url url: String):Response<ResponseBody>
 }

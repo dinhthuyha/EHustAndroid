@@ -101,4 +101,11 @@ class TaskRepository @Inject constructor(
         }.asFlow()
     }
 
+    fun downloadFile(url: String): Flow<State<ResponseBody>>{
+        return object : NetworkBoundRepository<ResponseBody>(){
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.downloadFile(url)
+            }
+        }.asFlow()
+    }
 }
