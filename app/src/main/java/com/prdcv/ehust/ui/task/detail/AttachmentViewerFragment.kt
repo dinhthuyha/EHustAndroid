@@ -1,6 +1,5 @@
 package com.prdcv.ehust.ui.task.detail
 
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +8,9 @@ import android.webkit.WebView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -108,6 +99,8 @@ class AttachmentViewerFragment : BaseFragment() {
                     webView.settings.javaScriptEnabled = true
                     webView.settings.setSupportZoom(zoomEnabled)
                     webView.settings.builtInZoomControls = zoomEnabled
+                    webView.settings.useWideViewPort = true
+                    webView.setInitialScale(1)
                 }, client = object : AccompanistWebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         if (view?.title.isNullOrBlank()) view?.reload()
