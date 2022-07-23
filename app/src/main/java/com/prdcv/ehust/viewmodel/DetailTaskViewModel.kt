@@ -150,8 +150,8 @@ class DetailTaskViewModel @Inject constructor(
         datePost = datePost,
         type = TypeNotification.TYPE_PROJECT,
         status = StatusNotification.STATUS_UNREAD,
-        nameUserPost = user?.fullName?:"",
-        idUserPost = user?.id?:0,
+        nameUserUpdate = user?.fullName?:"",
+        idUserUpdate = user?.id?:0,
         idTask = taskDetail.id)
         viewModelScope.launch {
             taskRepository.updateNotificationNewTask(notification).collect{

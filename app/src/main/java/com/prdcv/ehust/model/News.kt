@@ -14,10 +14,10 @@ data class News(
     val datePost: String,
     val type: TypeNotification,
     val status: StatusNotification,
-    @SerializedName("name_user_post")
-    val nameUserPost: String,
-    @SerializedName("id_user_post")
-    val idUserPost: Int,
+    @SerializedName("name_user_update")
+    val nameUserUpdate: String,
+    @SerializedName("id_user_update")
+    val idUserUpdate: Int,
     @SerializedName("id_task")
     val idTask: Int? = null
 ) : Parcelable
