@@ -19,6 +19,8 @@ data class ClassStudent(
     @SerializedName("study_form")
     val studyForm: String? = null,
 
+    @SerializedName("subject_class")
+    val subject: Subject? = null
     ) : ItemSearch, Parcelable {
     override fun toString(): String {
         return if (semester == 0) {

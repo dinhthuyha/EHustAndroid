@@ -71,11 +71,10 @@ fun DetailTask(
     val numberCommentShow: MutableState<Int> = mutableStateOf(4)
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
     DefaultTheme {
         Scaffold(topBar = {
             ToolBar(
-                title = "Chi tiết công việc",
+                title = if (viewModel.isNewTask) "Tạo công việc" else "Chi tiết công việc",
                 isEditing = !uiState.readOnly.value,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { uiState.readOnly.value = false },

@@ -64,7 +64,7 @@ fun ProjectScreen(
     }
 
     DefaultTheme {
-        Scaffold(topBar = { ToolBar("Projects ") }) {
+        Scaffold(topBar = { ToolBar("Danh sách đồ án ") }) {
             Log.d("TAG", "ProjectScreen: ${viewModel.semester}")
             SwipeRefresh(
                 state = uiState.refreshState,
