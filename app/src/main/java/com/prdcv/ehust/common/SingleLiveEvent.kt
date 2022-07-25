@@ -31,7 +31,6 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
         super.observe(owner) { t ->
             if (mPending.compareAndSet(true, false)) {
                 observer.onChanged(t)
-                postValue(null)
             }
         }
     }
