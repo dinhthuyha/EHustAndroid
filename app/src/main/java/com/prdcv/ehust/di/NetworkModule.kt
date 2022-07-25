@@ -61,7 +61,7 @@ object NetworkModule {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://104.215.150.77/api/")
+            .baseUrl("https://ehust-vip-pr01.southeastasia.cloudapp.azure.com/api/")
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder()
@@ -115,7 +115,7 @@ object NetworkModule {
     @Provides
     fun minioClient(): MinioClient {
         return MinioClient.builder()
-            .endpoint("http://104.215.150.77:9000")
+            .endpoint("https://ehust-vip-pr01.southeastasia.cloudapp.azure.com")
             .credentials("iylnllsY1LIML1Kc", "NbjEzIcII2jjwCDju73D89urAdAGVrQx")
             .build()
     }

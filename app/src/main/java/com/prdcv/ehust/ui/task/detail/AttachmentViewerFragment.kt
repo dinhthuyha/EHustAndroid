@@ -38,7 +38,7 @@ class AttachmentViewerFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val url = "http://104.215.150.77:9000/attachment/${args.attachmentId}"
+        val url = "https://ehust-vip-pr01.southeastasia.cloudapp.azure.com/attachment/${args.attachmentId}"
 
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
