@@ -23,14 +23,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.hadt.ehust.model.TopicStatus
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.Topic
+import com.prdcv.ehust.data.model.Role
+import com.prdcv.ehust.data.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.dashedBorder
 import com.prdcv.ehust.ui.profile.ToolBar
-import com.prdcv.ehust.viewmodel.TopicsViewModel
-import java.net.IDN
+import com.prdcv.ehust.ui.TopicsViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

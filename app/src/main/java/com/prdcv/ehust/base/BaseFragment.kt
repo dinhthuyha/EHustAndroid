@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.prdcv.ehust.viewmodel.ShareViewModel
+import com.prdcv.ehust.ui.ShareViewModel
 
 abstract class BaseFragment: Fragment(){
     protected val shareViewModel by activityViewModels<ShareViewModel>()

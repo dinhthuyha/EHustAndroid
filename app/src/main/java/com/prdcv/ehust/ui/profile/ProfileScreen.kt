@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prdcv.ehust.R
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.data.model.Role
+import com.prdcv.ehust.data.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 
 @Composable

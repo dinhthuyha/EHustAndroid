@@ -3,7 +3,7 @@ package com.prdcv.ehust.ui.search
 import androidx.databinding.ViewDataBinding
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
 import com.prdcv.ehust.databinding.ItemSearchClassBinding
-import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.data.model.ClassStudent
 
 
 class SearchClassViewHolder(

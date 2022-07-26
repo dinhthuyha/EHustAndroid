@@ -2,7 +2,6 @@ package com.prdcv.ehust.ui.login
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -12,9 +11,8 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentLoginBinding
-import com.prdcv.ehust.extension.findActivity
-import com.prdcv.ehust.extension.hideKeyboard
-import com.prdcv.ehust.model.Role
+import com.prdcv.ehust.utils.extension.hideKeyboard
+import com.prdcv.ehust.data.model.Role
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.royrodriguez.transitionbutton.TransitionButton
 import dagger.hilt.android.AndroidEntryPoint

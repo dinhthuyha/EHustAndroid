@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.model.Topic
+import com.prdcv.ehust.data.model.Topic
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

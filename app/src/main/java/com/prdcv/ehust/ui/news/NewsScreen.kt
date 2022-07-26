@@ -34,12 +34,12 @@ import androidx.navigation.navArgument
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.prdcv.ehust.model.StatusNotification
+import com.prdcv.ehust.data.model.StatusNotification
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
 import com.prdcv.ehust.common.State
-import com.prdcv.ehust.model.News
-import com.prdcv.ehust.viewmodel.ShareViewModel
+import com.prdcv.ehust.data.model.News
+import com.prdcv.ehust.ui.ShareViewModel
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Shapes
 import com.prdcv.ehust.ui.compose.UNREAD

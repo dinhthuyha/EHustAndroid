@@ -39,16 +39,16 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
-import com.prdcv.ehust.model.Meeting
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.data.model.Meeting
+import com.prdcv.ehust.data.model.Role
+import com.prdcv.ehust.data.model.ScheduleEvent
 import com.prdcv.ehust.ui.compose.Button
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.ui.task.TaskRow
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
-import com.prdcv.ehust.viewmodel.ShareViewModel
-import com.prdcv.ehust.viewmodel.state.HomeScreenState
+import com.prdcv.ehust.ui.ShareViewModel
+import com.prdcv.ehust.ui.HomeScreenState
 import java.time.LocalTime
 
 

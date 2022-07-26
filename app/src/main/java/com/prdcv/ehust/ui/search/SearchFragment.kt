@@ -11,12 +11,11 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.SeachFragmentBinding
-import com.prdcv.ehust.extension.hideKeyboard
-import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.Role
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.utils.extension.hideKeyboard
+import com.prdcv.ehust.data.model.ClassStudent
+import com.prdcv.ehust.data.model.Role
+import com.prdcv.ehust.data.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 

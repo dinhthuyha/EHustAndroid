@@ -11,8 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.viewmodel.ProjectViewModel
-import com.prdcv.ehust.viewmodel.TopicsViewModel
+import com.prdcv.ehust.ui.TopicsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 

@@ -7,7 +7,7 @@
 
         <variable
             name="flight"
-            type="com.prdcv.ehust.model.SChedule" />
+            type="com.prdcv.ehust.data.model.SChedule" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

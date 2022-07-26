@@ -9,9 +9,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.model.Topic
-import com.prdcv.ehust.ui.task.NewTaskFragmentArgs
-import com.prdcv.ehust.viewmodel.TopicsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

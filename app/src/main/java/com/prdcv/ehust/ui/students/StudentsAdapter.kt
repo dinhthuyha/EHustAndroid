@@ -6,7 +6,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.recyclerview.BaseDiffUtilItemCallback
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.data.model.User
 
 class StudentsAdapter(
     private val clickListener: (User) -> Unit

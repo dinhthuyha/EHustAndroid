@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.data.model.User
 import com.prdcv.ehust.ui.main.MainFragmentDirections
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import dagger.hilt.android.AndroidEntryPoint

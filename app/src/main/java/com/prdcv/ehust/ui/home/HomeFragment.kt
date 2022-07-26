@@ -17,9 +17,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
 import com.akexorcist.snaptimepicker.SnapTimePickerDialog
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.extension.toLocalDate
-import com.prdcv.ehust.extension.toLocalTime
-import com.prdcv.ehust.model.Meeting
+import com.prdcv.ehust.utils.extension.toLocalDate
+import com.prdcv.ehust.utils.extension.toLocalTime
+import com.prdcv.ehust.data.model.Meeting
 import com.prdcv.ehust.ui.home.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate

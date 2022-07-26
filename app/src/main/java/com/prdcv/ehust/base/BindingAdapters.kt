@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
 import com.prdcv.ehust.base.recyclerview.BindAbleAdapter
-import com.prdcv.ehust.model.Meeting
-import com.prdcv.ehust.model.SChedule
-import com.prdcv.ehust.model.ScheduleEvent
+import com.prdcv.ehust.data.model.Meeting
+import com.prdcv.ehust.data.model.SChedule
+import com.prdcv.ehust.data.model.ScheduleEvent
 import java.time.format.DateTimeFormatter
 
 @Suppress("UNCHECKED_CAST")

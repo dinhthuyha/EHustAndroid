@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.prdcv.ehust.model.ClassStudent" />
+            type="com.prdcv.ehust.data.model.ClassStudent" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -6,12 +6,8 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.recyclerview.BaseDiffUtilItemCallback
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
-import com.prdcv.ehust.model.ClassStudent
-import com.prdcv.ehust.model.SChedule
-import com.prdcv.ehust.model.ScheduleEvent
-import com.prdcv.ehust.ui.search.SearchClassViewHolder
-import com.prdcv.ehust.ui.search.SearchUserViewHolder
-import com.prdcv.ehust.ui.search.ViewType
+import com.prdcv.ehust.data.model.SChedule
+import com.prdcv.ehust.data.model.ScheduleEvent
 import java.time.format.DateTimeFormatter
 
 

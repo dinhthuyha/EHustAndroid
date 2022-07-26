@@ -30,15 +30,15 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.R
-import com.prdcv.ehust.model.TaskData
-import com.prdcv.ehust.model.Topic
+import com.prdcv.ehust.data.model.TaskData
+import com.prdcv.ehust.data.model.Topic
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.ui.projects.topic.TitleTopic
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
-import com.prdcv.ehust.viewmodel.TopicsViewModel
+import com.prdcv.ehust.ui.TopicsViewModel
 import java.time.LocalDate
 import java.time.Period
 

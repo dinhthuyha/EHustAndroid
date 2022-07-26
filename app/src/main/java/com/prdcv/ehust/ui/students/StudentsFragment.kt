@@ -5,7 +5,7 @@ import androidx.navigation.fragment.findNavController
 import com.prdcv.ehust.base.BaseFragmentWithBinding
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.databinding.FragmentStudentsBinding
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.data.model.User
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

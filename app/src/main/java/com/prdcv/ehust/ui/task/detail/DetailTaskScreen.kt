@@ -47,12 +47,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.prdcv.ehust.R
-import com.prdcv.ehust.extension.*
-import com.prdcv.ehust.model.Attachment
-import com.prdcv.ehust.model.Comment
+import com.prdcv.ehust.utils.extension.*
+import com.prdcv.ehust.data.model.Attachment
+import com.prdcv.ehust.data.model.Comment
 import com.prdcv.ehust.ui.compose.*
 import com.prdcv.ehust.ui.task.detail.state.TaskDetailScreenState
-import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import com.prdcv.ehust.viewmodel.TaskStatus
 import kotlinx.coroutines.launch
 import java.io.InputStream

@@ -30,8 +30,8 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.prdcv.ehust.R
-import com.prdcv.ehust.model.PairingStudentWithTeacher
-import com.prdcv.ehust.model.TaskData
+import com.prdcv.ehust.data.model.PairingStudentWithTeacher
+import com.prdcv.ehust.data.model.TaskData
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.projects.SpinnerSemester
 import com.prdcv.ehust.ui.task.CircularProgressWithPercent

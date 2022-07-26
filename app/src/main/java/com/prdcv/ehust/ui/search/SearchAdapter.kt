@@ -5,7 +5,7 @@ import com.prdcv.ehust.R
 import com.prdcv.ehust.base.recyclerview.BaseDiffUtilItemCallback
 import com.prdcv.ehust.base.recyclerview.BaseRecyclerAdapter
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
-import com.prdcv.ehust.model.ClassStudent
+import com.prdcv.ehust.data.model.ClassStudent
 
 class SearchAdapter(
     private val clickListener: (ItemSearch) -> Unit

@@ -26,7 +26,6 @@ import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import com.prdcv.ehust.R
 import com.prdcv.ehust.base.BaseFragment
-import com.prdcv.ehust.viewmodel.DetailTaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

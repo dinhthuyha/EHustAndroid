@@ -1,11 +1,10 @@
 package com.prdcv.ehust.network
 
-import com.prdcv.ehust.model.StatusNotification
+import com.prdcv.ehust.data.model.StatusNotification
 import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
-import com.prdcv.ehust.model.*
+import com.prdcv.ehust.data.model.*
 import okhttp3.ResponseBody
-import okhttp3.internal.http.hasBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

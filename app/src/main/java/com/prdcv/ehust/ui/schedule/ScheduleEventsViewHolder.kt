@@ -4,10 +4,9 @@ import android.graphics.Color
 import androidx.databinding.ViewDataBinding
 import com.prdcv.ehust.base.recyclerview.BaseViewHolder
 import com.prdcv.ehust.databinding.CalendarEventItemViewBinding
-import com.prdcv.ehust.model.Meeting
-import com.prdcv.ehust.model.SChedule
-import com.prdcv.ehust.model.ScheduleEvent
-import java.time.format.DateTimeFormatter
+import com.prdcv.ehust.data.model.Meeting
+import com.prdcv.ehust.data.model.SChedule
+import com.prdcv.ehust.data.model.ScheduleEvent
 
 class ScheduleEventsViewHolder(
      binding: ViewDataBinding,

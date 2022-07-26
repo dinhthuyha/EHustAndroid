@@ -1,7 +1,6 @@
 package com.prdcv.ehust.ui.admin
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,21 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.hadt.ehust.model.TypeNotification
 import com.prdcv.ehust.R
-import com.prdcv.ehust.model.Subject
-import com.prdcv.ehust.model.User
+import com.prdcv.ehust.data.model.Subject
+import com.prdcv.ehust.data.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
-import com.prdcv.ehust.ui.main.MainFragmentDirections
-import com.prdcv.ehust.ui.profile.ProfileFragmentDirections
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.prdcv.ehust.viewmodel.AssignViewModel
 

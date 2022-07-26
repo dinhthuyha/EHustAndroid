@@ -2,7 +2,7 @@ package com.prdcv.ehust.network
 
 import com.hadt.ehust.model.TopicStatus
 import com.hadt.ehust.model.TypeNotification
-import com.prdcv.ehust.model.*
+import com.prdcv.ehust.data.model.*
 import io.minio.MinioClient
 import io.minio.ObjectWriteResponse
 import io.minio.PutObjectArgs
@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Path
 import javax.inject.Inject
 
 class EHustClient @Inject constructor(

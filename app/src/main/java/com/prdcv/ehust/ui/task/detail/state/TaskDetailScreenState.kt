@@ -3,10 +3,10 @@ package com.prdcv.ehust.ui.task.detail.state
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.Pair
-import com.prdcv.ehust.model.Attachment
-import com.prdcv.ehust.model.AttachmentInfo
-import com.prdcv.ehust.model.Comment
-import com.prdcv.ehust.model.TaskDetail
+import com.prdcv.ehust.data.model.Attachment
+import com.prdcv.ehust.data.model.AttachmentInfo
+import com.prdcv.ehust.data.model.Comment
+import com.prdcv.ehust.data.model.TaskDetail
 import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.Instant
 import java.time.LocalDate
