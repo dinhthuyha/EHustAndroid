@@ -35,7 +35,7 @@ import com.prdcv.ehust.data.model.TaskData
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.projects.SpinnerSemester
 import com.prdcv.ehust.ui.task.CircularProgressWithPercent
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 import com.prdcv.ehust.viewmodel.TaskStatus
 import java.time.LocalDate
 import java.time.Period
@@ -44,7 +44,7 @@ import java.util.*
 @Preview(showBackground = true)
 @Composable
 fun ManagementScreen(
-    viewModel: AssignViewModel = hiltViewModel(),
+    viewModel: HomeAdminViewModel = hiltViewModel(),
     navController: NavController? = null,
     hideKeyboard: () -> Unit = {}
 ) {
@@ -197,7 +197,7 @@ fun ManagementScreen(
 @Composable
 fun RowFilter(
     isLoading: Boolean = false,
-    viewModel: AssignViewModel,
+    viewModel: HomeAdminViewModel,
     textState: MutableState<String>,
     hideKeyboard: () -> Unit,
     data: SnapshotStateList<String>
@@ -224,7 +224,7 @@ fun RowFilter(
 @Composable
 fun FullNameList(
     state: MutableState<String>,
-    viewModel: AssignViewModel,
+    viewModel: HomeAdminViewModel,
     visible: MutableState<Boolean>,
     data: SnapshotStateList<String>,
     hideKeyboard: () -> Unit
@@ -469,7 +469,7 @@ fun RowScope.RowCheckBox(
 
 @Composable
 fun TableScreen(
-    viewModel: AssignViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: HomeAdminViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
     val tableData = viewModel.uiState.tableData
     val totalPage = if (tableData.size % 10 == 0) tableData.size / 10 else (tableData.size / 10) + 1

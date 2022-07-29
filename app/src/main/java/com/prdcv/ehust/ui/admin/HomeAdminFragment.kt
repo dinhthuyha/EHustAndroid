@@ -11,7 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.utils.extension.hideKeyboard
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class HomeAdminFragment : BaseFragment() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
-    private val viewModel: AssignViewModel by activityViewModels()
+    private val viewModel: HomeAdminViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

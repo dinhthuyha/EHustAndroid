@@ -2,21 +2,15 @@ package com.prdcv.ehust.ui.admin
 
 import android.content.SharedPreferences
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -27,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.prdcv.ehust.R
 import com.prdcv.ehust.ui.compose.DefaultTheme
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 
 private sealed class Screen(val route: String, val label: String, @DrawableRes val icon: Int) {
     object Assignment : Screen("assignment", "Trang chủ", R.drawable.ic_baseline_home_24)
@@ -36,7 +30,7 @@ private sealed class Screen(val route: String, val label: String, @DrawableRes v
 }
 
 @Composable
-fun AdminMainScreen(viewModel: AssignViewModel, nav: NavController,
+fun AdminMainScreen(viewModel: HomeAdminViewModel, nav: NavController,
                     sharedPreferences: SharedPreferences,
                     hideKeyboard: () -> Unit) {
     val navController = rememberNavController()

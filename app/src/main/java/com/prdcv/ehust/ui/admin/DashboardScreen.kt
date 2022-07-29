@@ -16,10 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prdcv.ehust.R
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 
 @Composable
-fun DashboardScreen(viewModel: AssignViewModel) {
+fun DashboardScreen(viewModel: HomeAdminViewModel) {
     val uiState = viewModel.uiState
     val TAG ="hadinh"
 

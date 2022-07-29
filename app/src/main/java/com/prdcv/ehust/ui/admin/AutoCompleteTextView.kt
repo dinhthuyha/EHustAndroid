@@ -1,6 +1,5 @@
 package com.prdcv.ehust.ui.admin
 
-import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,13 +29,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -86,7 +84,7 @@ fun <T> QuerySearch(
 }
 
 @Composable
-fun RowComplete(viewModel: AssignViewModel, title: String,
+fun RowComplete(viewModel: HomeAdminViewModel, title: String,
                 selected: MutableState<String>,
                 predictionsUser: SnapshotStateList<String>,
                 listUser: SnapshotStateList<String>,

@@ -141,7 +141,7 @@ data class AssignScreenState(
 
 
 @HiltViewModel
-class AssignViewModel @Inject constructor(
+class HomeAdminViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val subjectRepository: SubjectRepository
 ) : ViewModel() {

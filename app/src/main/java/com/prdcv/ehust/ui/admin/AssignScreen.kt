@@ -22,10 +22,10 @@ import com.prdcv.ehust.data.model.User
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.utils.SharedPreferencesKey
-import com.prdcv.ehust.viewmodel.AssignViewModel
+import com.prdcv.ehust.viewmodel.HomeAdminViewModel
 
 @Composable
-fun AssignScreen(viewModel: AssignViewModel,navController: NavController,sharedPreferences: SharedPreferences, hideKeyboard: () -> Unit) {
+fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sharedPreferences: SharedPreferences, hideKeyboard: () -> Unit) {
 
 
     val uiState = viewModel.uiState
