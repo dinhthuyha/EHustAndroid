@@ -72,10 +72,8 @@ data class AssignScreenState(
 ) {
 
     fun isAllSelected(): Boolean {
-        return selectedSubject
-            ?.let { studentSelect.value != "" }
-            ?.let { teacherSelect.value != "" }
-            ?.let { true } ?: false
+        return selectedSubject != null && (studentSelect.value != "")
+                && (teacherSelect.value != "")
     }
 
     fun getAllSemester(state: State<List<Int>>) {
