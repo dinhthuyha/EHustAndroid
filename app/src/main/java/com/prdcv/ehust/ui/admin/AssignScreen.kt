@@ -23,6 +23,7 @@ import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.utils.SharedPreferencesKey
 import com.prdcv.ehust.viewmodel.HomeAdminViewModel
+import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
 @Composable
 fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sharedPreferences: SharedPreferences, hideKeyboard: () -> Unit) {
@@ -31,7 +32,14 @@ fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sh
     val uiState = viewModel.uiState
 
     DefaultTheme {
-        Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState), topBar = { ToolBarAssign(title = "Trang chủ", navController = navController, sharedPreferences = sharedPreferences )}) {
+        Scaffold(
+            scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState),
+            topBar = { ToolBarAssign(title = "Trang chủ") {
+                navController.popBackStack()
+                sharedPreferences.edit().remove(SharedPreferencesKey.TOKEN).commit()
+                uiState.resetSelectionState()
+            } })
+        {
 
             LaunchedEffect(Unit) {
                 uiState.resetSelectionState()
@@ -81,12 +89,12 @@ fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sh
 }
 
 @Composable
-fun ToolBarAssign(title: String, navController: NavController, sharedPreferences: SharedPreferences) {
+fun ToolBarAssign(title: String, doLogout: () -> Unit) {
     TopAppBar(backgroundColor = colorResource(id = R.color.text_color) ,
         title = {
             Text(
                 text = title,
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 21.sp,
             )
@@ -94,16 +102,12 @@ fun ToolBarAssign(title: String, navController: NavController, sharedPreferences
         actions = {
             Text(
                 text = "Đăng xuất",
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier
                     .clickable {
-                        navController.popBackStack()
-                        sharedPreferences
-                            .edit()
-                            .remove(SharedPreferencesKey.TOKEN)
-                            .commit()
+                        doLogout()
                     }
                     .padding(end = 12.dp)
             )
