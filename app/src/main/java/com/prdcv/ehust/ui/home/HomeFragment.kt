@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
@@ -103,16 +104,26 @@ class HomeFragment : BaseFragment() {
             }.show(requireActivity().supportFragmentManager, SnapTimePickerDialog.TAG)
         }
         btnSave.setOnClickListener {
-            meeting = Meeting(
-                idUserTeacher = shareViewModel.user?.id!!,
-                nameStudent = txtSV.text.toString(),
-                title = title.text.toString(),
-                date = dateFrom.text.toString().toLocalDate(),
-                startTime = timeFrom.text.toString().toLocalTime(),
-                endTime = timeTo.text.toString().toLocalTime()
-            )
-            shareViewModel.postMeeting(meeting!!)
-            dialog.dismiss()
+            if (shareViewModel.user?.id != null
+                && txtSV.text.isNotEmpty()
+                && title.text.isNotEmpty()
+                && dateFrom.text.isNotEmpty()
+                && timeFrom.text.isNotEmpty()
+                && timeTo.text.isNotEmpty()){
+                meeting = Meeting(
+                    idUserTeacher = shareViewModel.user?.id!!,
+                    nameStudent = txtSV.text.toString(),
+                    title = title.text.toString(),
+                    date = dateFrom.text.toString().toLocalDate(),
+                    startTime = timeFrom.text.toString().toLocalTime(),
+                    endTime = timeTo.text.toString().toLocalTime()
+                )
+                shareViewModel.postMeeting(meeting!!)
+                dialog.dismiss()
+            }else{
+                Toast.makeText(requireContext(),"Xin hãy điền đầy đủ thống tin vào các trường", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         btnCancel.setOnClickListener { dialog.dismiss() }
