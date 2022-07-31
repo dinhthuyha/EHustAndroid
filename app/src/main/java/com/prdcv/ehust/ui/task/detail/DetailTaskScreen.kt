@@ -77,6 +77,7 @@ fun DetailTask(
             ToolBar(
                 title = if (viewModel.isNewTask) "Tạo công việc" else "Chi tiết công việc",
                 isEditing = !uiState.readOnly.value,
+                isNewTask = viewModel.isNewTask,
                 onCloseScreen = { (navController.popBackStack()) },
                 onEditTask = { uiState.readOnly.value = false },
                 onSaveTask = viewModel::saveTask,
@@ -642,6 +643,7 @@ fun RowComment(comment: Comment, onAttachmentClick: (String?, String?) -> Unit =
 @Composable
 fun ToolBar(
     title: String?,
+    isNewTask: Boolean,
     isEditing: Boolean,
     onEditTask: () -> Unit,
     onCloseScreen: () -> Unit,
@@ -654,6 +656,7 @@ fun ToolBar(
         },
         navigationIcon = {
             IconButton(onClick = {
+                if (isNewTask) onCloseScreen()
                 if (isEditing) onDiscardTask() else onCloseScreen()
             }) {
                 Icon(
@@ -769,6 +772,7 @@ private fun ToolBarPreview() {
     ToolBar(
         title = "Tiêu đề",
         isEditing = true,
+        isNewTask = false,
         onEditTask = {},
         onCloseScreen = {},
         onSaveTask = {},
