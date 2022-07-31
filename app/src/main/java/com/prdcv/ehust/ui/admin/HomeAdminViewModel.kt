@@ -34,7 +34,7 @@ data class AssignScreenState(
     val subjects: List<Subject> = emptyList(),
     val students: List<User> = emptyList(),
     val teachers: List<User> = emptyList(),
-    val selectedSubject: Subject? = null,
+    var selectedSubject: Subject? = null,
     val submitButtonEnabled: Boolean = true,
     val informationDashBoard: MutableState<DashBoard> = mutableStateOf(DashBoard()),
     var teacherSelect: MutableState<String> = mutableStateOf(""),
@@ -134,7 +134,13 @@ data class AssignScreenState(
         }
     }
 
-
+    fun resetSelectionState() {
+        selectedSubject = null
+        studentSelect.value = ""
+        teacherSelect.value = ""
+        predictionsStudent.clear()
+        predictionsTeacher.clear()
+    }
 }
 
 
@@ -217,8 +223,7 @@ class HomeAdminViewModel @Inject constructor(
     }
 
     fun onProjectSelected(project: Subject) {
-        uiState =
-            uiState.copy(selectedSubject = project)
+        uiState.selectedSubject = project
         getAllUserInClass(project.name, Role.ROLE_TEACHER)
         getAllUserInClass(project.name, Role.ROLE_STUDENT)
     }

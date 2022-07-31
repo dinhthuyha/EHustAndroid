@@ -33,6 +33,10 @@ fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sh
     DefaultTheme {
         Scaffold(scaffoldState = rememberScaffoldState(snackbarHostState = viewModel.snackbarHostState), topBar = { ToolBarAssign(title = "Trang chủ", navController = navController, sharedPreferences = sharedPreferences )}) {
 
+            LaunchedEffect(Unit) {
+                uiState.resetSelectionState()
+            }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -93,8 +97,14 @@ fun ToolBarAssign(title: String, navController: NavController, sharedPreferences
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                modifier = Modifier.clickable {  navController.popBackStack()
-                    sharedPreferences.edit().remove(SharedPreferencesKey.TOKEN).commit() }
+                modifier = Modifier
+                    .clickable {
+                        navController.popBackStack()
+                        sharedPreferences
+                            .edit()
+                            .remove(SharedPreferencesKey.TOKEN)
+                            .commit()
+                    }
                     .padding(end = 12.dp)
             )
         })
