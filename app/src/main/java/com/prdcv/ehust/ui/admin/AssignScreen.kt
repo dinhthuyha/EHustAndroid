@@ -40,7 +40,7 @@ fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sh
             ) {
                 item {
                     SpinnerProject(
-                        label = "Danh sách dự án",
+                        label = "Danh sách đồ án",
                         options = uiState.subjects,
                         selectedOption = uiState.selectedSubject,
                         onItemClick = viewModel::onProjectSelected
@@ -64,7 +64,7 @@ fun AssignScreen(viewModel: HomeAdminViewModel, navController: NavController, sh
                 item {
                     Button(onClick = viewModel::onSubmit, enabled = uiState.submitButtonEnabled) {
                         Text(
-                            text = "Gán dự án",
+                            text = "Gán đồ án",
                             fontSize = 16.sp,
                             color = White,
                             modifier = Modifier.padding(15.dp, 6.dp)

@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.hadt.ehust.model.TopicStatus
+import com.prdcv.ehust.data.model.ProgressStatus
 import com.prdcv.ehust.data.model.Role
 import com.prdcv.ehust.data.model.Topic
 import com.prdcv.ehust.ui.compose.DefaultTheme
@@ -185,7 +186,11 @@ fun TopicStudentRow(
             .fillMaxWidth()
             .clickable {
                 if (topic.status == TopicStatus.ACCEPT) {
-                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic))
+                    navController?.navigate(
+                        TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(
+                            topic
+                        )
+                    )
                 }
             }
     ) {
@@ -222,7 +227,11 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
-                navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(topic))
+                navController?.navigate(
+                    TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(
+                        topic
+                    )
+                )
             }
     ) {
         Column(
@@ -232,6 +241,7 @@ fun TopicTeacherRow(
         ) {
             TitleTopic(topic = topic)
             ShowNameStudent(topic = topic)
+            ShowStatusProgress(topic = topic)
             ShowStatusTopic(topic = topic, viewModel)
         }
 
@@ -324,6 +334,14 @@ fun ShowStatusTopic(
 }
 
 @Composable
+fun ShowStatusProgress(topic: Topic){
+    when(topic.status){
+        TopicStatus.ACCEPT -> {
+            Text(text = "Trạng thái: ${topic.progressStatus?.text}")
+        }
+    }
+}
+@Composable
 fun ShowNameStudent(topic: Topic) {
     Row(horizontalArrangement = Arrangement.Start, modifier = Modifier.fillMaxWidth()) {
         when (topic.status) {
@@ -380,5 +398,6 @@ private val fakeTopicPreview =
         id = 123,
         nameStudent = "Dinh Thuy Ha",
         name = "lập trình web bán hàng online",
-        status = TopicStatus.REQUESTING
+        status = TopicStatus.REQUESTING,
+        progressStatus = ProgressStatus.DONE
     )

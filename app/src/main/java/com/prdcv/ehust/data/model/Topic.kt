@@ -24,5 +24,9 @@ data class Topic(
     val subject: Subject? = null,
 
     @SerializedName("name_teacher")
-    val nameTeacher: String? = null
+    val nameTeacher: String? = null,
+
+    @SerializedName("progress_status")
+    val progressStatus: ProgressStatus? = null
+
 ) : Parcelable
