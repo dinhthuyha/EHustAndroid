@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.Gray
@@ -275,7 +276,7 @@ fun RowTaskSetup(
                 ) {
                     RowElementSetupTask(
                         value = uiState.uiDateRange,
-                        title = "Thời gian thực hiện",
+                        title = "Thời gian thực hiện*",
                         readOnly = uiState.readOnly,
                         idIcon = R.drawable.ic_date,
                         modifier = Modifier
@@ -313,7 +314,7 @@ fun RowTaskSetup(
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskEstimateTime,
-                            title = "Số giờ hoàn thành công việc",
+                            title = "Số giờ hoàn thành công việc*",
                             idIcon = R.drawable.ic_time,
                             "Hours",
                             readOnly = uiState.readOnly,
@@ -330,7 +331,7 @@ fun RowTaskSetup(
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskProgress,
-                            title = "Tiến độ hoàn thành",
+                            title = "Tiến độ hoàn thành*",
                             idIcon = R.drawable.ic_done,
                             readOnly = uiState.readOnly,
                             modifier = Modifier.fillMaxWidth(),
@@ -348,7 +349,7 @@ fun RowTaskSetup(
                     ) {
                         RowElementSetupTask(
                             value = uiState.taskAssignee,
-                            title = "Người tạo task",
+                            title = "Người tạo task*",
                             idIcon = R.drawable.ic_assignee,
                             modifier = Modifier.fillMaxWidth(),
                             readOnly = uiState.readOnly,
@@ -369,7 +370,7 @@ fun RowTaskSetup(
                             .fillMaxSize(),
                     ) {
                         SpinnerStatusTask(
-                            label = "Trạng thái công việc: ",
+                            label = "Trạng thái công việc*: ",
                             options = uiState.listStatusTask,
                             selectedOption = uiState.taskStatus,
                             onItemClick = viewModel::onStatusTaskSelected
@@ -535,6 +536,7 @@ fun RowTaskDescription(
                         .editableHighlight(!readOnly.value)
                         .padding(10.dp)
                         .padding(start = 5.dp),
+
                     onValueChange = { taskTitle.value = it },
                     readOnly = readOnly.value,
                     textStyle = TextStyle(fontWeight = FontWeight.SemiBold),
@@ -549,6 +551,14 @@ fun RowTaskDescription(
                         .fillMaxWidth()
                         .editableHighlight(!readOnly.value)
                     ,
+                    placeholder = {
+                        Text(
+                            text = "Mô tả",
+                            color = Gray,
+                            fontWeight = FontWeight.W400,
+                            fontSize = 15.sp
+                        )
+                    },
                     value = taskDescription.value,
                     onValueChange = {
                         taskDescription.value = it
@@ -562,7 +572,9 @@ fun RowTaskDescription(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
                         focusManager.clearFocus()
-                    })
+                    },
+
+                    )
                 )
             }
         }

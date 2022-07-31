@@ -21,6 +21,7 @@ import com.prdcv.ehust.utils.ProgressStream
 import com.prdcv.ehust.ui.BaseViewModel
 import com.prdcv.ehust.viewmodel.TaskStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterIsInstance
@@ -40,7 +41,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailTaskViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    @ApplicationContext val context: Context
 ) : BaseViewModel() {
 
     var idTopic: Int = 0
@@ -58,6 +60,7 @@ class DetailTaskViewModel @Inject constructor(
             calendarState.setSelectedDay(daySelected)
         }
     }
+
     fun onStatusTaskSelected(status: TaskStatus) {
         uiState.taskStatus.value = status
     }
@@ -127,68 +130,90 @@ class DetailTaskViewModel @Inject constructor(
         }
     }
 
-    private fun postNewTask() {
-        val task = uiState.newTaskDetail.copy(id = 0)
-        viewModelScope.launch(Dispatchers.IO) {
-            taskRepository.newTask(idTopic, task).collect {
-                when (it) {
-                    is State.Success -> {
-                        idTask = it.data
-                        uiState.readOnly.value = true
-                        updateNotificationNewTask(task)
-                        getDetailTask()
-                    }
-                    else -> {}
-                }
-            }
-        }
+    fun checkFieldRequireNewTask(taskDetail: TaskDetail): Boolean {
+        return (taskDetail.title != null
+                && taskDetail.startDate != null
+                && taskDetail.dueDate != null
+                && taskDetail.estimateTime != null
+                && taskDetail.progress != null
+                && taskDetail.assignee != null
+                && taskDetail.status != null
+                )
     }
 
-    private fun updateNotificationNewTask(taskDetail: TaskDetail){
+    private fun postNewTask() {
+        val task = uiState.newTaskDetail.copy(id = 0)
+        if (checkFieldRequireNewTask(task)){
+            viewModelScope.launch(Dispatchers.IO) {
+                taskRepository.newTask(idTopic, task).collect {
+                    when (it) {
+                        is State.Success -> {
+                            idTask = it.data
+                            uiState.readOnly.value = true
+                            updateNotificationNewTask(task)
+                            getDetailTask()
+                        }
+                        else -> {}
+                    }
+                }
+            }
+        }else{
+            Toast.makeText(context,"Hãy nhập đầy đủ thống tin vào các trường bắt buộc",Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    private fun updateNotificationNewTask(taskDetail: TaskDetail) {
         val dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val datePost = dtf.format(LocalDate.now())
-        val notification = News(title = "${taskDetail.assignee} vừa tạo task ${taskDetail.title},",
-        content = taskDetail.description?:"",
-        datePost = datePost,
-        type = TypeNotification.TYPE_PROJECT,
-        status = StatusNotification.STATUS_UNREAD,
-        nameUserUpdate = user?.fullName?:"",
-        idUserUpdate = user?.id?:0,
-        idTask = taskDetail.id)
+        val notification = News(
+            title = "${taskDetail.assignee} vừa tạo task ${taskDetail.title},",
+            content = taskDetail.description ?: "",
+            datePost = datePost,
+            type = TypeNotification.TYPE_PROJECT,
+            status = StatusNotification.STATUS_UNREAD,
+            nameUserUpdate = user?.fullName ?: "",
+            idUserUpdate = user?.id ?: 0,
+            idTask = taskDetail.id
+        )
         viewModelScope.launch {
-            taskRepository.updateNotificationNewTask(notification).collect{
+            taskRepository.updateNotificationNewTask(notification).collect {
                 Log.d("TAG", "updateNotificationNewTask: ")
             }
         }
 
     }
+
     private fun updateTaskDetails() {
         val task = uiState.newTaskDetail
 
         viewModelScope.launch {
-            async { taskRepository.updateTask(task).collect {
-                when (it) {
-                    is State.Success -> {
-                        uiState.readOnly.value = true
-                        getDetailTask()
+            async {
+                taskRepository.updateTask(task).collect {
+                    when (it) {
+                        is State.Success -> {
+                            uiState.readOnly.value = true
+                            getDetailTask()
 
+                        }
+                        else -> {}
                     }
-                    else -> {}
                 }
-            } }
+            }
             async { notificationUpdateTask(task) }
 
         }
     }
 
-    private fun notificationUpdateTask(taskDetail: TaskDetail){
+    private fun notificationUpdateTask(taskDetail: TaskDetail) {
         viewModelScope.launch {
-            taskRepository.notificationUpdateTask(taskDetail).collect{
+            taskRepository.notificationUpdateTask(taskDetail).collect {
                 Log.d("TAG", "updateNotificationNewTask: ")
             }
         }
 
     }
+
     fun onAttachmentSelected(inputStream: InputStream?, filename: String?, contentType: String?) {
         if (inputStream == null) return
         val filePath = UUID.randomUUID().toString()
@@ -204,15 +229,17 @@ class DetailTaskViewModel @Inject constructor(
         uiState.progressBarVisible.value = true
         val filePath = UUID.randomUUID().toString()
         // TODO: xử lý các trường hợp lỗi
-        taskRepository.uploadAttachment(attachmentInfo.copy(filename = filePath)).filterIsInstance<State.Success<Any>>().last()
-        taskRepository.addAttachment(commentId, Attachment(attachmentInfo.filename, filePath)).filterIsInstance<State.Success<Any>>().last()
+        taskRepository.uploadAttachment(attachmentInfo.copy(filename = filePath))
+            .filterIsInstance<State.Success<Any>>().last()
+        taskRepository.addAttachment(commentId, Attachment(attachmentInfo.filename, filePath))
+            .filterIsInstance<State.Success<Any>>().last()
     }
 
-    fun downloadFile(url: String, context: Context, fileName: String){
+    fun downloadFile(url: String, context: Context, fileName: String) {
         viewModelScope.launch {
-            taskRepository.downloadFile(url).collect{
+            taskRepository.downloadFile(url).collect {
                 Log.d("TAG", "downloadFile: ")
-                if (it is State.Success){
+                if (it is State.Success) {
                     try {
                         var pdfFileName: File? = null
                         var dirPath: String? = null
@@ -253,11 +280,15 @@ class DetailTaskViewModel @Inject constructor(
                                 }
                                 outputStream!!.write(fileReader, 0, read)
                                 fileSizeDownloaded += read.toLong()
-                                Log.d("writeResponseBodyToDisk", "file download: $fileSizeDownloaded of $fileSize")
+                                Log.d(
+                                    "writeResponseBodyToDisk",
+                                    "file download: $fileSizeDownloaded of $fileSize"
+                                )
                             }
 
                             outputStream!!.flush()
-                            Toast.makeText(context,"Lưu file thành công", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Lưu file thành công", Toast.LENGTH_SHORT)
+                                .show()
                             Log.d("TAG", "downloadFile: done")
 
                         } catch (e: Exception) {
