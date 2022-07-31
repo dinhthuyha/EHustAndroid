@@ -1,6 +1,8 @@
 package com.prdcv.ehust.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -23,6 +25,7 @@ import com.prdcv.ehust.data.repo.SubjectRepository
 import com.prdcv.ehust.data.repo.UserRepository
 import com.prdcv.ehust.ui.admin.HomeAdminFragmentDirections
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -128,7 +131,12 @@ data class AssignScreenState(
         when (val _state = value) {
             is State.Success -> {
                 user.value = _state.data
-                navController?.navigate(HomeAdminFragmentDirections.actionHomeAdminFragmentToProfileFragment(_state.data, true))
+                navController?.navigate(
+                    HomeAdminFragmentDirections.actionHomeAdminFragmentToProfileFragment(
+                        _state.data,
+                        true
+                    )
+                )
             }
             else -> {}
         }
@@ -147,7 +155,8 @@ data class AssignScreenState(
 @HiltViewModel
 class HomeAdminViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val subjectRepository: SubjectRepository
+    private val subjectRepository: SubjectRepository,
+    @ApplicationContext val context: Context
 ) : ViewModel() {
 
     val snackbarHostState: SnackbarHostState = SnackbarHostState()
@@ -239,6 +248,8 @@ class HomeAdminViewModel @Inject constructor(
                 idTeacher,
                 uiState.selectedSubject!!.name
             )
+        } else {
+            Toast.makeText(context, "Bạn phải chọn đủ cả 3 trường trên", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -380,18 +391,18 @@ class HomeAdminViewModel @Inject constructor(
     fun getProfileByUser(value: String, navController: NavController?) {
         viewModelScope.launch {
             withContext(Dispatchers.Main) {
-                 findByFullNameUser(value, navController)
+                findByFullNameUser(value, navController)
             }
 
         }
     }
 
-    private fun findByFullNameUser(value: String,navController: NavController?){
+    private fun findByFullNameUser(value: String, navController: NavController?) {
         viewModelScope.launch {
             userRepository.searchAllUserByFullName(value).collect {
                 uiState.findByFullNameUser(it, navController)
             }
         }
-        
+
     }
 }
