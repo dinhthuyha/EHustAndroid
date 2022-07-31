@@ -41,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -514,7 +515,6 @@ fun RowTaskDescription(
     readOnly: MutableState<Boolean>
 ) {
     val focusManager = LocalFocusManager.current
-
     Column(modifier = Modifier.padding(start = 10.dp, end = 10.dp)) {
         Spacer(modifier = Modifier.height(15.dp))
         Text(
@@ -536,7 +536,18 @@ fun RowTaskDescription(
                         .editableHighlight(!readOnly.value)
                         .padding(10.dp)
                         .padding(start = 5.dp),
-
+                    decorationBox = { innerTextField ->
+                            if (taskTitle.value.isEmpty()) {
+                                Text(
+                                    text = "Tên công việc*",
+                                    color = Gray,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 15.sp
+                                )
+                            }
+                            // <-- Add this
+                            innerTextField()
+                    },
                     onValueChange = { taskTitle.value = it },
                     readOnly = readOnly.value,
                     textStyle = TextStyle(fontWeight = FontWeight.SemiBold),
@@ -553,7 +564,7 @@ fun RowTaskDescription(
                     ,
                     placeholder = {
                         Text(
-                            text = "Mô tả",
+                            text = "Mô tả chi tiết:",
                             color = Gray,
                             fontWeight = FontWeight.W400,
                             fontSize = 15.sp
