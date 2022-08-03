@@ -13,15 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.hadt.ehust.model.TypeSubject
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.profile.ToolBar
 
 
 @Composable
-fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel) {
+fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewModel()) {
     val uiState = viewModel.uiState.moreInformationTopic
     val loading = viewModel.uiState.refreshState
     LaunchedEffect(key1 = Unit) {
@@ -141,6 +143,27 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel) {
                                         .padding(start = 10.dp)
                                 )
                             }
+                            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+                                when (uiState.value.type) {
+                                    TypeSubject.PROJECT -> {}
+                                    TypeSubject.THESIS -> {
+                                        Text(
+                                            text = "Trạng thái: ",
+                                            style = MaterialTheme.typography.subtitle1,
+                                            modifier = Modifier.padding(start = 10.dp)
+                                        )
+
+                                        Text(
+                                            text = "Đang thực hiện",
+                                            modifier = Modifier
+                                                .padding(start = 10.dp)
+                                        )
+                                    }
+                                    else -> {}
+                                }
+
+                            }
+
 
                         }
 

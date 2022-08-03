@@ -1,6 +1,7 @@
 package com.prdcv.ehust.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.hadt.ehust.model.TypeSubject
 import java.time.LocalDate
 
 data class MoreInformationTopic(
@@ -26,6 +27,9 @@ data class MoreInformationTopic(
     @SerializedName("process_score")
     val processScore: Float? = null,
     @SerializedName("end_score")
-    val endScore: Float? = null
+    val endScore: Float? = null,
+    @SerializedName("state_process")
+    val stateProcess: ProgressStatus? = null,
+    var type: TypeSubject? = null
 
 )
