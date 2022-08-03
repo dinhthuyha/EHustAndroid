@@ -22,5 +22,10 @@ data class MoreInformationTopic(
     @SerializedName("id_student")
     val idStudent: Int? = null,
     @SerializedName("email_student")
-    val emailStudent: String? = null
+    val emailStudent: String? = null,
+    @SerializedName("process_score")
+    val processScore: Float? = null,
+    @SerializedName("end_score")
+    val endScore: Float? = null
+
 )
