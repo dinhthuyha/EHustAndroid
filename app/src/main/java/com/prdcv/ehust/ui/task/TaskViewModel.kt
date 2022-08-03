@@ -76,7 +76,7 @@ class TaskViewModel @Inject constructor(
     fun findAllTaskByIdTopic(idTopic: Int) {
         uiState.refreshState.isRefreshing = true
         viewModelScope.launch(Dispatchers.IO) {
-            delay(1000)
+            delay(600)
             taskRepository.findAllTaskByIdTopic(idTopic).collect { uiState.addTasksFromState(it) }
         }
     }

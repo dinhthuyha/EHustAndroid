@@ -68,7 +68,7 @@ class ShareViewModel @Inject constructor(
         viewModelScope.launch {
             uiState = HomeScreenState()
             userRepository.login(id, password).collect {
-                if (it is State.Success) delay(800)
+                if (it is State.Success) delay(600)
                 _token.postValue(it)
             }
         }
@@ -220,7 +220,7 @@ class ShareViewModel @Inject constructor(
             }
             userRepository.findAllMeeting(idUserTeacher, idUserStudent).collect {
                 if (it is State.Success)
-                    delay(2000)
+                    delay(600)
                 uiState.findAllMeeting(it)
             }
         }
@@ -239,7 +239,7 @@ class ShareViewModel @Inject constructor(
                     is State.Error -> _token.postValue(State.Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại."))
                     State.Loading -> _token.postValue(State.Loading)
                     is State.Success -> {
-                        delay(800)
+                        delay(600)
                         _token.postValue(it as State<Map<String, Any>>)
                     }
                 }

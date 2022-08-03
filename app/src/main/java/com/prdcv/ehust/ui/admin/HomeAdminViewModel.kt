@@ -195,7 +195,7 @@ class HomeAdminViewModel @Inject constructor(
         viewModelScope.launch {
             subjectRepository.getAllDataBySemester(semester).collect {
                 if (it is State.Success)
-                    delay(1000)
+                    delay(600)
                 uiState.getAllDataBySemester(it)
             }
         }

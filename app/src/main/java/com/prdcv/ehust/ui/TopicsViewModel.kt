@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.hadt.ehust.model.TopicStatus
+import com.hadt.ehust.model.TypeSubject
 import com.prdcv.ehust.common.State
 import com.prdcv.ehust.data.model.MoreInformationTopic
+import com.prdcv.ehust.data.model.ProgressStatus
 import com.prdcv.ehust.data.model.Role
 import com.prdcv.ehust.data.model.Subject
 import com.prdcv.ehust.data.model.Topic
@@ -33,6 +35,8 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
     var moreInformationTopic: MutableState<MoreInformationTopic> = mutableStateOf(MoreInformationTopic()),
+    var listStatusProcess: SnapshotStateList<ProgressStatus> = mutableStateListOf(ProgressStatus.RESPONDING, ProgressStatus.DONE, ProgressStatus.UNFINISHED),
+    var statusProcess: MutableState<ProgressStatus> = mutableStateOf(ProgressStatus.RESPONDING),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val bottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
@@ -125,12 +129,15 @@ class TopicsViewModel @Inject constructor(
         viewModelScope.launch {
             topicRepository.findByDetailTopic(id).collect {
                 if (it is State.Success)
-                    delay(2000)
+                    delay(600)
                 uiState.findDetailInformationTopic(it)
             }
         }
     }
 
+    fun onStatusProcessSelected(itemSelected: ProgressStatus){
+
+    }
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",
         idProject: String,
@@ -212,7 +219,7 @@ class TopicsViewModel @Inject constructor(
             name = name,
             idStudent = mUserId,
             nameTeacher = mProject?.nameTeacher,
-            subject = Subject(mProject?.idProject, "", true)
+            subject = Subject(mProject?.idProject, "", TypeSubject.PROJECT)
         )
         viewModelScope.launch(Dispatchers.IO) {
             topicRepository.submitTopicSuggestion(sTopic).collect {
