@@ -172,4 +172,5 @@ class EHustClient @Inject constructor(
 
     suspend fun downloadFile(url: String) = ehustService.downloadFile(url)
 
+    suspend fun updateStateProcessInformationTopic(topic: MoreInformationTopic) = ehustService.updateStateProcessInformationTopic(topic)
 }

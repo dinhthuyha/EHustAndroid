@@ -52,4 +52,12 @@ class TopicRepository @Inject constructor(val eHustClient: EHustClient) {
             }
         }.asFlow()
     }
+
+    fun updateStateProcessInformationTopic(topic: MoreInformationTopic): Flow<State<ResponseBody>>{
+        return object : NetworkBoundRepository<ResponseBody>(){
+            override suspend fun fetchFromRemote(): Response<ResponseBody> {
+                return eHustClient.updateStateProcessInformationTopic(topic)
+            }
+        }.asFlow()
+    }
 }

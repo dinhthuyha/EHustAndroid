@@ -185,4 +185,7 @@ interface EHustService {
 
     @GET
     suspend fun downloadFile(@Url url: String):Response<ResponseBody>
+
+        @PUT("update/informationtopic")
+    suspend fun updateStateProcessInformationTopic(@Body topic: MoreInformationTopic): Response<ResponseBody>
 }

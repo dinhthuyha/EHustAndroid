@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui
 
+import android.util.Log
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -24,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
@@ -34,11 +36,19 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
     var coroutineScope: CoroutineScope? = null,
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
-    var moreInformationTopic: MutableState<MoreInformationTopic> = mutableStateOf(MoreInformationTopic()),
+    var moreInformationTopic: MutableState<MoreInformationTopic> = mutableStateOf(
+        MoreInformationTopic()
+    ),
     var readOnly: MutableState<Boolean> = mutableStateOf(true),
     val isEditing: MutableState<Boolean> = mutableStateOf(true),
-    var listStatusProcess: SnapshotStateList<ProgressStatus> = mutableStateListOf(ProgressStatus.RESPONDING, ProgressStatus.DONE, ProgressStatus.UNFINISHED),
+    var listStatusProcess: SnapshotStateList<ProgressStatus> = mutableStateListOf(
+        ProgressStatus.RESPONDING,
+        ProgressStatus.DONE,
+        ProgressStatus.UNFINISHED
+    ),
     var statusProcess: MutableState<ProgressStatus> = mutableStateOf(ProgressStatus.RESPONDING),
+    var stateProcessScore: MutableState<Float> = mutableStateOf(0f),
+    var stateEndScore: MutableState<Float> = mutableStateOf(0f),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
     val bottomSheetState: ModalBottomSheetState = ModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
@@ -108,11 +118,18 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
 
                 refreshState.isRefreshing = false
                 moreInformationTopic.value = it.data
+                statusProcess.value = it.data.stateProcess?:ProgressStatus.UNFINISHED
+                stateProcessScore.value = it.data.processScore?:0f
+                stateEndScore.value = it.data.endScore?:0f
             }
             is State.Loading -> {
                 refreshState.isRefreshing = true
             }
         }
+    }
+
+    fun updateStatusProcess(topic: MoreInformationTopic) {
+        moreInformationTopic.value = topic
     }
 
 }
@@ -122,15 +139,28 @@ class TopicsViewModel @Inject constructor(
     private val topicRepository: TopicRepository
 ) : ViewModel() {
     val uiState = TopicScreenState()
-    var currentSemester: Int? =0
-
+    var currentSemester: Int? = 0
+    private  val TAG = "TopicsViewModel"
     var mUserId: Int = 0
     var mProject: ProjectArg? = null
     var mRole: Role = Role.ROLE_UNKNOWN
 
-    fun saveInformationTopic(){
+    fun saveInformationTopic() {
         uiState.isEditing.value = !uiState.isEditing.value
+        var topic: MoreInformationTopic = uiState.moreInformationTopic.value
+        if (uiState.moreInformationTopic.value.type == TypeSubject.PROJECT) {
+            topic = uiState.moreInformationTopic.value.copy(
+                processScore = uiState.stateProcessScore.value,
+                endScore = uiState.stateEndScore.value
+            )
+        }
+        viewModelScope.launch {
+            topicRepository.updateStateProcessInformationTopic(topic!!).collect {
+                Log.d(TAG, "saveInformationTopic: ")
+            }
+        }
     }
+
     fun findDetailInformationTopic(id: Int) {
         viewModelScope.launch {
             topicRepository.findByDetailTopic(id).collect {
@@ -141,9 +171,13 @@ class TopicsViewModel @Inject constructor(
         }
     }
 
-    fun onStatusProcessSelected(itemSelected: ProgressStatus){
-        uiState.statusProcess.value = itemSelected
+
+    fun onStatusProcessSelected(topic: MoreInformationTopic) {
+        uiState.updateStatusProcess(topic)
+        uiState.statusProcess.value = topic.stateProcess!!
+
     }
+
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",
         idProject: String,
@@ -195,7 +229,7 @@ class TopicsViewModel @Inject constructor(
                     findTopicByIdTeacherAndIdProject(
                         idTeacher = it.idTeacher!!,
                         idProject = it.idProject!!,
-                        semester = it.semester?:20212
+                        semester = it.semester ?: 20212
                     )
                 }
                 else -> {}

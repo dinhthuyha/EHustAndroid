@@ -5,10 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -54,17 +56,20 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 import com.hadt.ehust.model.TypeSubject
 import com.prdcv.ehust.R
+import com.prdcv.ehust.data.model.MoreInformationTopic
 import com.prdcv.ehust.data.model.ProgressStatus
 import com.prdcv.ehust.data.model.Role
 import com.prdcv.ehust.ui.compose.DefaultTheme
 import com.prdcv.ehust.ui.compose.Purple500
 import com.prdcv.ehust.ui.compose.Shapes
+import com.prdcv.ehust.utils.extension.noRippleClickable
 
 
 @Composable
 fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewModel()) {
     val uiState = viewModel.uiState.moreInformationTopic
-    val state = mutableStateOf("")
+    val stateProcessScore = viewModel.uiState.stateProcessScore
+    val stateEndScore = viewModel.uiState.stateEndScore
     val loading = viewModel.uiState.refreshState
     val readOnly = viewModel.uiState.readOnly
     val isEditing= viewModel.uiState.isEditing
@@ -216,12 +221,12 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewMode
                                                 Text(text = "Điểm quá trình:")
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 BasicTextField(
-                                                    value = "10",
+                                                    value = if (stateProcessScore.value.toString() =="0.0") "" else stateProcessScore.value.toString(),
                                                     onValueChange = { value ->
-                                                        state.value = value
+                                                        stateProcessScore.value = value.toFloat()
                                                     },
 
-                                                    readOnly = readOnly.value,
+                                                    readOnly = isEditing.value,
                                                     modifier = Modifier
                                                         .widthIn(min = 40.dp, max = 50.dp)
                                                         .heightIn(min = 40.dp, max = 130.dp)
@@ -234,16 +239,17 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewMode
                                                     singleLine = true
                                                 )
                                             }
+                                            Spacer(modifier = Modifier.height(10.dp))
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Text(text = "Điểm cuối kì:")
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 BasicTextField(
-                                                    value = "10",
+                                                    value = if (stateEndScore.value.toString() =="0.0") "" else stateEndScore.value.toString(),
                                                     onValueChange = { value ->
-                                                        state.value = value
+                                                        stateEndScore.value = value.toFloat()
                                                     },
 
-                                                    readOnly = readOnly.value,
+                                                    readOnly = isEditing.value,
                                                     modifier = Modifier
                                                         .widthIn(min = 40.dp, max = 50.dp)
                                                         .heightIn(min = 40.dp, max = 130.dp)
@@ -259,17 +265,39 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewMode
                                         }
                                     }
                                     TypeSubject.THESIS -> {
-                                        Text(
-                                            text = "Trạng thái: ",
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        SpinnerStatusProcess(
-                                            options = viewModel.uiState.listStatusProcess,
-                                            selectedOption = viewModel.uiState.statusProcess,
-                                            onItemClick = viewModel::onStatusProcessSelected,
-                                        )
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(IntrinsicSize.Min)
+                                        ){
+                                            Row(
+                                                modifier = Modifier.padding(bottom = 8.dp, start = 10.dp),
+                                                horizontalArrangement = Arrangement.Center,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ){
+                                                Text(
+                                                    text = "Trạng thái: ",
+                                                    color = Color.Black,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                                SpinnerStatusProcess(
+                                                    options = viewModel.uiState.listStatusProcess,
+                                                    topic = uiState.value,
+                                                    selectedOption = viewModel.uiState.statusProcess,
+                                                    onItemClick = viewModel::onStatusProcessSelected,
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            if (isEditing.value) {
+                                                Column(modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .noRippleClickable {}) {}
+                                            }
+
+                                        }
+
                                     }
                                     else -> {}
                                 }
@@ -326,8 +354,9 @@ fun ToolBar(
 @Composable
 fun SpinnerStatusProcess(
     options: List<ProgressStatus>,
+    topic: MoreInformationTopic,
     selectedOption: MutableState<ProgressStatus>,
-    onItemClick: (ProgressStatus) -> Unit,
+    onItemClick: (MoreInformationTopic) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -335,12 +364,12 @@ fun SpinnerStatusProcess(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
         modifier = Modifier
-            .width(165.dp)
+            .width(185.dp)
             .height(60.dp)
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedOption.value?.toString() ?: "",
+            value = selectedOption.value.text ?: "",
             textStyle = MaterialTheme.typography.caption,
             onValueChange = {},
             label = { },
@@ -360,14 +389,21 @@ fun SpinnerStatusProcess(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            options.forEach { selectionOption ->
+            options.map { it.text }.forEach { selectionOption ->
                 DropdownMenuItem(
                     onClick = {
-                        onItemClick(selectionOption)
+                       val progressStatusSelect = when(selectionOption){
+                            ProgressStatus.UNFINISHED.text ->{ ProgressStatus.UNFINISHED}
+                            ProgressStatus.DONE.text ->{ ProgressStatus.DONE}
+                            ProgressStatus.RESPONDING.text ->{ ProgressStatus.RESPONDING}
+                           else ->{ProgressStatus.UNFINISHED}
+                        }
+                       val topicNew=  topic.copy(stateProcess = progressStatusSelect)
+                        onItemClick(topicNew)
                         expanded = false
                     }
                 ) {
-                    Text(text = selectionOption.toString(), fontSize = 13.sp)
+                    Text(text = selectionOption, fontSize = 13.sp)
                 }
             }
         }
