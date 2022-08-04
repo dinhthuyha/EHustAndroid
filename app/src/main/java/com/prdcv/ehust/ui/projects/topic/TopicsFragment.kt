@@ -40,6 +40,7 @@ class TopicsFragment : BaseFragment() {
                         mProject = arg.project
                         mRole = shareViewModel.user?.roleId!!
                         mUserId = shareViewModel.user?.id ?: 0
+                        currentSemester = shareViewModel.maxSemester
                     }
                 )
             }

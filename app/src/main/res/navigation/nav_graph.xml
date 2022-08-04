@@ -120,6 +120,9 @@
         <argument
             android:name="project"
             app:argType="com.prdcv.ehust.ui.projects.ProjectArg" />
+        <action
+            android:id="@+id/action_topicsFragment_to_informationTopicFragment"
+            app:destination="@id/informationTopicFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeAdminFragment"

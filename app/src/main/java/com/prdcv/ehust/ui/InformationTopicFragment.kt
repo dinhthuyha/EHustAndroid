@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
+import com.prdcv.ehust.data.model.Role
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +32,7 @@ class InformationTopicFragment: BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-               InformationTopic(idTopic?:0, topicsViewModel)
+               InformationTopic(idTopic?:0, topicsViewModel.apply { mRole= shareViewModel.user?.roleId?:Role.ROLE_TEACHER })
             }
         }
     }

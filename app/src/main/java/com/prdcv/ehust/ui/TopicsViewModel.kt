@@ -35,6 +35,8 @@ data class TopicScreenState @OptIn(ExperimentalMaterialApi::class) constructor(
     var _topics: List<Topic> = emptyList(),
     val topics: SnapshotStateList<Topic> = mutableStateListOf(),
     var moreInformationTopic: MutableState<MoreInformationTopic> = mutableStateOf(MoreInformationTopic()),
+    var readOnly: MutableState<Boolean> = mutableStateOf(true),
+    val isEditing: MutableState<Boolean> = mutableStateOf(true),
     var listStatusProcess: SnapshotStateList<ProgressStatus> = mutableStateListOf(ProgressStatus.RESPONDING, ProgressStatus.DONE, ProgressStatus.UNFINISHED),
     var statusProcess: MutableState<ProgressStatus> = mutableStateOf(ProgressStatus.RESPONDING),
     val refreshState: SwipeRefreshState = SwipeRefreshState(false),
@@ -120,11 +122,15 @@ class TopicsViewModel @Inject constructor(
     private val topicRepository: TopicRepository
 ) : ViewModel() {
     val uiState = TopicScreenState()
+    var currentSemester: Int? =0
 
     var mUserId: Int = 0
     var mProject: ProjectArg? = null
     var mRole: Role = Role.ROLE_UNKNOWN
 
+    fun saveInformationTopic(){
+        uiState.isEditing.value = !uiState.isEditing.value
+    }
     fun findDetailInformationTopic(id: Int) {
         viewModelScope.launch {
             topicRepository.findByDetailTopic(id).collect {
@@ -136,7 +142,7 @@ class TopicsViewModel @Inject constructor(
     }
 
     fun onStatusProcessSelected(itemSelected: ProgressStatus){
-
+        uiState.statusProcess.value = itemSelected
     }
     fun findTopicByIdTeacherAndIdProject(
         nameTeacher: String = "a",

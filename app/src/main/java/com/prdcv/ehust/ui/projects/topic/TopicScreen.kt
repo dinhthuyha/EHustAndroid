@@ -227,6 +227,9 @@ fun TopicTeacherRow(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable {
+                if (topic.semester!= viewModel?.currentSemester){
+                    navController?.navigate(TopicsFragmentDirections.actionTopicsFragmentToInformationTopicFragment(topic.id?:0))
+                }else
                 navController?.navigate(
                     TopicsFragmentDirections.actionTopicsFragmentToNewTaskFragment(
                         topic
