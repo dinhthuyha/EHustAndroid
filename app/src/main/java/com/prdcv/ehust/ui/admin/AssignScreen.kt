@@ -96,7 +96,7 @@ fun ToolBarAssign(title: String, doLogout: () -> Unit) {
                 text = title,
                 color = White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 21.sp,
+                fontSize = 19.sp,
             )
         },
         actions = {
@@ -104,7 +104,7 @@ fun ToolBarAssign(title: String, doLogout: () -> Unit) {
                 text = "Đăng xuất",
                 color = White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 modifier = Modifier
                     .clickable {
                         doLogout()
