@@ -1,5 +1,6 @@
 package com.prdcv.ehust.ui.projects
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +24,7 @@ data class ProjectsScreenState(
             is State.Success -> {
                 projects.apply {
                     clear()
-                    addAll(_state.data)
+                    addAll(_state.data.sortedByDescending { it.codeCourse})
                 }
             }
         }
@@ -40,8 +41,11 @@ data class ProjectsScreenState(
                 }
                 listProject.apply {
                     clear()
-                    addAll(list.distinctBy { it.codeProject })
+                    addAll(list.distinctBy { it.codeProject }.sortedByDescending { it.codeProject })
+
                 }
+
+                Log.d("TAG", "getAllProjectByIdTeacherAndSemester: ")
             }
             is State.Loading -> {
                 refreshState.isRefreshing = false
