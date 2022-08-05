@@ -74,7 +74,7 @@ fun ManagementScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(top = 12.dp, bottom = 12.dp, start = 12.dp)
+                        .padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
                         .placeholder(
                             visible = uiState.refreshState.isRefreshing,
                             highlight = PlaceholderHighlight.shimmer()
@@ -91,12 +91,12 @@ fun ManagementScreen(
                         onItemClick = viewModel::onSemesterSelected,
                         isLoading = uiState.refreshState.isRefreshing
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+
                 }
                 Column(
                     horizontalAlignment = Alignment.End, modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp)
+                        .padding(6.dp)
                 ) {
                     Text(
                         text = "Lọc sinh viên/ giảng viên theo tên:",
@@ -501,12 +501,12 @@ fun TableScreen(
 
         // Here are all the lines of your table.
         val temps = mutableListOf<PairingStudentWithTeacher>()
-        val count: Int = if (currentPage == totalPage) tableData.size - 8 * (currentPage - 1) else 8
+        val count: Int = if (currentPage == totalPage) tableData.size - 7 * (currentPage - 1) else 7
         if (tableData.isNotEmpty()) {
-            val items = if (count == 8 && tableData.size != 0) {
-                tableData.slice(8 * (currentPage - 1) until 8 * (currentPage - 1) + count)
+            val items = if (count == 7 && tableData.size != 0) {
+                tableData.slice(7 * (currentPage - 1) until 7 * (currentPage - 1) + count)
             } else {
-                tableData.slice(8 * (currentPage - 1) until 8 * (currentPage - 1) + count)
+                tableData.slice(7 * (currentPage - 1) until 7 * (currentPage - 1) + count)
             }
             temps.addAll(items)
 
