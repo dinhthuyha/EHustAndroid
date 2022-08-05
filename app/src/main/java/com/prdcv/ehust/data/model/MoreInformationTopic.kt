@@ -30,6 +30,7 @@ data class MoreInformationTopic(
     val endScore: Float? = null,
     @SerializedName("state_process")
     val stateProcess: ProgressStatus? = null,
-    var type: TypeSubject? = null
+    var type: TypeSubject? = null,
+    val semester: Int? = null
 
 )

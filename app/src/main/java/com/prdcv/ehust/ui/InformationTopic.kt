@@ -83,6 +83,7 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewMode
             viewModel.uiState.readOnly.value = true
         }
         Role.ROLE_TEACHER -> {
+
             viewModel.uiState.readOnly.value = false
         }
         else -> {}

@@ -32,7 +32,10 @@ class InformationTopicFragment: BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-               InformationTopic(idTopic?:0, topicsViewModel.apply { mRole= shareViewModel.user?.roleId?:Role.ROLE_TEACHER })
+               InformationTopic(idTopic?:0, topicsViewModel.apply {
+                   mRole= shareViewModel.user?.roleId?:Role.ROLE_TEACHER
+                   currentSemester = shareViewModel.maxSemester
+               })
             }
         }
     }

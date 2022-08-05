@@ -29,6 +29,6 @@ data class Topic(
     @SerializedName("progress_status")
     val progressStatus: ProgressStatus? = null,
 
-val semester: Int? = null
+    val semester: Int? = null
 
 ) : Parcelable

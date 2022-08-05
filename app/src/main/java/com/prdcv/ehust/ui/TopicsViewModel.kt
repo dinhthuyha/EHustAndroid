@@ -164,8 +164,13 @@ class TopicsViewModel @Inject constructor(
     fun findDetailInformationTopic(id: Int) {
         viewModelScope.launch {
             topicRepository.findByDetailTopic(id).collect {
-                if (it is State.Success)
+                if (it is State.Success){
+                    if (it.data.semester!= currentSemester){
+                        uiState.readOnly.value = true
+                    }
                     delay(600)
+                }
+
                 uiState.findDetailInformationTopic(it)
             }
         }
