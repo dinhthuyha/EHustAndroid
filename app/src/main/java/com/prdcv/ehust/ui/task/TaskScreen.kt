@@ -41,6 +41,7 @@ import com.prdcv.ehust.viewmodel.TaskViewModel
 import com.prdcv.ehust.ui.TopicsViewModel
 import java.time.LocalDate
 import java.time.Period
+import kotlin.math.absoluteValue
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -188,7 +189,11 @@ fun TaskRow(
             val today = LocalDate.now()
             val dueDate = data.dueDate
             val dateRemain = Period.between(today, dueDate).days
-            return "(còn $dateRemain ngày)"
+            return if (dateRemain >= 0) {
+                "(còn $dateRemain ngày)"
+            } else {
+                "(quá hạn ${dateRemain.absoluteValue} ngày)"
+            }
         }
 
         return ""

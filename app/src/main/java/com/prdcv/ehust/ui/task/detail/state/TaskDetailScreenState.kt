@@ -87,7 +87,9 @@ data class TaskDetailScreenState(
             val dueDate = taskDueDate.value
             val estimateTime = taskEstimateTime.value.takeIf { it.isNotBlank() }?.toInt()
 //            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
-            val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.div(100f)
+            val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.let {
+                if (it > 100f) 100f else if (it < 0f) 0f else it
+            }?.div(100f)
             val assignee = taskAssignee.value.takeIf { it.isNotBlank() }
 
             return TaskDetail(
