@@ -22,7 +22,7 @@ data class TaskDetailScreenState(
     val taskStartDate: MutableState<LocalDate?> = mutableStateOf(null),
     val taskDueDate: MutableState<LocalDate?> = mutableStateOf(null),
     val taskEstimateTime: MutableState<String> = mutableStateOf(""),
-    val taskSpendTime: MutableState<String> = mutableStateOf(""),
+//    val taskSpendTime: MutableState<String> = mutableStateOf(""),
     val taskProgress: MutableState<String> = mutableStateOf(""),
     val taskAssignee: MutableState<String> = mutableStateOf(""),
     val taskComments: MutableState<List<Comment>> = mutableStateOf(emptyList()),
@@ -42,7 +42,6 @@ data class TaskDetailScreenState(
         taskStartDate.value = taskDetail.startDate
         taskDueDate.value = taskDetail.dueDate
         taskEstimateTime.value = taskDetail.estimateTime.toString()
-        taskSpendTime.value = taskDetail.spendTime?.toString() ?: ""
         taskProgress.value = taskDetail.progress?.percent ?: ""
         taskAssignee.value = taskDetail.assignee ?: ""
         uiDateRange.value = selectedDatesFormatted
@@ -87,7 +86,7 @@ data class TaskDetailScreenState(
             val startDate = taskStartDate.value
             val dueDate = taskDueDate.value
             val estimateTime = taskEstimateTime.value.takeIf { it.isNotBlank() }?.toInt()
-            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
+//            val spendTime = taskSpendTime.value.takeIf { it.isNotBlank() }?.toInt()
             val progress = taskProgress.value.takeIf { it.isNotBlank() }?.toFloat()?.div(100f)
             val assignee = taskAssignee.value.takeIf { it.isNotBlank() }
 
@@ -96,7 +95,6 @@ data class TaskDetailScreenState(
                 title = title,
                 status = status,
                 description = des,
-                spendTime = spendTime,
                 estimateTime = estimateTime,
                 progress = progress,
                 assignee = assignee,

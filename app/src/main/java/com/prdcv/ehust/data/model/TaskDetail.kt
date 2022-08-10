@@ -14,8 +14,8 @@ data class TaskDetail(
     @SerializedName("estimate_time")
     val estimateTime: Int? = null,
 
-    @SerializedName("spend_time")
-    val spendTime: Int? = null,
+//    @SerializedName("spend_time")
+//    val spendTime: Int? = null,
 
     @SerializedName("start_date")
     val startDate: LocalDate? = null,
