@@ -227,7 +227,7 @@ fun TaskRow(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier
+                modifier = Modifier.weight(1f)
                     .width(IntrinsicSize.Max)
                     .padding(10.dp)
             ) {
@@ -238,7 +238,7 @@ fun TaskRow(
                         highlight = PlaceholderHighlight.shimmer()
                     )
                 ) {
-                    data.status?.let { Tag(it.text, selectTagColor(data.status)) }
+                    Tag(data.status.text, selectTagColor(data.status))
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
                 }
