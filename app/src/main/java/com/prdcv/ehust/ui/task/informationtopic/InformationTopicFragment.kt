@@ -1,4 +1,4 @@
-package com.prdcv.ehust.ui
+package com.prdcv.ehust.ui.task.informationtopic
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.prdcv.ehust.base.BaseFragment
 import com.prdcv.ehust.data.model.Role
+import com.prdcv.ehust.ui.InformationTopic
+import com.prdcv.ehust.ui.TopicsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

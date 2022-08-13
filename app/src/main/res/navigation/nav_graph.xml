@@ -161,7 +161,7 @@
     </fragment>
     <fragment
         android:id="@+id/informationTopicFragment"
-        android:name="com.prdcv.ehust.ui.InformationTopicFragment"
+        android:name="com.prdcv.ehust.ui.task.informationtopic.InformationTopicFragment"
         android:label="InformationTopicFragment" >
         <argument
             android:name="idTopic"
