@@ -155,7 +155,7 @@ class TopicsViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            topicRepository.updateStateProcessInformationTopic(topic!!).collect {
+            topicRepository.updateStateProcessInformationTopic(topic).collect {
                 Log.d(TAG, "saveInformationTopic: ")
             }
         }
@@ -164,10 +164,9 @@ class TopicsViewModel @Inject constructor(
     fun findDetailInformationTopic(id: Int) {
         viewModelScope.launch {
             topicRepository.findByDetailTopic(id).collect {
+                uiState.readOnly.value = true
                 if (it is State.Success){
-                    if (it.data.semester!= currentSemester){
-                        uiState.readOnly.value = true
-                    }
+                    uiState.readOnly.value = it.data.semester!= currentSemester
                     delay(600)
                 }
 
