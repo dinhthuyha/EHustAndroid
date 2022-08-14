@@ -32,15 +32,19 @@ import com.hadt.ehust.model.TopicStatus
 import com.prdcv.ehust.R
 import com.prdcv.ehust.data.model.TaskData
 import com.prdcv.ehust.data.model.Topic
-import com.prdcv.ehust.ui.compose.*
+import com.prdcv.ehust.ui.TopicsViewModel
+import com.prdcv.ehust.ui.compose.DefaultTheme
+import com.prdcv.ehust.ui.compose.TagFinished
+import com.prdcv.ehust.ui.compose.TagInProgress
+import com.prdcv.ehust.ui.compose.TagNew
 import com.prdcv.ehust.ui.profile.ToolBar
 import com.prdcv.ehust.ui.projects.topic.TitleTopic
 import com.prdcv.ehust.ui.task.detail.TaskDetailArgs
 import com.prdcv.ehust.viewmodel.TaskStatus
 import com.prdcv.ehust.viewmodel.TaskViewModel
-import com.prdcv.ehust.ui.TopicsViewModel
 import java.time.LocalDate
 import java.time.Period
+import kotlin.math.absoluteValue
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -82,6 +86,19 @@ fun TaskScreenPreview(navController: NavController, topic: Topic) {
                             }
                         } else {
                             item { TopicRow(navController =  navController, topic = topic) }
+
+                            if (uiState.filteredTaskList.isEmpty()) {
+                                item {
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Không có công việc nào", color = Color.Gray)
+                                    }
+                                }
+                                return@LazyColumn
+                            }
+
                             items(items = uiState.filteredTaskList, key = { it.id }) { item ->
 
                                 TaskRow(
@@ -188,7 +205,11 @@ fun TaskRow(
             val today = LocalDate.now()
             val dueDate = data.dueDate
             val dateRemain = Period.between(today, dueDate).days
-            return "(còn $dateRemain ngày)"
+            return if (dateRemain >= 0) {
+                "(còn $dateRemain ngày)"
+            } else {
+                "(quá hạn ${dateRemain.absoluteValue} ngày)"
+            }
         }
 
         return ""
@@ -206,7 +227,7 @@ fun TaskRow(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier
+                modifier = Modifier.weight(1f)
                     .width(IntrinsicSize.Max)
                     .padding(10.dp)
             ) {
@@ -217,7 +238,7 @@ fun TaskRow(
                         highlight = PlaceholderHighlight.shimmer()
                     )
                 ) {
-                    data.status?.let { Tag(it.text, selectTagColor(data.status)) }
+                    Tag(data.status.text, selectTagColor(data.status))
                     Spacer(modifier = Modifier.size(3.dp))
                     Text(text = "#${data.id}", fontWeight = FontWeight.Light, fontSize = 13.sp)
                 }
