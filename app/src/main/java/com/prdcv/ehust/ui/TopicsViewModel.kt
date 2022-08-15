@@ -167,8 +167,18 @@ class TopicsViewModel @Inject constructor(
                 uiState.readOnly.value = true
                 if (it is State.Success){
                     uiState.readOnly.value = it.data.semester!= currentSemester
+                    when (mRole) {
+                        Role.ROLE_STUDENT -> {
+                            uiState.readOnly.value = true
+                        }
+                        Role.ROLE_TEACHER -> {
+                            uiState.readOnly.value = false
+                        }
+                        else -> {}
+                    }
                     delay(600)
                 }
+
 
                 uiState.findDetailInformationTopic(it)
             }

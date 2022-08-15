@@ -78,16 +78,7 @@ fun InformationTopic(idTopic: Int = 0, viewModel: TopicsViewModel = hiltViewMode
     LaunchedEffect(key1 = Unit) {
         viewModel.findDetailInformationTopic(idTopic)
     }
-    when (viewModel.mRole) {
-        Role.ROLE_STUDENT -> {
-            viewModel.uiState.readOnly.value = true
-        }
-        Role.ROLE_TEACHER -> {
 
-            viewModel.uiState.readOnly.value = false
-        }
-        else -> {}
-    }
     DefaultTheme() {
         Scaffold(topBar = {
             ToolBar(
